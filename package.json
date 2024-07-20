@@ -11,6 +11,7 @@
 	"author": "Matt Kane",
 	"license": "MIT",
 	"devDependencies": {
+		"@changesets/cli": "^2.27.7",
 		"@types/node": "^20.14.11",
 		"prettier": "^3.3.3"
 	},
