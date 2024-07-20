@@ -1,0 +1,18 @@
+{
+	"name": "astro-loaders",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "pnpm run --filter @ascorbic/* build"
+	},
+	"keywords": [],
+	"author": "Matt Kane",
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^20.14.11",
+		"prettier": "^3.3.3"
+	},
+	"packageManager": "pnpm@8.15.8+sha256.691fe176eea9a8a80df20e4976f3dfb44a04841ceb885638fe2a26174f81e65e"
+}

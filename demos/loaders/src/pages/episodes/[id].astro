@@ -1,0 +1,42 @@
+---
+import type { GetStaticPaths } from "astro";
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import { Image } from "@unpic/astro";
+export const getStaticPaths: GetStaticPaths = async () => {
+  const releases = await getCollection("podcasts");
+  return releases.map((release) => ({
+    params: {
+      id: release.id.replace(/\W/g, "-"),
+    },
+    props: release,
+  }));
+};
+
+type Props = CollectionEntry<"podcasts">;
+
+const { data: release } = Astro.props;
+
+const img = release.image.url ?? release.meta.image?.url;
+const alt = release.image.title ?? release.meta.image?.title ?? release.title;
+---
+
+<Layout title={release.title ?? "Episode"}>
+  <h1>{release.title}</h1>
+  {
+    img ? (
+      <Image src={img} alt={alt} width={100} height={100} layout="fixed" />
+    ) : undefined
+  }
+  <p>
+    {
+      release.enclosures.map((enclosure) => (
+        <audio controls>
+          <source src={enclosure.url} type={enclosure.type} />
+        </audio>
+      ))
+    }
+  </p>
+  <Fragment set:html={release.description} />
+</Layout>

@@ -1,0 +1,35 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+
+const releases = await getCollection("releases");
+const episodes = await getCollection("podcasts");
+---
+
+<Layout title="Releases">
+  <ul>
+    {
+      releases.map((release) => (
+        <li>
+          <a
+            href={`/releases/${release.data.title?.replace(/\W/g, "-").toLowerCase()}`}
+          >
+            {release.data.title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <h2>Episodes</h2>
+  <ul>
+    {
+      episodes.map((episode) => (
+        <li>
+          <a href={`/episodes/${episode.id.replace(/\W/g, "-")}`}>
+            {episode.data.title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

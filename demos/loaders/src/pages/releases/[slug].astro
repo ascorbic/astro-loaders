@@ -1,0 +1,26 @@
+---
+import type { GetStaticPaths } from "astro";
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const releases = await getCollection("releases");
+
+  return releases.map((release) => ({
+    params: {
+      slug: release.data.title?.replace(/\W/g, "-").toLowerCase(),
+    },
+    props: release,
+  }));
+};
+
+type Props = CollectionEntry<"releases">;
+
+const { data: release } = Astro.props;
+---
+
+<Layout title={release.title ?? "Release"}>
+  <h1>{release.title}</h1>
+  <Fragment set:html={release.description} />
+</Layout>

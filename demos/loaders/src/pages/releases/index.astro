@@ -1,0 +1,19 @@
+---
+import { getCollection } from "astro:content";
+
+const releases = await getCollection("releases");
+---
+
+<ul>
+  {
+    releases.map((release) => (
+      <li>
+        <a
+          href={`/releases/${release.data.title?.replace(/\W/g, "-").toLowerCase()}`}
+        >
+          {release.data.title}
+        </a>
+      </li>
+    ))
+  }
+</ul>
