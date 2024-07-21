@@ -4,6 +4,9 @@
 	"description": "",
 	"type": "module",
 	"main": "dist/index.js",
+	"files": [
+		"dist"
+	],
 	"exports": {
 		".": "./dist/index.js"
 	},
@@ -12,7 +15,7 @@
 		"dev": "tsup src/index.ts --format esm --dts --watch",
 		"prepublishOnly": "node --run build",
 		"check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm",
-		"test": "node --test"
+		"test": "vitest"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.15.3",
