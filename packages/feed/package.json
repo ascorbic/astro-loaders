@@ -9,8 +9,10 @@
 	},
 	"scripts": {
 		"build": "tsup src/index.ts --format esm --dts --clean",
+		"dev": "tsup src/index.ts --format esm --dts --watch",
 		"prepublishOnly": "node --run build",
-		"check": "publint && attw --pack"
+		"check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm",
+		"test": "node --test"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.15.3",
