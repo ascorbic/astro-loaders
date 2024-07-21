@@ -1,7 +1,7 @@
 import type { Loader } from "astro/loaders";
 import FeedParser from "feedparser";
-import { webToNodeStream } from "./streams.js";
 import { ItemSchema, type Item } from "./schema.js";
+import { webToNodeStream } from "./streams.js";
 
 export interface FeedLoaderOptions {
 	/** URL of the feed */
