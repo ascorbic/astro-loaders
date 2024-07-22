@@ -1,5 +1,5 @@
 {
-	"name": "@ascorbic/feed-loader",
+	"name": "@ascorbic/loader-utils",
 	"version": "0.0.0",
 	"description": "",
 	"type": "module",
@@ -19,7 +19,6 @@
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.15.3",
-		"@types/feedparser": "^2.2.8",
 		"astro": "0.0.0-contentlayer-20240720080804",
 		"publint": "^0.2.9",
 		"tsup": "^8.2.0",
@@ -31,8 +30,5 @@
 	"keywords": [],
 	"author": "",
 	"license": "MIT",
-	"dependencies": {
-		"feedparser": "^2.2.10",
-		"@ascorbic/loader-utils": "workspace:^"
-	}
+	"dependencies": {}
 }

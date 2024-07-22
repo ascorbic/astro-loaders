@@ -44,6 +44,9 @@ importers:
 
   packages/feed:
     dependencies:
+      '@ascorbic/loader-utils':
+        specifier: workspace:^
+        version: link:../utils
       feedparser:
         specifier: ^2.2.10
         version: 2.2.10
@@ -54,6 +57,24 @@ importers:
       '@types/feedparser':
         specifier: ^2.2.8
         version: 2.2.8
+      astro:
+        specifier: 0.0.0-contentlayer-20240720080804
+        version: 0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+      publint:
+        specifier: ^0.2.9
+        version: 0.2.9
+      tsup:
+        specifier: ^8.2.0
+        version: 8.2.0(postcss@8.4.39)(typescript@5.5.3)
+      typescript:
+        specifier: ^5.5.3
+        version: 5.5.3
+
+  packages/utils:
+    devDependencies:
+      '@arethetypeswrong/cli':
+        specifier: ^0.15.3
+        version: 0.15.3
       astro:
         specifier: 0.0.0-contentlayer-20240720080804
         version: 0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
