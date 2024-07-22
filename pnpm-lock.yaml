@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@changesets/changelog-github':
+        specifier: ^0.5.0
+        version: 0.5.0
       '@changesets/cli':
         specifier: ^2.27.7
         version: 2.27.7
@@ -31,13 +34,13 @@ importers:
         version: 0.8.2(prettier@3.3.3)(typescript@5.5.3)
       '@astrojs/netlify':
         specifier: ^5.4.0
-        version: 5.4.0(astro@0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))
+        version: 5.4.0(astro@0.0.0-contentlayer-20240722131255(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))
       '@unpic/astro':
         specifier: ^0.0.46
-        version: 0.0.46(astro@0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))
+        version: 0.0.46(astro@0.0.0-contentlayer-20240722131255(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))
       astro:
-        specifier: 0.0.0-contentlayer-20240720080804
-        version: 0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+        specifier: 0.0.0-contentlayer-20240722131255
+        version: 0.0.0-contentlayer-20240722131255(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
       typescript:
         specifier: ^5.5.3
         version: 5.5.3
@@ -58,8 +61,8 @@ importers:
         specifier: ^2.2.8
         version: 2.2.8
       astro:
-        specifier: 0.0.0-contentlayer-20240720080804
-        version: 0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+        specifier: 0.0.0-contentlayer-20240722131255
+        version: 0.0.0-contentlayer-20240722131255(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
       publint:
         specifier: ^0.2.9
         version: 0.2.9
@@ -76,8 +79,8 @@ importers:
         specifier: ^0.15.3
         version: 0.15.3
       astro:
-        specifier: 0.0.0-contentlayer-20240720080804
-        version: 0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+        specifier: 0.0.0-contentlayer-20240722131255
+        version: 0.0.0-contentlayer-20240722131255(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
       publint:
         specifier: ^0.2.9
         version: 0.2.9
@@ -269,6 +272,9 @@ packages:
   '@changesets/changelog-git@0.2.0':
     resolution: {integrity: sha512-bHOx97iFI4OClIT35Lok3sJAwM31VbUM++gnMBV16fdbtBhgYu4dxsphBF/0AZZsyAHMrnM0yFcj5gZM1py6uQ==}
 
+  '@changesets/changelog-github@0.5.0':
+    resolution: {integrity: sha512-zoeq2LJJVcPJcIotHRJEEA2qCqX0AQIeFE+L21L8sRLPVqDhSXY8ZWAt2sohtBpFZkBwu+LUwMSKRr2lMy3LJA==}
+
   '@changesets/cli@2.27.7':
     resolution: {integrity: sha512-6lr8JltiiXPIjDeYg4iM2MeePP6VN/JkmqBsVA5XRiy01hGS3y629LtSDvKcycj/w/5Eur1rEwby/MjcYS+e2A==}
     hasBin: true
@@ -281,6 +287,9 @@ packages:
 
   '@changesets/get-dependents-graph@2.1.1':
     resolution: {integrity: sha512-LRFjjvigBSzfnPU2n/AhFsuWR5DK++1x47aq6qZ8dzYsPtS/I5mNhIGAS68IAxh1xjO9BTtz55FwefhANZ+FCA==}
+
+  '@changesets/get-github-info@0.6.0':
+    resolution: {integrity: sha512-v/TSnFVXI8vzX9/w3DU2Ol+UlTZcu3m0kXTjTT4KlAdwSvwutcByYwyYn9hwerPWfPkT2JfpoX0KgvCEi8Q/SA==}
 
   '@changesets/get-release-plan@4.0.3':
     resolution: {integrity: sha512-6PLgvOIwTSdJPTtpdcr3sLtGatT+Jr22+cQwEBJBy6wP0rjB4yJ9lv583J9fVpn1bfQlBkDa8JxbS2g/n9lIyA==}
@@ -1254,8 +1263,8 @@ packages:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
     engines: {node: '>=12'}
 
-  astro@0.0.0-contentlayer-20240720080804:
-    resolution: {integrity: sha512-VaG4zcKKdIuopUAuazBAKaF2b2bJOMXv7gZfZ5N+V2TGaRoTtUOtbZruGYN3fsEBvnabDlIAmEn4zDKJq+TRIw==}
+  astro@0.0.0-contentlayer-20240722131255:
+    resolution: {integrity: sha512-QdD2ZgbMiqjF3gy7UbxFquswDOkolADv7qTFIltSEAnqh9f2IlDv83iD8+HhHC6IXUKAZTOboah6OSsqWvnGKA==}
     engines: {node: ^18.17.1 || ^20.3.0 || >=21.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
 
@@ -1478,6 +1487,9 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
+  dataloader@1.4.0:
+    resolution: {integrity: sha512-68s5jYdlvasItOJnCuI2Q9s4q98g0pCyL3HrcKJu8KNugUl8ahgmZYg38ysLTgQjjXX3H8CJLkAvWrclWfcalw==}
+
   debug@4.3.5:
     resolution: {integrity: sha512-pt0bNEmneDIvdL1Xsd9oDQ/wrQRkXDT4AUWlNZNPKvW5x/jyO9VFXkJUP07vQ2upmw5PlaITaPKc31jK13V+jg==}
     engines: {node: '>=6.0'}
@@ -1532,6 +1544,10 @@ packages:
 
   dlv@1.1.3:
     resolution: {integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==}
+
+  dotenv@8.6.0:
+    resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
+    engines: {node: '>=10'}
 
   dset@3.1.3:
     resolution: {integrity: sha512-20TuZZHCEZ2O71q9/+8BwKwZ0QtD9D8ObhrihJPr+vLLYlSuAU3/zL4cSlgbfeoGHTjCSJBa7NGcrF9/Bx/WJQ==}
@@ -3314,13 +3330,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/netlify@5.4.0(astro@0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))':
+  '@astrojs/netlify@5.4.0(astro@0.0.0-contentlayer-20240722131255(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))':
     dependencies:
       '@astrojs/internal-helpers': 0.4.1
       '@astrojs/underscore-redirects': 0.3.4
       '@netlify/functions': 2.8.1
       '@vercel/nft': 0.27.3
-      astro: 0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+      astro: 0.0.0-contentlayer-20240722131255(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
       esbuild: 0.22.0
     transitivePeerDependencies:
       - encoding
@@ -3534,6 +3550,14 @@ snapshots:
     dependencies:
       '@changesets/types': 6.0.0
 
+  '@changesets/changelog-github@0.5.0':
+    dependencies:
+      '@changesets/get-github-info': 0.6.0
+      '@changesets/types': 6.0.0
+      dotenv: 8.6.0
+    transitivePeerDependencies:
+      - encoding
+
   '@changesets/cli@2.27.7':
     dependencies:
       '@babel/runtime': 7.24.8
@@ -3590,6 +3614,13 @@ snapshots:
       chalk: 2.4.2
       fs-extra: 7.0.1
       semver: 7.6.3
+
+  '@changesets/get-github-info@0.6.0':
+    dependencies:
+      dataloader: 1.4.0
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
 
   '@changesets/get-release-plan@4.0.3':
     dependencies:
@@ -4192,12 +4223,12 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@unpic/astro@0.0.46(astro@0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))':
+  '@unpic/astro@0.0.46(astro@0.0.0-contentlayer-20240722131255(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))':
     dependencies:
       '@unpic/core': 0.0.49
       '@unpic/pixels': 1.2.2
       '@unpic/placeholder': 0.1.2
-      astro: 0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+      astro: 0.0.0-contentlayer-20240722131255(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
       blurhash: 2.0.5
 
   '@unpic/core@0.0.49':
@@ -4393,7 +4424,7 @@ snapshots:
 
   assertion-error@2.0.1: {}
 
-  astro@0.0.0-contentlayer-20240720080804(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3):
+  astro@0.0.0-contentlayer-20240722131255(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3):
     dependencies:
       '@astrojs/compiler': 2.9.2
       '@astrojs/internal-helpers': 0.4.1
@@ -4680,6 +4711,8 @@ snapshots:
 
   cssesc@3.0.0: {}
 
+  dataloader@1.4.0: {}
+
   debug@4.3.5:
     dependencies:
       ms: 2.1.2
@@ -4717,6 +4750,8 @@ snapshots:
       path-type: 4.0.0
 
   dlv@1.1.3: {}
+
+  dotenv@8.6.0: {}
 
   dset@3.1.3: {}
 
