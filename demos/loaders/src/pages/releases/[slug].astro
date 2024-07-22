@@ -17,10 +17,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 type Props = CollectionEntry<"releases">;
 
-const { data: release } = Astro.props;
+const { data: release, render } = Astro.props;
+
+const { Content } = await render();
 ---
 
 <Layout title={release.title ?? "Release"}>
   <h1>{release.title}</h1>
-  <Fragment set:html={release.description} />
+  <Content />
 </Layout>

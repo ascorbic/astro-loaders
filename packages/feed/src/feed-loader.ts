@@ -53,10 +53,10 @@ export function feedLoader({
             logger.warn("Item does not have a guid, skipping");
             continue;
           }
-          const data = (await parseData({
+          const data = await parseData({
             id,
-            data: item as Item & Record<string, unknown>,
-          })) as unknown as Item;
+            data: item,
+          });
 
           store.set({
             id,
