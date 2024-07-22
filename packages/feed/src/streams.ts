@@ -1,7 +1,8 @@
 import { Readable } from "node:stream";
+import type { ReadableStream } from "node:stream/web";
 
 export function webToNodeStream(
-  webStream: ReadableStream<Uint8Array>
+  webStream: ReadableStream<Uint8Array>,
 ): Readable {
   const reader = webStream.getReader();
   return new Readable({

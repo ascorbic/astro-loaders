@@ -2,11 +2,15 @@ import type { Loader } from "astro/loaders";
 import FeedParser from "feedparser";
 import { ItemSchema, type Item } from "./schema.js";
 import { webToNodeStream } from "./streams.js";
+import {
+  getConditionalHeaders,
+  storeConditionalHeaders,
+} from "@ascorbic/loader-utils";
 
 export interface FeedLoaderOptions {
-	/** URL of the feed */
+  /** URL of the feed */
   url: URL | string;
-	/** Extra options passed to the fetch request */
+  /** Extra options passed to the fetch request */
   requestOptions?: RequestInit;
 }
 
@@ -21,17 +25,11 @@ export function feedLoader({
       logger.info("Loading posts");
       const parser = new FeedParser({ feedurl: feedUrl.toString() });
 
-      const etag = meta.get("etag");
-      const lastModified = meta.get("last-modified");
-      if (store.keys().length > 0 && (etag || lastModified)) {
-        const headers = new Headers(requestOptions.headers);
-        if (etag) {
-          headers.set("If-None-Match", etag);
-        } else {
-          headers.set("If-Modified-Since", lastModified!);
-        }
-        requestOptions.headers = headers;
-      }
+      requestOptions.headers = getConditionalHeaders({
+        init: requestOptions.headers,
+        meta,
+      });
+
       const res = await fetch(feedUrl, requestOptions);
 
       if (res.status === 304) {
@@ -44,8 +42,6 @@ export function feedLoader({
       if (!res.body) {
         throw new Error("Response body is empty");
       }
-      const incomingEtag = res.headers.get("etag");
-      const incomingLastModified = res.headers.get("last-modified");
 
       store.clear();
 
@@ -77,13 +73,10 @@ export function feedLoader({
 
       return new Promise((resolve, reject) => {
         parser.on("end", () => {
-          meta.delete("etag");
-          meta.delete("last-modified");
-          if (incomingEtag) {
-            meta.set("etag", incomingEtag);
-          } else if (incomingLastModified) {
-            meta.set("last-modified", incomingLastModified);
-          }
+          storeConditionalHeaders({
+            headers: res.headers,
+            meta,
+          });
           resolve();
         });
         parser.on("error", (err: Error) => {
