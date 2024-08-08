@@ -9,4 +9,7 @@ export default defineConfig({
   image: {
     domains: ["image.simplecastcdn.com"],
   },
+  experimental: {
+    contentLayer: true,
+  },
 });

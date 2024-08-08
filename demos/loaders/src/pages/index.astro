@@ -4,6 +4,12 @@ import Layout from "../layouts/Layout.astro";
 
 const releases = await getCollection("releases");
 const episodes = await getCollection("podcasts");
+// en-CA formats as yyyy-mm-dd
+const formatter = new Intl.DateTimeFormat("en-CA", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 ---
 
 <Layout title="Releases">
@@ -25,7 +31,7 @@ const episodes = await getCollection("podcasts");
     {
       episodes.map((episode) => (
         <li>
-          <a href={`/episodes/${episode.id.replace(/\W/g, "-")}`}>
+          <a href={`/episodes/${formatter.format(episode.data.date!)}`}>
             {episode.data.title}
           </a>
         </li>

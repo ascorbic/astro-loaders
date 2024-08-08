@@ -1,7 +1,6 @@
 ---
 import type { GetStaticPaths } from "astro";
-import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
+import { getCollection, render, type CollectionEntry } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -11,18 +10,18 @@ export const getStaticPaths: GetStaticPaths = async () => {
     params: {
       slug: release.data.title?.replace(/\W/g, "-").toLowerCase(),
     },
-    props: release,
+    props: { release },
   }));
 };
 
-type Props = CollectionEntry<"releases">;
+type Props = { release: CollectionEntry<"releases"> };
 
-const { data: release, render } = Astro.props;
+const { release } = Astro.props;
 
-const { Content } = await render();
+const { Content } = await render(release);
 ---
 
-<Layout title={release.title ?? "Release"}>
-  <h1>{release.title}</h1>
+<Layout title={release.data.title ?? "Release"}>
+  <h1>{release.data.title}</h1>
   <Content />
 </Layout>

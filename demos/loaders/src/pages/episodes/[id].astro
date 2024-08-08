@@ -1,31 +1,39 @@
 ---
 import type { GetStaticPaths } from "astro";
-import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
+import { getCollection, render, type CollectionEntry } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { Image } from "@unpic/astro";
+
 export const getStaticPaths: GetStaticPaths = async () => {
-  const releases = await getCollection("podcasts");
-  return releases.map((release) => ({
+  // en-CA formats as yyyy-mm-dd
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  const episodes = await getCollection("podcasts");
+  return episodes.map((episode) => ({
     params: {
-      id: release.id.replace(/\W/g, "-"),
+      id: formatter.format(episode.data.date!),
     },
-    props: release,
+    props: { episode },
   }));
 };
 
-type Props = CollectionEntry<"podcasts">;
+type Props = { episode: CollectionEntry<"podcasts"> };
 
-const { data: release, render } = Astro.props;
+const { episode } = Astro.props;
+const { data } = episode;
 
-const { Content } = await render();
+const { Content } = await render(episode);
 
-const img = release.image.url ?? release.meta.image?.url;
-const alt = release.image.title ?? release.meta.image?.title ?? release.title;
+const img = data.image.url ?? data.meta.image?.url;
+const alt = data.image.title ?? data.meta.image?.title ?? data.title;
 ---
 
-<Layout title={release.title ?? "Episode"}>
-  <h1>{release.title}</h1>
+<Layout title={data.title ?? "Episode"}>
+  <h1>{data.title}</h1>
   {
     img ? (
       <Image src={img} alt={alt} width={100} height={100} layout="fixed" />
@@ -33,7 +41,7 @@ const alt = release.image.title ?? release.meta.image?.title ?? release.title;
   }
   <p>
     {
-      release.enclosures.map((enclosure) => (
+      data.enclosures.map((enclosure) => (
         <audio controls>
           <source src={enclosure.url} type={enclosure.type} />
         </audio>
