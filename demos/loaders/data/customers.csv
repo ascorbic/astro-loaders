@@ -25,7 +25,7 @@ CustomerID,First Name,Last Name,Email,Age,RegistrationDate,PurchaseAmount,IsSubs
 24,Nicole,Nelson,nicole.n@email.com,31,2022-03-18,95.50,FALSE,2023-10-15
 25,Joseph,Carter,joseph.c@email.com,37,2022-02-25,180.75,TRUE,2023-12-05
 26,Laura,Mitchell,laura.m@email.com,29,2022-04-07,110.25,FALSE,2023-11-10
-27,Charles,Perez,charles.p@email.com,42,2022-01-16,215.00,TRUE,2023-12-07
+27,Charles,Perez,charles.p@email.com,42,2022-01-16,215.00,TRUE,2023-12-07 
 28,Rebecca,Roberts,rebecca.r@email.com,33,2022-03-12,130.50,TRUE,2023-11-24
 29,Ryan,Turner,ryan.t@email.com,39,2022-02-19,195.25,FALSE,2023-09-28
 30,Michelle,Phillips,michelle.p@email.com,26,2022-04-20,85.75,TRUE,2023-12-03

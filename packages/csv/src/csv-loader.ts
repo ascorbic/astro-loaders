@@ -21,6 +21,11 @@ export interface CSVLoaderOptions {
    * Default is the first column.
    * */
   idField?: string;
+  /** Options passed to the CSV parser */
+  parserOptions?: Omit<
+    Papa.ParseConfig,
+    "header" | "dynamicTyping" | "transformHeader" | "step" | "complete"
+  >;
 }
 
 const camelize = (str: string) =>
@@ -39,20 +44,21 @@ export function csvLoader({
   fileName,
   idField,
   transformHeader = camelize,
+  parserOptions,
 }: CSVLoaderOptions): Loader {
   async function syncData(
     filePath: string,
     { logger, parseData, store, settings }: LoaderContext,
   ) {
-    logger.info(`Loading CSV data from ${fileName}`);
     const relativePath = relative(
       fileURLToPath(settings.config.root),
       filePath,
     );
 
     const csvStream = Papa.parse(Papa.NODE_STREAM_INPUT, {
-      header: true,
       dynamicTyping: true,
+      ...parserOptions,
+      header: true,
       transformHeader: transformHeader === false ? undefined : transformHeader,
     });
 
@@ -85,6 +91,7 @@ export function csvLoader({
           logger.warn(`No ID (${idField}) found in row ${row}. Skipping.`);
           return;
         }
+        count++;
         const id = String(data[idField]);
         const parsedData = await parseData({
           id,
@@ -92,7 +99,6 @@ export function csvLoader({
           filePath: relativePath,
         });
         store.set({ id, data: parsedData, filePath: relativePath });
-        count++;
       });
     }).catch((error) => {
       logger.error("Error reading data: " + error);
