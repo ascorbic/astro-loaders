@@ -1,0 +1,40 @@
+{
+	"name": "@ascorbic/csv-loader",
+	"version": "0.0.0",
+	"description": "",
+	"type": "module",
+	"main": "dist/index.js",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": "./dist/index.js"
+	},
+	"scripts": {
+		"build": "tsup src/index.ts --format esm --dts --clean",
+		"dev": "tsup src/index.ts --format esm --dts --watch",
+		"prepublishOnly": "node --run build",
+		"check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm",
+		"test": "vitest"
+	},
+	"devDependencies": {
+		"@arethetypeswrong/cli": "^0.15.3",
+		"@types/feedparser": "^2.2.8",
+		"@types/papaparse": "^5.3.14",
+		"astro": "0.0.0-contentlayer-20240808151214",
+		"publint": "^0.2.9",
+		"tsup": "^8.2.0",
+		"typescript": "^5.5.3"
+	},
+	"peerDependencies": {
+		"astro": "experimental--contentlayer"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "MIT",
+	"dependencies": {
+		"@ascorbic/loader-utils": "workspace:^",
+		"papaparse": "^5.4.1",
+		"pathe": "^1.1.2"
+	}
+}
