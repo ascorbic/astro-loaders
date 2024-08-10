@@ -27,7 +27,7 @@
 		"typescript": "^5.5.3"
 	},
 	"peerDependencies": {
-		"astro": "experimental--contentlayer"
+		"astro": "experimental--contentlayer || ^4.14.0"
 	},
 	"keywords": [],
 	"author": "",
