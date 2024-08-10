@@ -1,5 +1,6 @@
-import { defineCollection } from "astro:content";
+import { defineCollection, z } from "astro:content";
 import { feedLoader } from "@ascorbic/feed-loader";
+import { csvLoader } from "@ascorbic/csv-loader";
 
 const releases = defineCollection({
   loader: feedLoader({
@@ -13,4 +14,21 @@ const podcasts = defineCollection({
   }),
 });
 
-export const collections = { releases, podcasts };
+const customers = defineCollection({
+  loader: csvLoader({
+    fileName: "data/customers.csv",
+  }),
+  schema: z.object({
+    customerID: z.number(),
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string(),
+    age: z.number(),
+    registrationDate: z.coerce.date(),
+    purchaseAmount: z.number(),
+    isSubscriber: z.boolean(),
+    lastPurchaseDate: z.coerce.date(),
+  }),
+});
+
+export const collections = { releases, podcasts, customers };

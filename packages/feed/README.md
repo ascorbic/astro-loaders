@@ -1,11 +1,11 @@
 # Astro feed loader
 
-This package provides a feed loader for Astro. It allows you to load and parse RSS, RDF Atom feeds, and use the data in your Astro components. It uses the new Astro content layer, so won't work with normal Astro sites yet.
+This package provides a feed loader for Astro. It allows you to load and parse RSS, RDF Atom feeds, and use the data in your Astro site. It uses the new Astro content layer, so you need to enable experimental support and use `astro@4.14` or later.
 
 ## Installation
 
 ```sh
-npm install @ascorbic/astro-feed astro@experimental--contentlayer
+npm install @ascorbic/astro-feed
 ```
 
 ## Usage

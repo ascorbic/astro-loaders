@@ -33,7 +33,7 @@ export function feedLoader({
       const res = await fetch(feedUrl, requestOptions);
 
       if (res.status === 304) {
-        logger.info("Feed not modified, skipping");
+        logger.info(`Feed ${feedUrl} not modified, skipping`);
         return;
       }
       if (!res.ok) {
