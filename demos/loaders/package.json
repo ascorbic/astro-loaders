@@ -11,6 +11,7 @@
 		"astro": "astro"
 	},
 	"dependencies": {
+		"@ascorbic/airtable-loader": "workspace:^",
 		"@ascorbic/csv-loader": "workspace:^",
 		"@ascorbic/feed-loader": "workspace:^",
 		"@astrojs/check": "^0.8.2",

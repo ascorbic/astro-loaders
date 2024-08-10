@@ -5,7 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "pnpm run --filter @ascorbic/* test",
-		"build": "pnpm run --filter @ascorbic/* build"
+		"build": "pnpm run --filter @ascorbic/* build",
+		"check": "pnpm run --filter @ascorbic/* check"
 	},
 	"keywords": [],
 	"author": "Matt Kane",
@@ -15,6 +16,7 @@
 		"@changesets/cli": "^2.27.7",
 		"@types/node": "^20.14.11",
 		"prettier": "^3.3.3",
+		"vite": "^5.4.0",
 		"vitest": "^2.0.3"
 	},
 	"packageManager": "pnpm@9.1.4"

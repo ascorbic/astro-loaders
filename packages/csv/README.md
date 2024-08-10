@@ -5,7 +5,7 @@ This package provides a CSV loader for Astro. It allows you to load and parse CS
 ## Installation
 
 ```sh
-npm install @ascorbic/astro-csv
+npm install @ascorbic/csv-loader
 ```
 
 ## Usage
