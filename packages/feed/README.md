@@ -5,7 +5,7 @@ This package provides a feed loader for Astro. It allows you to load and parse R
 ## Installation
 
 ```sh
-npm install @ascorbic/astro-feed
+npm install @ascorbic/feed-loader
 ```
 
 ## Usage

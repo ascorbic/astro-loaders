@@ -4,4 +4,6 @@ Some Astro loaders, for the experimental [content layer](https://astro.build/blo
 
 ### Packages
 
-- [@ascorbic/astro-feed](packages/feed/README.md) - Load RSS, RDF, and Atom feeds
+- [@ascorbic/airtable-loader](packages/airtable/README.md) - Load data from Airtable
+- [@ascorbic/csv-loader](packages/csv/README.md) - Load CSV files
+- [@ascorbic/feed-loader](packages/feed/README.md) - Load RSS, RDF, and Atom feeds, including podcasts
