@@ -4,6 +4,7 @@ import Layout from "../layouts/Layout.astro";
 
 const releases = await getCollection("releases");
 const episodes = await getCollection("podcasts");
+const customers = await getCollection("customers");
 // en-CA formats as yyyy-mm-dd
 const formatter = new Intl.DateTimeFormat("en-CA", {
   year: "numeric",
@@ -38,4 +39,25 @@ const formatter = new Intl.DateTimeFormat("en-CA", {
       ))
     }
   </ul>
+  <h2>Customers</h2>
+  <table>
+    <thead>
+      <tr>
+        {Object.keys(customers?.[0]?.data ?? {}).map((key) => <th>{key}</th>)}
+        <th></th>
+      </tr>
+    </thead>
+    {
+      customers.map((customer) => (
+        <tr>
+          {Object.values(customer.data).map((value) => (
+            <td>{value}</td>
+          ))}
+          <td>
+            <a href={`/customers/${customer.id}`}>View</a>
+          </td>
+        </tr>
+      ))
+    }
+  </table>
 </Layout>

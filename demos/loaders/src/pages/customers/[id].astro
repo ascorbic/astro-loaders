@@ -1,0 +1,26 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const customers = await getCollection("customers");
+  return customers.map((customer) => ({
+    params: {
+      id: customer.id,
+    },
+    props: { customer },
+  }));
+};
+
+type Props = { customer: CollectionEntry<"customers"> };
+
+const { customer } = Astro.props;
+const { data } = customer;
+---
+
+<Layout title={data.firstName}>
+  <h1>{data.firstName} {data.lastName}</h1>
+  <p>{data.email}</p>
+  <p>{data.lastPurchaseDate.toISOString()}</p>
+</Layout>
