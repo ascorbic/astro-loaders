@@ -1,6 +1,6 @@
 {
-	"name": "@ascorbic/csv-loader",
-	"version": "0.0.1",
+	"name": "@ascorbic/airtable-loader",
+	"version": "0.0.0",
 	"description": "",
 	"type": "module",
 	"main": "dist/index.js",
@@ -19,7 +19,6 @@
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.15.3",
-		"@types/papaparse": "^5.3.14",
 		"astro": "0.0.0-contentlayer-20240808151214",
 		"publint": "^0.2.9",
 		"tsup": "^8.2.0",
@@ -33,7 +32,6 @@
 	"license": "MIT",
 	"dependencies": {
 		"@ascorbic/loader-utils": "workspace:^",
-		"papaparse": "^5.4.1",
-		"pathe": "^1.1.2"
+		"airtable": "^0.12.2"
 	}
 }

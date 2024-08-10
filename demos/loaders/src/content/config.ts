@@ -1,6 +1,7 @@
 import { defineCollection, z } from "astro:content";
 import { feedLoader } from "@ascorbic/feed-loader";
 import { csvLoader } from "@ascorbic/csv-loader";
+import { airtableLoader } from "@ascorbic/airtable-loader";
 
 const releases = defineCollection({
   loader: feedLoader({
@@ -31,4 +32,11 @@ const customers = defineCollection({
   }),
 });
 
-export const collections = { releases, podcasts, customers };
+const spacecraft = defineCollection({
+  loader: airtableLoader({
+    base: import.meta.env.AIRTABLE_BASE,
+    table: "Product Launches",
+  }),
+});
+
+export const collections = { releases, podcasts, customers, spacecraft };

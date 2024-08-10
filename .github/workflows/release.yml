@@ -34,6 +34,7 @@ jobs:
 
       - name: Build Packages
         run: pnpm run build
+      - run: pnpm run check
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets

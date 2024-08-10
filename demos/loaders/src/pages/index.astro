@@ -5,6 +5,8 @@ import Layout from "../layouts/Layout.astro";
 const releases = await getCollection("releases");
 const episodes = await getCollection("podcasts");
 const customers = await getCollection("customers");
+const spacecraft = await getCollection("spacecraft");
+
 // en-CA formats as yyyy-mm-dd
 const formatter = new Intl.DateTimeFormat("en-CA", {
   year: "numeric",
@@ -14,6 +16,17 @@ const formatter = new Intl.DateTimeFormat("en-CA", {
 ---
 
 <Layout title="Releases">
+  <h2>Spacecraft</h2>
+  {
+    spacecraft.map(({ data }) => (
+      <div>
+        <h3>{data["Launch Name"]}</h3>
+        <p>{data["Launch date"]?.toDateString()}</p>
+        <p>{data.Description}</p>
+      </div>
+    ))
+  }
+  <h2>Releases</h2>
   <ul>
     {
       releases.map((release) => (
