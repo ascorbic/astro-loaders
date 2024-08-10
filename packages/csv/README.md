@@ -1,11 +1,11 @@
-# Astro feed loader
+# Astro CSV loader
 
-This package provides a feed loader for Astro. It allows you to load and parse RSS, RDF Atom feeds, and use the data in your Astro components. It uses the new Astro content layer, so won't work with normal Astro sites yet.
+This package provides a CSV loader for Astro. It allows you to load and parse CSV files, and use the data in your Astro components, including using it to generate pages. It uses the new Astro content layer, so you need to enable experimental support and use `astro@4.14` or later.
 
 ## Installation
 
 ```sh
-npm install @ascorbic/astro-feed astro@experimental--contentlayer
+npm install @ascorbic/astro-csv
 ```
 
 ## Usage
@@ -26,71 +26,64 @@ You can then use the feed loader in your content configuration:
 ```typescript
 // src/content/config.ts
 import { defineCollection } from "astro:content";
-import { feedLoader } from "@ascorbic/feed-loader";
+import { csvLoader } from "@ascorbic/csv-loader";
 
-const releases = defineCollection({
-  loader: feedLoader({
-    url: "https://github.com/withastro/astro/releases.atom",
+const customers = defineCollection({
+  loader: csvLoader({
+    fileName: "data/customers.csv",
+  }),
+  schema: z.object({
+    customerID: z.number(),
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string(),
+    age: z.number(),
+    registrationDate: z.coerce.date(),
+    purchaseAmount: z.number(),
   }),
 });
 
-const podcasts = defineCollection({
-  loader: feedLoader({
-    url: "https://feeds.99percentinvisible.org/99percentinvisible",
-  }),
-});
-
-export const collections = { releases, podcasts };
+export const collections = { customers };
 ```
 
-You can then use these like any other collection in Astro:
+You can then use these like any other content collection in Astro:
 
 ```astro
 ---
-import { getCollection } from "astro:content";
-import Layout from "../layouts/Layout.astro";
+import type { GetStaticPaths } from "astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
 
-const episodes = await getCollection("podcasts");
+export const getStaticPaths: GetStaticPaths = async () => {
+  const customers = await getCollection("customers");
+  return customers.map((customer) => ({
+    params: {
+      id: customer.id,
+    },
+    props: { customer },
+  }));
+};
+
+type Props = { customer: CollectionEntry<"customers"> };
+
+const { customer } = Astro.props;
+const { data } = customer;
 ---
 
-<Layout title="Episodes">
-  <h2>Episodes</h2>
-  <ul>
-    {
-      episodes.map((episode) => (
-        <li>
-          <a href={`/episodes/${episode.id.replace(/\W/g, "-")}`}>
-            {episode.data.title}
-          </a>
-        </li>
-      ))
-    }
-  </ul>
+<Layout title={data.firstName}>
+  <h1>{data.firstName} {data.lastName}</h1>
+  <p>{data.email}</p>
+  <p>{data.registrationDate.toISOString()}</p>
 </Layout>
-```
 
-You can render the episode description using the `render()` function:
-
-```astro
----
-import { render, getEntry } from "astro:content";
-
-const episode = getEntry("podcasts", Astro.params.id);
-
-const { Content } = await render(episode);
----
-<h1>{episode.data.title}</h1>
-
-<Content />
-
-<p>
-	{
-		episode.data.enclosures.map((enclosure) => (
-			<audio controls>
-				<source src={enclosure.url} type={enclosure.type} />
-			</audio>
-		))
-	}
-</p>
 
 ```
+
+## Options
+
+The `csvLoader` function takes an options object with the following properties:
+
+- `fileName`: The path to the CSV file to load. This should be absolute, or relative to the project root.
+- `transformHeader`: A function that transforms the header values into field names. By default, the values are camelized. Pass `false` to leave the values unchanged.
+- `idField`: The field to use as an ID. Values in this column must be unique. If the header is transformed, it is the value _after_ transformation. The default is the first column.
+- `parserOptions`: Additional ptions passed to the CSV parser. This object is passed directly to the PapaParse CSV library. See the [PapaParse documentation](https://www.papaparse.com/docs#config) for more information.
