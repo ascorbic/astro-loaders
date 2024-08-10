@@ -1,6 +1,6 @@
 # Astro CSV loader
 
-This package provides a CSV loader for Astro. It allows you to load and parse CSV files, and use the data in your Astro components, including using it to generate pages. It uses the new Astro content layer, so you need to enable experimental support and use `astro@4.14` or later.
+This package provides a CSV loader for Astro. It allows you to load and parse CSV files, and use the data in your Astro site, including using it to generate pages. It uses the new Astro content layer, so you need to enable experimental support and use `astro@4.14` or later.
 
 ## Installation
 
