@@ -1,7 +1,7 @@
 {
 	"name": "@test/loaders",
 	"type": "module",
-	"version": "0.0.3",
+	"version": "0.0.0",
 	"private": true,
 	"scripts": {
 		"dev": "astro dev",
