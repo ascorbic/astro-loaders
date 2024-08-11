@@ -28,9 +28,18 @@
 	"peerDependencies": {
 		"astro": "experimental--contentlayer || ^4.14.0"
 	},
-	"keywords": [],
+	"keywords": [
+		"astro",
+		"astro-loader"
+	],
 	"author": "",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+github.com:ascorbic/astro-loaders.git",
+		"directory": "packages/feed"
+	},
+	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
 		"feedparser": "^2.2.10",
 		"@ascorbic/loader-utils": "workspace:^"

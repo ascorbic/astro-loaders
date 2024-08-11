@@ -25,10 +25,16 @@
 		"typescript": "^5.5.3"
 	},
 	"peerDependencies": {
-		"astro": "experimental--contentlayer"
+		"astro": "experimental--contentlayer || ^4.14.0"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+github.com:ascorbic/astro-loaders.git",
+		"directory": "packages/utils"
+	},
+	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {}
 }

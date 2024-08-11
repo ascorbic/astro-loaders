@@ -13,6 +13,6 @@
 	"baseBranch": "main",
 	"updateInternalDependencies": "patch",
 	"ignore": [
-		"@test/loaders"
+		"@test/*"
 	]
 }

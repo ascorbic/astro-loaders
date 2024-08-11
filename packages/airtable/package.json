@@ -27,9 +27,18 @@
 	"peerDependencies": {
 		"astro": "experimental--contentlayer || ^4.14.0"
 	},
-	"keywords": [],
+	"keywords": [
+		"astro",
+		"astro-loader"
+	],
 	"author": "",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+github.com:ascorbic/astro-loaders.git",
+		"directory": "packages/airtable"
+	},
+	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
 		"@ascorbic/loader-utils": "workspace:^",
 		"airtable": "^0.12.2"
