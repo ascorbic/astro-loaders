@@ -1,0 +1,19 @@
+---
+import { getCollection } from "astro:content";
+
+const releases = await getCollection("mockBlog");
+---
+
+<ul>
+  {
+    releases.map((release) => (
+      <li>
+        <a
+          href={`/blog/${release.data.title?.replace(/\W/g, "-").toLowerCase()}`}
+        >
+          {release.data.title}
+        </a>
+      </li>
+    ))
+  }
+</ul>

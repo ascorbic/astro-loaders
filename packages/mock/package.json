@@ -1,0 +1,47 @@
+{
+	"name": "@ascorbic/mock-loader",
+	"version": "0.0.0",
+	"description": "",
+	"type": "module",
+	"main": "dist/index.js",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": "./dist/index.js"
+	},
+	"scripts": {
+		"build": "tsup src/index.ts --format esm --dts --clean",
+		"dev": "tsup src/index.ts --format esm --dts --watch",
+		"prepublishOnly": "node --run build",
+		"check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm",
+		"test": "vitest"
+	},
+	"devDependencies": {
+		"@arethetypeswrong/cli": "^0.15.3",
+		"astro": "0.0.0-contentlayer-20240808151214",
+		"publint": "^0.2.9",
+		"tsup": "^8.2.0",
+		"typescript": "^5.5.3"
+	},
+	"peerDependencies": {
+		"astro": "experimental--contentlayer || ^4.14.0"
+	},
+	"keywords": [
+		"astro",
+		"astro-loader"
+	],
+	"author": "",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+github.com:ascorbic/astro-loaders.git",
+		"directory": "packages/mock"
+	},
+	"homepage": "https://github.com/ascorbic/astro-loaders",
+	"dependencies": {
+		"@anatine/zod-mock": "^3.13.4",
+		"@ascorbic/loader-utils": "workspace:^",
+		"@faker-js/faker": "^8.4.1"
+	}
+}

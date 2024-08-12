@@ -1,0 +1,28 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const releases = await getCollection("mockBlog");
+
+  return releases.map((release) => ({
+    params: {
+      slug: release.data.title?.replace(/\W/g, "-").toLowerCase(),
+    },
+    props: { release },
+  }));
+};
+
+type Props = { release: CollectionEntry<"releases"> };
+
+const { release } = Astro.props;
+
+const { Content } = await render(release);
+---
+
+<Layout title={release.data.title ?? "Release"}>
+  <h1>{release.data.title}</h1>
+  <p>{release.data.date?.toLocaleString()}</p>
+  <Content />
+</Layout>

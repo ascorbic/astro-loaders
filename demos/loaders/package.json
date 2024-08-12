@@ -14,6 +14,7 @@
 		"@ascorbic/airtable-loader": "workspace:^",
 		"@ascorbic/csv-loader": "workspace:^",
 		"@ascorbic/feed-loader": "workspace:^",
+		"@ascorbic/mock-loader": "workspace:^",
 		"@astrojs/check": "^0.8.2",
 		"@astrojs/netlify": "^5.4.0",
 		"@unpic/astro": "^0.0.46",
