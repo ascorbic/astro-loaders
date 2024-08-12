@@ -46,13 +46,13 @@ importers:
         version: 0.8.2(prettier@3.3.3)(typescript@5.5.3)
       '@astrojs/netlify':
         specifier: ^5.4.0
-        version: 5.4.0(astro@0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))
+        version: 5.4.0(astro@4.13.3(@types/node@20.14.11)(typescript@5.5.3))
       '@unpic/astro':
         specifier: ^0.0.46
-        version: 0.0.46(astro@0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))
+        version: 0.0.46(astro@4.13.3(@types/node@20.14.11)(typescript@5.5.3))
       astro:
-        specifier: 0.0.0-contentlayer-20240808151214
-        version: 0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+        specifier: 4.13.3
+        version: 4.13.3(@types/node@20.14.11)(typescript@5.5.3)
       typescript:
         specifier: ^5.5.3
         version: 5.5.3
@@ -70,8 +70,8 @@ importers:
         specifier: ^0.15.3
         version: 0.15.3
       astro:
-        specifier: 0.0.0-contentlayer-20240808151214
-        version: 0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+        specifier: 4.13.3
+        version: 4.13.3(@types/node@20.14.11)(typescript@5.5.3)
       publint:
         specifier: ^0.2.9
         version: 0.2.9
@@ -101,8 +101,8 @@ importers:
         specifier: ^5.3.14
         version: 5.3.14
       astro:
-        specifier: 0.0.0-contentlayer-20240808151214
-        version: 0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+        specifier: 4.13.3
+        version: 4.13.3(@types/node@20.14.11)(typescript@5.5.3)
       publint:
         specifier: ^0.2.9
         version: 0.2.9
@@ -129,8 +129,8 @@ importers:
         specifier: ^2.2.8
         version: 2.2.8
       astro:
-        specifier: 0.0.0-contentlayer-20240808151214
-        version: 0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+        specifier: 4.13.3
+        version: 4.13.3(@types/node@20.14.11)(typescript@5.5.3)
       publint:
         specifier: ^0.2.9
         version: 0.2.9
@@ -157,8 +157,8 @@ importers:
         specifier: ^0.15.3
         version: 0.15.3
       astro:
-        specifier: 0.0.0-contentlayer-20240808151214
-        version: 0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+        specifier: 4.13.3
+        version: 4.13.3(@types/node@20.14.11)(typescript@5.5.3)
       publint:
         specifier: ^0.2.9
         version: 0.2.9
@@ -175,8 +175,8 @@ importers:
         specifier: ^0.15.3
         version: 0.15.3
       astro:
-        specifier: 0.0.0-contentlayer-20240808151214
-        version: 0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+        specifier: 4.13.3
+        version: 4.13.3(@types/node@20.14.11)(typescript@5.5.3)
       publint:
         specifier: ^0.2.9
         version: 0.2.9
@@ -1048,15 +1048,6 @@ packages:
     resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
     engines: {node: '>= 8.0.0'}
 
-  '@rollup/pluginutils@5.1.0':
-    resolution: {integrity: sha512-XTIWOPPcpvyKI6L1NHo0lFlCyznUEyPmPY1mc3KpPVDYulHSTvyeLNVW00QTLIAFNhR3kYnJTQHeGqU4M3n09g==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-
   '@rollup/rollup-android-arm-eabi@4.19.0':
     resolution: {integrity: sha512-JlPfZ/C7yn5S5p0yKk7uhHTTnFlvTgLetl2VxqE518QgyM7C9bSfFTYvB/Q/ftkq0RIPY4ySxTz+/wKJ/dXC0w==}
     cpu: [arm]
@@ -1370,8 +1361,8 @@ packages:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
     engines: {node: '>=12'}
 
-  astro@0.0.0-contentlayer-20240808151214:
-    resolution: {integrity: sha512-c5oPncztIuR5LT9iqk+ByQm9N+z3VpFSVWfiXvhfxeis6mmaDywY55j3ZIYaccr7fqR7JmsPhtQhWR8mueNInA==}
+  astro@4.13.3:
+    resolution: {integrity: sha512-MyhmM0v5sphiVwxAm5jjKxWeuPZijWPJ8Ajdign9QzEmLWSH8vUYIJWx/dWRQ6vF1I0jXrksoj3wtw5nzXt9nw==}
     engines: {node: ^18.17.1 || ^20.3.0 || >=21.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
 
@@ -2398,10 +2389,6 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  neotraverse@0.6.13:
-    resolution: {integrity: sha512-xpoemvyynsk/d/sHSq5psi5swYHMFyNOlsK4e1MBkx3ll9j4O6HLhExF90/72Wid52D6cqGmIVE96V3gw44s0Q==}
-    engines: {node: '>= 18'}
-
   nlcst-to-string@4.0.0:
     resolution: {integrity: sha512-YKLBCcUYKAg0FNlOBT6aI91qFmSiFKiluk655WzPF+DDMA02qIyy8uiRqI8QXtcFpEvll12LpL5MXqEmAZ+dcA==}
 
@@ -3334,9 +3321,6 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  xxhash-wasm@1.0.2:
-    resolution: {integrity: sha512-ibF0Or+FivM9lNrg+HGJfVX8WJqgo+kCLDc4vx6xMeTce7Aj+DLttKbxxRR/gNLSAelRc1omAPlJ77N/Jem07A==}
-
   y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
@@ -3370,12 +3354,6 @@ packages:
     resolution: {integrity: sha512-uSt90Gzc/tUfyNqxnjlfBs8W6WSGpNBv0rVsNxP/BVSMHMKGdthPYff4xtCHYloJGM0CFxFsb3NbC0eqPhfImw==}
     peerDependencies:
       zod: ^3.23.3
-
-  zod-to-ts@1.2.0:
-    resolution: {integrity: sha512-x30XE43V+InwGpvTySRNz9kB7qFU8DlyEy7BsSTCHPH1R0QasMmHWZDCzYm6bVXtj/9NNJAZF3jW8rzFvH5OFA==}
-    peerDependencies:
-      typescript: ^4.9.4 || ^5.0.2
-      zod: ^3
 
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
@@ -3482,13 +3460,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/netlify@5.4.0(astro@0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))':
+  '@astrojs/netlify@5.4.0(astro@4.13.3(@types/node@20.14.11)(typescript@5.5.3))':
     dependencies:
       '@astrojs/internal-helpers': 0.4.1
       '@astrojs/underscore-redirects': 0.3.4
       '@netlify/functions': 2.8.1
       '@vercel/nft': 0.27.3
-      astro: 0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+      astro: 4.13.3(@types/node@20.14.11)(typescript@5.5.3)
       esbuild: 0.22.0
     transitivePeerDependencies:
       - encoding
@@ -4230,14 +4208,6 @@ snapshots:
       estree-walker: 2.0.2
       picomatch: 2.3.1
 
-  '@rollup/pluginutils@5.1.0(rollup@4.19.0)':
-    dependencies:
-      '@types/estree': 1.0.5
-      estree-walker: 2.0.2
-      picomatch: 2.3.1
-    optionalDependencies:
-      rollup: 4.19.0
-
   '@rollup/rollup-android-arm-eabi@4.19.0':
     optional: true
 
@@ -4360,12 +4330,12 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@unpic/astro@0.0.46(astro@0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3))':
+  '@unpic/astro@0.0.46(astro@4.13.3(@types/node@20.14.11)(typescript@5.5.3))':
     dependencies:
       '@unpic/core': 0.0.49
       '@unpic/pixels': 1.2.2
       '@unpic/placeholder': 0.1.2
-      astro: 0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
+      astro: 4.13.3(@types/node@20.14.11)(typescript@5.5.3)
       blurhash: 2.0.5
 
   '@unpic/core@0.0.49':
@@ -4419,7 +4389,7 @@ snapshots:
   '@vitest/snapshot@2.0.3':
     dependencies:
       '@vitest/pretty-format': 2.0.3
-      magic-string: 0.30.10
+      magic-string: 0.30.11
       pathe: 1.1.2
 
   '@vitest/spy@2.0.3':
@@ -4577,7 +4547,7 @@ snapshots:
 
   assertion-error@2.0.1: {}
 
-  astro@0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3):
+  astro@4.13.3(@types/node@20.14.11)(typescript@5.5.3):
     dependencies:
       '@astrojs/compiler': 2.10.2
       '@astrojs/internal-helpers': 0.4.1
@@ -4589,7 +4559,6 @@ snapshots:
       '@babel/plugin-transform-react-jsx': 7.25.2(@babel/core@7.25.2)
       '@babel/traverse': 7.25.3
       '@babel/types': 7.25.2
-      '@rollup/pluginutils': 5.1.0(rollup@4.19.0)
       '@types/babel__core': 7.20.5
       '@types/cookie': 0.6.0
       acorn: 8.12.1
@@ -4620,9 +4589,7 @@ snapshots:
       js-yaml: 4.1.0
       kleur: 4.1.5
       magic-string: 0.30.11
-      micromatch: 4.0.7
       mrmime: 2.0.0
-      neotraverse: 0.6.13
       ora: 8.0.1
       p-limit: 6.1.0
       p-queue: 8.0.1
@@ -4640,18 +4607,15 @@ snapshots:
       vite: 5.4.0(@types/node@20.14.11)
       vitefu: 0.2.5(vite@5.4.0(@types/node@20.14.11))
       which-pm: 3.0.0
-      xxhash-wasm: 1.0.2
       yargs-parser: 21.1.1
       zod: 3.23.8
       zod-to-json-schema: 3.23.2(zod@3.23.8)
-      zod-to-ts: 1.2.0(typescript@5.5.3)(zod@3.23.8)
     optionalDependencies:
       sharp: 0.33.4
     transitivePeerDependencies:
       - '@types/node'
       - less
       - lightningcss
-      - rollup
       - sass
       - sass-embedded
       - stylus
@@ -5898,8 +5862,6 @@ snapshots:
 
   nanoid@3.3.7: {}
 
-  neotraverse@0.6.13: {}
-
   nlcst-to-string@4.0.0:
     dependencies:
       '@types/nlcst': 2.0.3
@@ -6668,7 +6630,7 @@ snapshots:
   vite-node@2.0.3(@types/node@20.14.11):
     dependencies:
       cac: 6.7.14
-      debug: 4.3.5
+      debug: 4.3.6
       pathe: 1.1.2
       tinyrainbow: 1.2.0
       vite: 5.4.0(@types/node@20.14.11)
@@ -6876,8 +6838,6 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  xxhash-wasm@1.0.2: {}
-
   y18n@5.0.8: {}
 
   yallist@2.1.2: {}
@@ -6904,11 +6864,6 @@ snapshots:
 
   zod-to-json-schema@3.23.2(zod@3.23.8):
     dependencies:
-      zod: 3.23.8
-
-  zod-to-ts@1.2.0(typescript@5.5.3)(zod@3.23.8):
-    dependencies:
-      typescript: 5.5.3
       zod: 3.23.8
 
   zod@3.23.8: {}
