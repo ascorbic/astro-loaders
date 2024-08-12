@@ -1,80 +1,120 @@
 import { AstroError } from "astro/errors";
-import { z } from "astro/zod";
+import { z, type ZodTypeAny } from "astro/zod";
 
-const airtableTypeToZodType = (type: string, options?: any): z.ZodTypeAny => {
-  switch (type) {
-    case "singleLineText":
-    case "multilineText":
-    case "richText":
-    case "phoneNumber":
-    case "formula":
-    case "barcode":
-    case "aiText":
-      return z.string();
-    case "email":
-      return z.string().email();
-    case "url":
-      return z.string().url();
-    case "number":
-    case "percent":
-    case "currency":
-    case "rating":
-    case "count":
-    case "autoNumber":
-      return z.number();
-    case "duration":
-      return z.string().duration();
-    case "checkbox":
-      return z.boolean();
-    case "date":
-    case "dateTime":
-    case "createdTime":
-    case "lastModifiedTime":
-      return z.coerce.date();
-    case "singleSelect":
-      return z.enum(options.choices.map((choice: any) => choice.name));
-    case "multipleSelects":
-      return z.array(z.enum(options.choices.map((choice: any) => choice.name)));
-    case "singleCollaborator":
-    case "createdBy":
-    case "lastModifiedBy":
-      return z.object({
-        id: z.string(),
-        email: z.string().email(),
-        name: z.string(),
-      });
-    case "multipleCollaborators":
-      return z.array(
-        z.object({
-          id: z.string(),
-          email: z.string().email(),
-          name: z.string(),
-        }),
-      );
-    case "multipleRecordLinks":
-    case "multipleLookupValues":
-      return z.array(z.string());
-    case "multipleAttachments":
-      return z.array(
-        z.object({
-          url: z.string().url(),
-          filename: z.string(),
-        }),
-      );
-    case "rollup":
-      return z.any(); // Rollups can be complex, so `z.any()` is used
-    case "lookup":
-      return z.any(); // Lookups can vary, so `z.any()` is used
-    case "button":
-      return z.object({
-        label: z.string(),
+interface AirtableField {
+  name: string;
+  type: string;
+  options: {
+    choices: Array<{ name: string }>;
+  };
+}
+
+interface AirtableTable {
+  id: string;
+  name: string;
+  fields: Array<AirtableField>;
+}
+
+interface AirtableResponse {
+  tables: Array<AirtableTable>;
+}
+
+const STRING_TYPES = new Set([
+  "singleLineText",
+  "multilineText",
+  "richText",
+  "phoneNumber",
+  "formula",
+  "barcode",
+]);
+
+const NUMBER_TYPES = new Set([
+  "number",
+  "percent",
+  "currency",
+  "rating",
+  "count",
+  "autoNumber",
+]);
+
+const DATE_TYPES = new Set([
+  "date",
+  "dateTime",
+  "createdTime",
+  "lastModifiedTime",
+]);
+
+const USER_TYPES = new Set([
+  "singleCollaborator",
+  "createdBy",
+  "lastModifiedBy",
+]);
+
+const userSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  name: z.string(),
+});
+
+const TYPE_MAP = new Map<string, ZodTypeAny>([
+  ["email", z.string().email()],
+  ["url", z.string().url()],
+  ["duration", z.string().duration()],
+  ["singleSelect", z.string()],
+  ["multipleSelects", z.array(z.string())],
+  ["multipleCollaborators", z.array(userSchema)],
+  ["multipleRecordLinks", z.array(z.string())],
+  ["multipleLookupValues", z.array(z.string())],
+  [
+    "multipleAttachments",
+    z.array(
+      z.object({
         url: z.string().url(),
-      });
-    case "externalSyncSource":
-      return z.string(); // Placeholder, as external sync sources can vary
-    default:
-      return z.any(); // Default to any for unhandled or unknown types
+        filename: z.string(),
+      }),
+    ),
+  ],
+  [
+    "button",
+    z.object({
+      label: z.string(),
+      url: z.string().url(),
+    }),
+  ],
+  ["checkbox", z.boolean()],
+]);
+
+const airtableTypeToZodType = ({
+  type,
+  options,
+}: AirtableField): ZodTypeAny => {
+  if (STRING_TYPES.has(type)) {
+    return z.string();
   }
+  if (NUMBER_TYPES.has(type)) {
+    return z.number();
+  }
+  if (DATE_TYPES.has(type)) {
+    return z.coerce.date();
+  }
+
+  if (USER_TYPES.has(type)) {
+    return userSchema;
+  }
+
+  const choices = options.choices.map(({ name }) => name) as [
+    string,
+    ...string[],
+  ];
+
+  if (type === "singleSelect") {
+    return z.enum(choices);
+  }
+  if (type === "multipleSelects") {
+    return z.array(z.enum(choices));
+  }
+
+  return TYPE_MAP.get(type) ?? z.any();
 };
 
 // Generate Zod schema using the Base Schema API
@@ -98,24 +138,23 @@ export const zodSchemaFromAirbaseTable = async ({
     throw new AstroError(`Failed to fetch Airtable schema: ${res.statusText}`);
   }
 
-  const response: any = await res.json();
+  const response = (await res.json()) as AirtableResponse;
 
-  const tables = response.tables;
-  const tableSchema = tables.find(
-    (table: any) => table.name === tableIdOrName || table.id === tableIdOrName,
+  const tableSchema = response.tables.find(
+    (table) => table.name === tableIdOrName || table.id === tableIdOrName,
   );
 
   if (!tableSchema) {
     throw new AstroError(`Table ${tableIdOrName} not found in base schema.`);
   }
 
-  const zodSchemaObject: Record<string, z.ZodTypeAny> = {};
+  const schemaObject: Record<string, z.ZodTypeAny> = {};
 
-  tableSchema.fields.forEach((field: any) => {
-    const zodType = airtableTypeToZodType(field.type, field.options).optional();
-    zodSchemaObject[field.name] = zodType;
-  });
+  for (const field of tableSchema.fields) {
+    const zodType = airtableTypeToZodType(field).optional();
+    schemaObject[field.name] = zodType;
+  }
 
-  const zodSchema = z.object(zodSchemaObject);
+  const zodSchema = z.object(schemaObject);
   return zodSchema;
 };

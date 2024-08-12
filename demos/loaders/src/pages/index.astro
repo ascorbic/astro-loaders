@@ -22,6 +22,7 @@ const formatter = new Intl.DateTimeFormat("en-CA", {
       <div>
         <h3>{data["Launch Name"]}</h3>
         <p>{data["Launch date"]?.toDateString()}</p>
+        <p>{data.Status}</p>
         <p>{data.Description}</p>
       </div>
     ))
