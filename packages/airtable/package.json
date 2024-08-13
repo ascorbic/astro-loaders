@@ -18,11 +18,11 @@
 		"test": "vitest"
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.15.3",
+		"@arethetypeswrong/cli": "^0.15.4",
 		"astro": "experimental--contentlayer",
 		"publint": "^0.2.9",
-		"tsup": "^8.2.0",
-		"typescript": "^5.5.3"
+		"tsup": "^8.2.4",
+		"typescript": "^5.5.4"
 	},
 	"peerDependencies": {
 		"astro": "experimental--contentlayer || ^4.14.0"
