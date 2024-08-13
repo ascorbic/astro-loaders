@@ -157,7 +157,7 @@ importers:
         specifier: ^0.15.3
         version: 0.15.3
       astro:
-        specifier: 0.0.0-contentlayer-20240808151214
+        specifier: experimental--contentlayer
         version: 0.0.0-contentlayer-20240808151214(@types/node@20.14.11)(rollup@4.19.0)(typescript@5.5.3)
       publint:
         specifier: ^0.2.9
