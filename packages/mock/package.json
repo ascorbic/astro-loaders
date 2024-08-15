@@ -19,7 +19,7 @@
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.15.4",
-		"astro": "experimental--contentlayer",
+		"astro": "^4.14.0",
 		"publint": "^0.2.9",
 		"tsup": "^8.2.4",
 		"typescript": "^5.5.4"

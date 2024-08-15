@@ -18,7 +18,7 @@
 		"@astrojs/check": "^0.9.2",
 		"@astrojs/netlify": "^5.5.0",
 		"@unpic/astro": "^0.0.46",
-		"astro": "experimental--contentlayer",
+		"astro": "4.14.0",
 		"typescript": "^5.5.4"
 	}
 }
