@@ -1,5 +1,11 @@
 # @ascorbic/loader-utils
 
+## 1.0.0
+
+### Major Changes
+
+- [#15](https://github.com/ascorbic/astro-loaders/pull/15) [`38cf5e5`](https://github.com/ascorbic/astro-loaders/commit/38cf5e5e16b0c71af89f6ed6a3d15da1373a5c00) Thanks [@ascorbic](https://github.com/ascorbic)! - Stable release
+
 ## 0.0.2
 
 ### Patch Changes
