@@ -15,10 +15,10 @@
 		"@ascorbic/csv-loader": "workspace:^",
 		"@ascorbic/feed-loader": "workspace:^",
 		"@ascorbic/mock-loader": "workspace:^",
-		"@astrojs/check": "^0.9.2",
+		"@astrojs/check": "^0.9.3",
 		"@astrojs/netlify": "^5.5.1",
 		"@unpic/astro": "^0.0.46",
-		"astro": "4.14.2",
+		"astro": "4.14.5",
 		"typescript": "^5.5.4"
 	}
 }
