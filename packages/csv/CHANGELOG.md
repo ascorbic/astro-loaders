@@ -1,5 +1,16 @@
 # @ascorbic/csv-loader
 
+## 2.0.0
+
+### Major Changes
+
+- [#19](https://github.com/ascorbic/astro-loaders/pull/19) [`1c7fc0b`](https://github.com/ascorbic/astro-loaders/commit/1c7fc0ba65afcff8dd6854978ef0bad4f6d06579) Thanks [@ascorbic](https://github.com/ascorbic)! - Updates API for Astro 4.15.
+  Please ensure that you update your project to use the latest version of Astro before upgrading this package:
+
+  ```sh
+  npx @astrojs/upgrade
+  ```
+
 ## 1.0.0
 
 ### Major Changes
