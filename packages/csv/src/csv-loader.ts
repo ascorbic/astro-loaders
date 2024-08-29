@@ -48,12 +48,9 @@ export function csvLoader({
 }: CSVLoaderOptions): Loader {
   async function syncData(
     filePath: string,
-    { logger, parseData, store, settings }: LoaderContext,
+    { logger, parseData, store, config }: LoaderContext,
   ) {
-    const relativePath = relative(
-      fileURLToPath(settings.config.root),
-      filePath,
-    );
+    const relativePath = relative(fileURLToPath(config.root), filePath);
 
     const csvStream = Papa.parse(Papa.NODE_STREAM_INPUT, {
       dynamicTyping: true,
@@ -109,9 +106,9 @@ export function csvLoader({
   return {
     name: "csv-loader",
     load: async (options) => {
-      const { settings, logger, watcher } = options;
+      const { config, logger, watcher } = options;
       logger.info(`Loading CSV data from ${fileName}`);
-      const url = new URL(fileName, settings.config.root);
+      const url = new URL(fileName, config.root);
       if (!existsSync(url)) {
         logger.error(`File not found: ${fileName}`);
         return;
