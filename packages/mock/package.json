@@ -42,6 +42,6 @@
 	"dependencies": {
 		"@anatine/zod-mock": "^3.13.4",
 		"@ascorbic/loader-utils": "workspace:^",
-		"@faker-js/faker": "^8.4.1"
+		"@faker-js/faker": "^9.0.0"
 	}
 }
