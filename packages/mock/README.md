@@ -14,7 +14,7 @@ npm install @ascorbic/mock-loader
 
 ## Usage
 
-This package requires that you enable the experimental content layer in Astro. You can do this by adding the following to your `astro.config.mjs`:
+This package requires Astro 4.14.0 or later. You must enable the experimental content layer in Astro unless you are using version 5.0.0-beta or later. You can do this by adding the following to your `astro.config.mjs`:
 
 ```javascript
 export default defineConfig({
