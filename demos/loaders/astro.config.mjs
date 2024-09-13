@@ -4,12 +4,9 @@ import netlify from "@astrojs/netlify";
 
 // https://astro.build/config
 export default defineConfig({
-  output: "hybrid",
+  output: "static",
   adapter: netlify(),
   image: {
     domains: ["image.simplecastcdn.com"],
-  },
-  experimental: {
-    contentLayer: true,
   },
 });
