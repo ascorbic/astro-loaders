@@ -16,9 +16,9 @@
 		"@ascorbic/feed-loader": "workspace:^",
 		"@ascorbic/mock-loader": "workspace:^",
 		"@astrojs/check": "^0.9.3",
-		"@astrojs/netlify": "^5.5.1",
+		"@astrojs/netlify": "^5.5.2",
 		"@unpic/astro": "^0.0.46",
-		"astro": "4.15.4",
-		"typescript": "^5.5.4"
+		"astro": "4.15.5",
+		"typescript": "^5.6.2"
 	}
 }
