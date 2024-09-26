@@ -102,16 +102,18 @@ const airtableTypeToZodType = ({
     return userSchema;
   }
 
-  const choices = options.choices.map(({ name }) => name) as [
-    string,
-    ...string[],
-  ];
+  if (options.choices) {
+    const choices = options.choices.map(({ name }) => name) as [
+      string,
+      ...string[],
+    ];
 
-  if (type === "singleSelect") {
-    return z.enum(choices);
-  }
-  if (type === "multipleSelects") {
-    return z.array(z.enum(choices));
+    if (type === "singleSelect") {
+      return z.enum(choices);
+    }
+    if (type === "multipleSelects") {
+      return z.array(z.enum(choices));
+    }
   }
 
   return TYPE_MAP.get(type) ?? z.any();
