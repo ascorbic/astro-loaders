@@ -18,10 +18,10 @@
 		"test": "vitest"
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.16.2",
-		"astro": "^4.15.5",
-		"publint": "^0.2.10",
-		"tsup": "^8.2.4",
+		"@arethetypeswrong/cli": "^0.16.4",
+		"astro": "^4.15.9",
+		"publint": "^0.2.11",
+		"tsup": "^8.3.0",
 		"typescript": "^5.6.2"
 	},
 	"peerDependencies": {
@@ -42,6 +42,6 @@
 	"dependencies": {
 		"@anatine/zod-mock": "^3.13.4",
 		"@ascorbic/loader-utils": "workspace:^",
-		"@faker-js/faker": "^9.0.0"
+		"@faker-js/faker": "^9.0.2"
 	}
 }
