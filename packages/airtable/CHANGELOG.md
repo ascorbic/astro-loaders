@@ -1,5 +1,14 @@
 # @ascorbic/airtable-loader
 
+## 1.0.3
+
+### Patch Changes
+
+- [#36](https://github.com/ascorbic/astro-loaders/pull/36) [`b04b44f`](https://github.com/ascorbic/astro-loaders/commit/b04b44f1a8a1fa84c1f14e7f6b2e1d535b55a4ab) Thanks [@ascorbic](https://github.com/ascorbic)! - Fix peer dependencies for Astro 5 beta
+
+- Updated dependencies [[`b04b44f`](https://github.com/ascorbic/astro-loaders/commit/b04b44f1a8a1fa84c1f14e7f6b2e1d535b55a4ab)]:
+  - @ascorbic/loader-utils@1.0.2
+
 ## 1.0.2
 
 ### Patch Changes
