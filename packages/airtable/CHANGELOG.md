@@ -1,5 +1,11 @@
 # @ascorbic/airtable-loader
 
+## 1.0.2
+
+### Patch Changes
+
+- [#31](https://github.com/ascorbic/astro-loaders/pull/31) [`6458974`](https://github.com/ascorbic/astro-loaders/commit/6458974a0efb40ab8caaf0f2b9b210e054c2c64c) Thanks [@ryanq](https://github.com/ryanq)! - Checks for field choices before building enum for select fields
+
 ## 1.0.1
 
 ### Patch Changes
