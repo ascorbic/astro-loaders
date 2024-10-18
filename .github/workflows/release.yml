@@ -24,6 +24,9 @@ jobs:
           app-id: ${{ secrets.APP_ID }}
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v3
