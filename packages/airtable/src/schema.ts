@@ -4,7 +4,7 @@ import { z, type ZodTypeAny } from "astro/zod";
 interface AirtableField {
   name: string;
   type: string;
-  options: {
+  options?: {
     choices: Array<{ name: string }>;
   };
 }
@@ -102,7 +102,7 @@ const airtableTypeToZodType = ({
     return userSchema;
   }
 
-  if (options.choices) {
+  if (options?.choices) {
     const choices = options.choices.map(({ name }) => name) as [
       string,
       ...string[],
