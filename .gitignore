@@ -28,3 +28,4 @@ dist
 .netlify
 
 *.tgz
+.DS_Store
