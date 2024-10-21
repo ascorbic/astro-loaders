@@ -1,5 +1,11 @@
 # @ascorbic/feed-loader
 
+## 1.0.3
+
+### Patch Changes
+
+- [#44](https://github.com/ascorbic/astro-loaders/pull/44) [`104af64`](https://github.com/ascorbic/astro-loaders/commit/104af64b75645cdf5d03ea46a516076db718029f) Thanks [@ascorbic](https://github.com/ascorbic)! - Correctly handles Atom feeds with null enclosure length
+
 ## 1.0.2
 
 ### Patch Changes
