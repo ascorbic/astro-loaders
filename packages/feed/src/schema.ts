@@ -28,8 +28,8 @@ export const MetaSchema = z.object({
 
 // Enclosure schema
 export const EnclosureSchema = z.object({
-  length: z.string().optional(),
-  type: z.string().optional(),
+  length: z.string().nullable().optional(),
+  type: z.string().nullable().optional(),
   url: z.string(),
 });
 
@@ -52,13 +52,15 @@ export const ItemSchema = z.object({
 });
 
 type Simplify<T> = {
-	[P in keyof T]: T[P];
+  [P in keyof T]: T[P];
 };
 
 export type NS = z.infer<typeof NSSchema>;
 export type Image = z.infer<typeof ImageSchema>;
 export type Meta = z.infer<typeof MetaSchema>;
 export type Enclosure = z.infer<typeof EnclosureSchema>;
-export type Item = Simplify<z.infer<typeof ItemSchema> & {
-  [key: string]: unknown;
-}>;
+export type Item = Simplify<
+  z.infer<typeof ItemSchema> & {
+    [key: string]: unknown;
+  }
+>;
