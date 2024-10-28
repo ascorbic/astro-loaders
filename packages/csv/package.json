@@ -1,6 +1,6 @@
 {
 	"name": "@ascorbic/csv-loader",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"description": "",
 	"type": "module",
 	"main": "dist/index.js",
