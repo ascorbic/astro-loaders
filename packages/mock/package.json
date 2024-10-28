@@ -28,7 +28,7 @@
 		"astro": "^4.14.0 || ^5.0.0-beta.0"
 	},
 	"keywords": [
-		"astro",
+		"withastro",
 		"astro-loader"
 	],
 	"author": "",
