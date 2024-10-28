@@ -1,5 +1,13 @@
 # @ascorbic/csv-loader
 
+## 2.0.3
+
+### Patch Changes
+
+- [#51](https://github.com/ascorbic/astro-loaders/pull/51) [`abd94a3`](https://github.com/ascorbic/astro-loaders/commit/abd94a3d6425f460d06f4a8bbd2fcf72a5ab0f19) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Ensures loader visibility in the [Astro integrations library](https://astro.build/integrations/?search=&categories%5B%5D=loaders).
+
+- [#53](https://github.com/ascorbic/astro-loaders/pull/53) [`bccd796`](https://github.com/ascorbic/astro-loaders/commit/bccd79631958be3a3a75624d8e9a48da49ca7c2c) Thanks [@ascorbic](https://github.com/ascorbic)! - Adds Astro beta to peer dependencies
+
 ## 2.0.2
 
 ### Patch Changes
