@@ -20,8 +20,8 @@
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.16.4",
 		"astro": "5.0.0-beta.5",
-		"publint": "^0.2.11",
-		"tsup": "^8.3.0",
+		"publint": "^0.2.12",
+		"tsup": "^8.3.5",
 		"typescript": "^5.6.3"
 	},
 	"peerDependencies": {
@@ -42,6 +42,6 @@
 	"dependencies": {
 		"@anatine/zod-mock": "^3.13.4",
 		"@ascorbic/loader-utils": "workspace:^",
-		"@faker-js/faker": "^9.0.3"
+		"@faker-js/faker": "^9.1.0"
 	}
 }
