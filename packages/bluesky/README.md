@@ -37,7 +37,7 @@ const posts = defineCollection({
   // The loader provides its own type schema, so you don't need to provide one
 });
 
-export const collections = { customers };
+export const collections = { posts };
 ```
 
 You can then use these like any other content collection in Astro:
