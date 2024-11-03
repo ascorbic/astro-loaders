@@ -36,7 +36,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+github.com:ascorbic/astro-loaders.git",
+		"url": "git+https://github.com:ascorbic/astro-loaders.git",
 		"directory": "packages/feed"
 	},
 	"homepage": "https://github.com/ascorbic/astro-loaders",

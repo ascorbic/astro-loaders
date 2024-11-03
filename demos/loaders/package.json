@@ -12,11 +12,13 @@
 	},
 	"dependencies": {
 		"@ascorbic/airtable-loader": "workspace:^",
+		"@ascorbic/bluesky-loader": "workspace:^",
 		"@ascorbic/csv-loader": "workspace:^",
 		"@ascorbic/feed-loader": "workspace:^",
 		"@ascorbic/mock-loader": "workspace:^",
 		"@astrojs/check": "^0.9.4",
 		"@astrojs/netlify": "^5.5.4",
+		"@atproto/api": "^0.13.14",
 		"@unpic/astro": "^0.0.47",
 		"astro": "5.0.0-beta.6",
 		"typescript": "^5.6.3"

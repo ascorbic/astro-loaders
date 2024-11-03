@@ -1,6 +1,6 @@
 {
-	"name": "@ascorbic/mock-loader",
-	"version": "2.0.2",
+	"name": "@ascorbic/bluesky-loader",
+	"version": "0.0.0",
 	"description": "",
 	"type": "module",
 	"main": "dist/index.js",
@@ -13,9 +13,8 @@
 	"scripts": {
 		"build": "tsup src/index.ts --format esm --dts --clean",
 		"dev": "tsup src/index.ts --format esm --dts --watch",
-		"prepublishOnly": "node --run build",
-		"check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm",
-		"test": "vitest"
+		"prepublishOnly": "node --run check && node --run build",
+		"check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.16.4",
@@ -36,12 +35,11 @@
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com:ascorbic/astro-loaders.git",
-		"directory": "packages/mock"
+		"directory": "packages/feed"
 	},
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
-		"@anatine/zod-mock": "^3.13.4",
 		"@ascorbic/loader-utils": "workspace:^",
-		"@faker-js/faker": "^9.1.0"
+		"@atproto/api": "^0.13.14"
 	}
 }
