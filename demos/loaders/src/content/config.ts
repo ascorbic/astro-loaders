@@ -3,7 +3,7 @@ import { feedLoader } from "@ascorbic/feed-loader";
 import { csvLoader } from "@ascorbic/csv-loader";
 import { airtableLoader } from "@ascorbic/airtable-loader";
 import { mockLoader } from "@ascorbic/mock-loader";
-
+import { authorFeedLoader } from "@ascorbic/bluesky-loader";
 const releases = defineCollection({
   loader: feedLoader({
     url: "https://github.com/withastro/astro/releases.atom",
@@ -67,6 +67,12 @@ const spacecraft = defineCollection({
   }),
 });
 
+const bluesky = defineCollection({
+  loader: authorFeedLoader({
+    identifier: "mk.gg",
+  }),
+});
+
 export const collections = {
   releases,
   podcasts,
@@ -74,4 +80,5 @@ export const collections = {
   spacecraft,
   mockBlog,
   mockOrders,
+  bluesky,
 };
