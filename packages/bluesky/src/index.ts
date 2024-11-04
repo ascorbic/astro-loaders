@@ -1,9 +1,7 @@
 import { AtpAgent, type AppBskyFeedGetAuthorFeed } from "@atproto/api";
 import type { Loader } from "astro/loaders";
+import { PostViewSchema } from "./schema.js";
 import { renderPostAsHtml } from "./utils.js";
-import { PostSchema } from "./schema.js";
-export type { Post } from "./schema.js";
-export { renderPostAsHtml } from "./utils.js";
 
 /**
  * Load posts from a Bluesky author feed.
@@ -20,7 +18,7 @@ export const authorFeedLoader = ({
 }): Loader => {
   return {
     name: "bluesky-loader",
-    schema: PostSchema,
+    schema: PostViewSchema,
     async load({ store, logger, meta, parseData }) {
       const agent = new AtpAgent({ service: "https://public.api.bsky.app" });
       try {
