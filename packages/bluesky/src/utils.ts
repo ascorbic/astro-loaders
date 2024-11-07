@@ -1,5 +1,8 @@
-import { RichText } from "@atproto/api";
-import type { PostView } from "@atproto/api/dist/client/types/app/bsky/feed/defs";
+import {
+  RichText,
+  type AppBskyFeedDefs,
+  type RichTextProps,
+} from "@atproto/api";
 
 const escapeMap: Record<string, string> = {
   "&": "&amp;",
@@ -14,18 +17,23 @@ export const escapeHTML = (str?: string) =>
 
 export const nl2br = (str?: string) => str?.replaceAll("\n", "<br/ >\n") ?? "";
 
-export function renderPostAsHtml(post: PostView) {
-  const rt = new RichText(post.record as any);
+export function renderPostAsHtml(
+  post: AppBskyFeedDefs.PostView,
+  transformNewlines = true,
+) {
+  const rt = new RichText(post.record as RichTextProps);
   let html = "";
   for (const segment of rt.segments()) {
     if (segment.isLink()) {
       html += `<a href="${escapeHTML(segment.link?.uri)}">${escapeHTML(segment.text)}</a>`;
     } else if (segment.isMention()) {
-      html += `<a href="https://bsky.app/profile/${escapeHTML(segment.mention?.did)}">${escapeHTML(segment.text)}</a>`;
+      html += `<a href="https://bsky.app/profile/${escapeHTML(segment.mention!.did)}">${escapeHTML(segment.text)}</a>`;
     } else if (segment.isTag()) {
-      html += `<a href="https://bsky.app/hastag/${escapeHTML(segment.tag?.tag)}">#${escapeHTML(segment.tag?.tag)}</a>`;
+      html += `<a href="https://bsky.app/hashtag/${escapeHTML(segment.tag!.tag)}">#${escapeHTML(segment.tag!.tag)}</a>`;
     } else {
-      html += nl2br(escapeHTML(segment.text));
+      html += transformNewlines
+        ? nl2br(escapeHTML(segment.text))
+        : escapeHTML(segment.text);
     }
   }
   return html;
