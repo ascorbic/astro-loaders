@@ -1,5 +1,13 @@
 # @ascorbic/bluesky-loader
 
+## 0.0.2
+
+### Patch Changes
+
+- [#60](https://github.com/ascorbic/astro-loaders/pull/60) [`e3ca661`](https://github.com/ascorbic/astro-loaders/commit/e3ca661237b8316266ad8f14be4507a7f00b5cac) Thanks [@ajitzero](https://github.com/ajitzero)! - docs: fix typo in code example
+
+- [#63](https://github.com/ascorbic/astro-loaders/pull/63) [`f550447`](https://github.com/ascorbic/astro-loaders/commit/f550447b5f5cdd013e7d08a4d7a6b2c4c06a997d) Thanks [@ascorbic](https://github.com/ascorbic)! - Fixes hashtag links
+
 ## 0.0.1
 
 ### Patch Changes
