@@ -44,7 +44,7 @@ You can then use these like any other content collection in Astro:
 
 ```astro
 ---
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getCollection, type CollectionEntry, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 const posts = await getCollection("posts");
 
