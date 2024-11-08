@@ -28,7 +28,7 @@ You can then use the feed loader in your content configuration:
 ```typescript
 // src/content/config.ts
 import { defineCollection } from "astro:content";
-import { authorFeedLoader } from "@ascorbic/csv-loader";
+import { authorFeedLoader } from "@ascorbic/bluesky-loader";
 
 const posts = defineCollection({
   loader: authorFeedLoader({
@@ -44,7 +44,7 @@ You can then use these like any other content collection in Astro:
 
 ```astro
 ---
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getCollection, type CollectionEntry, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 const posts = await getCollection("posts");
 
