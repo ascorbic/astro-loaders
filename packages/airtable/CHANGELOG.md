@@ -1,5 +1,13 @@
 # @ascorbic/airtable-loader
 
+## 1.0.5
+
+### Patch Changes
+
+- [#69](https://github.com/ascorbic/astro-loaders/pull/69) [`3df2c6e`](https://github.com/ascorbic/astro-loaders/commit/3df2c6ea4de42e8a87215305ca2bd809f9ae4a48) Thanks [@ascorbic](https://github.com/ascorbic)! - Fixes type mapping for various types.
+
+  Rewrites the type mapping to be more robust and handle more types. This should fix issues with some types not being correctly mapped.
+
 ## 1.0.4
 
 ### Patch Changes
