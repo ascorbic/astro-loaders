@@ -1,5 +1,11 @@
 # @ascorbic/bluesky-loader
 
+## 0.0.3
+
+### Patch Changes
+
+- [#67](https://github.com/ascorbic/astro-loaders/pull/67) [`348dd1d`](https://github.com/ascorbic/astro-loaders/commit/348dd1d1ef6376c5ff9661bbae136ff5bcdd211f) Thanks [@ascorbic](https://github.com/ascorbic)! - Correctly handle all post types
+
 ## 0.0.2
 
 ### Patch Changes
