@@ -112,7 +112,6 @@ export const airtableTypeToZodType = (field: AirtableField): ZodTypeAny => {
       { type: "formula", options: { result: { type: P.string } } },
       ({ options }) => {
         const resultType = options.result.type;
-        console.log("formula result type:", resultType);
         if (resultType === "number") {
           return z.number();
         } else if (resultType === "string") {
