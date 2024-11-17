@@ -16,6 +16,7 @@
 		"@ascorbic/csv-loader": "workspace:^",
 		"@ascorbic/feed-loader": "workspace:^",
 		"@ascorbic/mock-loader": "workspace:^",
+		"@astro-community/astro-embed-bluesky": "^0.1.1",
 		"@astrojs/check": "^0.9.4",
 		"@astrojs/netlify": "^5.5.4",
 		"@atproto/api": "^0.13.14",

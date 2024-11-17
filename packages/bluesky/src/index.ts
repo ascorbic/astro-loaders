@@ -40,10 +40,12 @@ export const authorFeedLoader = ({
           for (const { post } of data.feed) {
             if (
               (mostRecent && mostRecent === post.cid) ||
-              (limit && count++ >= limit)
+              (limit && count >= limit)
             ) {
+              count++;
               break fetching;
             }
+            count++;
             if (!first) {
               first = post.cid;
             }
@@ -61,6 +63,7 @@ export const authorFeedLoader = ({
             });
           }
           cursor = data.cursor;
+          logger.info(`Fetched ${count} posts`);
         } while (cursor);
 
         if (first) {

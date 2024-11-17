@@ -1,3 +1,6 @@
 {
-	"extends": "astro/tsconfigs/strictest"
+	"extends": "astro/tsconfigs/strict",
+	"compilerOptions": {
+		"noErrorTruncation": true
+	}
 }
