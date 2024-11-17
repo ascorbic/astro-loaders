@@ -1,7 +1,7 @@
 import type { Loader } from "astro/loaders";
 import { AstroError } from "astro/errors";
 import Airtable, { type Query, type FieldSet } from "airtable";
-import { zodSchemaFromAirbaseTable } from "./schema.js";
+import { zodSchemaFromAirtableTable } from "./schema.js";
 
 export interface AirtableLoaderOptions<TFields extends FieldSet = FieldSet> {
   /** The access token. It must have data.records:read access to the base. Defaults to AIRTABLE_TOKEN env var */
@@ -45,7 +45,7 @@ export function airtableLoader({
       logger.info(`Loaded ${records.length} records from "${table}"`);
     },
     schema: () =>
-      zodSchemaFromAirbaseTable({
+      zodSchemaFromAirtableTable({
         baseID: base,
         tableIdOrName: table,
         apiKey: token,

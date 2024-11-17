@@ -74,6 +74,9 @@ importers:
       airtable:
         specifier: ^0.12.2
         version: 0.12.2
+      ts-pattern:
+        specifier: ^5.5.0
+        version: 5.5.0
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.16.4
