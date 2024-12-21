@@ -17,8 +17,8 @@
 		"check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm"
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.17.1",
-		"astro": "5.0.4",
+		"@arethetypeswrong/cli": "^0.17.2",
+		"astro": "5.1.1",
 		"publint": "^0.2.12",
 		"tsup": "^8.3.5",
 		"typescript": "^5.7.2"
@@ -40,6 +40,6 @@
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
 		"@ascorbic/loader-utils": "workspace:^",
-		"@atproto/api": "^0.13.19"
+		"@atproto/api": "^0.13.22"
 	}
 }
