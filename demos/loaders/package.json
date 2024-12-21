@@ -18,10 +18,10 @@
 		"@ascorbic/mock-loader": "workspace:^",
 		"@astro-community/astro-embed-bluesky": "^0.1.2",
 		"@astrojs/check": "^0.9.4",
-		"@astrojs/netlify": "^6.0.0",
-		"@atproto/api": "^0.13.19",
+		"@astrojs/netlify": "^6.0.1",
+		"@atproto/api": "^0.13.22",
 		"@unpic/astro": "^0.1.0",
-		"astro": "5.0.4",
+		"astro": "5.1.1",
 		"typescript": "^5.7.2"
 	}
 }
