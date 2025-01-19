@@ -57,8 +57,8 @@ importers:
         specifier: ^0.13.22
         version: 0.13.22
       '@unpic/astro':
-        specifier: ^0.1.0
-        version: 0.1.0(astro@5.1.1(@types/node@22.10.2)(jiti@2.4.2)(rollup@4.24.0)(typescript@5.7.2)(yaml@2.5.0))
+        specifier: ^1.0.0
+        version: 1.0.0(astro@5.1.1(@types/node@22.10.2)(jiti@2.4.2)(rollup@4.24.0)(typescript@5.7.2)(yaml@2.5.0))
       astro:
         specifier: 5.1.1
         version: 5.1.1(@types/node@22.10.2)(jiti@2.4.2)(rollup@4.24.0)(typescript@5.7.2)(yaml@2.5.0)
@@ -1132,13 +1132,13 @@ packages:
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
-  '@unpic/astro@0.1.0':
-    resolution: {integrity: sha512-ezKXYrhi564PjAhYw1LvniDgUSo8oAt0jcwt0zSk8Mizc4RAkFnpt7g6AlwUxnvCPhKmGmLeDF0mNksixtAWjg==}
+  '@unpic/astro@1.0.0':
+    resolution: {integrity: sha512-LC7PriiuAZ5EuD2u2Dgne5UzG+FvuyZNV0zc1ajkJXX4sUMOvj0FWjZc0pEYEgzTnlOGkN91x2nI9gEtDSOIyA==}
     peerDependencies:
       astro: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0-beta
 
-  '@unpic/core@0.1.0':
-    resolution: {integrity: sha512-Xw6BNChpV1klga8Qe/Y4slkohMl4GLmsQCEOxx+yRrm7cMzT6covLvUMVP606YTtIFpJauh0fSZ+N2A03y80iA==}
+  '@unpic/core@1.0.0':
+    resolution: {integrity: sha512-O3Bhcj0WLxZOQPCWyEBkGOtYg36hMYYIvfsSqL9uWQbRmmIIWGwFsH0+dyPMCOVFsmNnMmOMytxalelgsx9WUQ==}
 
   '@unpic/pixels@1.3.0':
     resolution: {integrity: sha512-Xe3J4KU9m2NWCDZ9iwIIRYFe7VwkWEqGCy4yoKMEkjoxpcQ7TPxD+QmdTphv3yiTmrDMMIWYEEH+j4mT6dILTA==}
@@ -3023,8 +3023,8 @@ packages:
     resolution: {integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==}
     engines: {node: '>= 4.0.0'}
 
-  unpic@3.22.0:
-    resolution: {integrity: sha512-NFhB8HgHHWkNzTxwWg6KHx8+3RZnhWFm4Axdqp9iI176iY3wskzfP16NRSJ2SSTfXzyK4W6GsBqs8iOOdvOB3g==}
+  unpic@4.0.0:
+    resolution: {integrity: sha512-WaB6lnIPV1NbgnkWHOLrHsBQkLt6ytwF1pnCuSs9aVvEwFDv47vQhefrJS+cBwiK5Y5y1xf6hzySgqxOZ5gdyg==}
 
   unstorage@1.14.1:
     resolution: {integrity: sha512-0MBKpoVhNLL/Ixvue9lIsrHkwwWW9/f3TRftsYu1R7nZJJyHSdgPMBDjny2op07nirnS3OX6H3u+YDFGld+1Bg==}
@@ -4350,17 +4350,17 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@unpic/astro@0.1.0(astro@5.1.1(@types/node@22.10.2)(jiti@2.4.2)(rollup@4.24.0)(typescript@5.7.2)(yaml@2.5.0))':
+  '@unpic/astro@1.0.0(astro@5.1.1(@types/node@22.10.2)(jiti@2.4.2)(rollup@4.24.0)(typescript@5.7.2)(yaml@2.5.0))':
     dependencies:
-      '@unpic/core': 0.1.0
+      '@unpic/core': 1.0.0
       '@unpic/pixels': 1.3.0
       '@unpic/placeholder': 0.1.2
       astro: 5.1.1(@types/node@22.10.2)(jiti@2.4.2)(rollup@4.24.0)(typescript@5.7.2)(yaml@2.5.0)
       blurhash: 2.0.5
 
-  '@unpic/core@0.1.0':
+  '@unpic/core@1.0.0':
     dependencies:
-      unpic: 3.22.0
+      unpic: 4.0.0
 
   '@unpic/pixels@1.3.0':
     dependencies:
@@ -6632,7 +6632,7 @@ snapshots:
 
   universalify@0.1.2: {}
 
-  unpic@3.22.0: {}
+  unpic@4.0.0: {}
 
   unstorage@1.14.1:
     dependencies:
