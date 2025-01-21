@@ -17,7 +17,7 @@
 		"@types/node": "^22.10.2",
 		"prettier": "^3.4.2",
 		"vite": "^6.0.5",
-		"vitest": "^2.1.8"
+		"vitest": "^3.0.3"
 	},
 	"packageManager": "pnpm@9.15.1"
 }
