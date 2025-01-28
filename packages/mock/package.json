@@ -18,11 +18,11 @@
 		"test": "vitest"
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.17.2",
-		"astro": "5.1.1",
-		"publint": "^0.2.12",
-		"tsup": "^8.3.5",
-		"typescript": "^5.7.2"
+		"@arethetypeswrong/cli": "^0.17.3",
+		"astro": "5.1.10",
+		"publint": "^0.3.2",
+		"tsup": "^8.3.6",
+		"typescript": "^5.7.3"
 	},
 	"peerDependencies": {
 		"astro": "^4.14.0 || ^5.0.0-beta.0"
@@ -40,8 +40,8 @@
 	},
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
-		"@anatine/zod-mock": "^3.13.4",
+		"@anatine/zod-mock": "^3.13.5",
 		"@ascorbic/loader-utils": "workspace:^",
-		"@faker-js/faker": "^9.3.0"
+		"@faker-js/faker": "^9.4.0"
 	}
 }
