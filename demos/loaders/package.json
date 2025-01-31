@@ -21,7 +21,7 @@
 		"@astrojs/netlify": "^6.1.0",
 		"@atproto/api": "^0.13.31",
 		"@unpic/astro": "^1.0.0",
-		"astro": "5.1.10",
+		"astro": "5.2.1",
 		"typescript": "^5.7.3"
 	}
 }
