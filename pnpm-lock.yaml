@@ -128,8 +128,8 @@ importers:
         specifier: ^5.5.2
         version: 5.5.2
       pathe:
-        specifier: ^1.1.2
-        version: 1.1.2
+        specifier: ^2.0.2
+        version: 2.0.2
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.17.3
