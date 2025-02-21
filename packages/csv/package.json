@@ -18,10 +18,10 @@
 		"test": "vitest"
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.17.3",
+		"@arethetypeswrong/cli": "^0.17.4",
 		"@types/papaparse": "^5.3.15",
-		"astro": "5.2.1",
-		"publint": "^0.3.2",
+		"astro": "5.3.0",
+		"publint": "^0.3.6",
 		"tsup": "^8.3.6",
 		"typescript": "^5.7.3"
 	},
@@ -43,6 +43,6 @@
 	"dependencies": {
 		"@ascorbic/loader-utils": "workspace:^",
 		"papaparse": "^5.5.2",
-		"pathe": "^2.0.2"
+		"pathe": "^2.0.3"
 	}
 }
