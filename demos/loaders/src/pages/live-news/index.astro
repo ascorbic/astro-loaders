@@ -1,0 +1,71 @@
+---
+import { getLiveCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Card from "../../components/Card.astro";
+export const prerender = false; // Disable prerendering for this page to allow live data fetching
+
+const { entries: posts, error } = await getLiveCollection("liveNews");
+
+if (error) {
+  console.error("Error loading live news:", error.message);
+}
+
+// Set cache headers for 1 minute durable CDN cache
+Astro.response.headers.set(
+  "Netlify-CDN-Cache-Control",
+  "public, s-maxage=60, durable"
+);
+---
+
+<Layout title="Live News">
+  <main>
+    <h1>Live News</h1>
+    <p>
+      These articles are fetched live from the BBC Science & Environment news
+      feed at request time.
+    </p>
+
+    {
+      error && (
+        <div style="background: #fee; border: 1px solid #fcc; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+          <strong>Error loading news:</strong> {error.message}
+        </div>
+      )
+    }
+
+    {
+      posts && posts.length > 0 ? (
+        <ul role="list" class="link-card-grid">
+          {posts.map((post) => (
+            <Card
+              href={`/live-news/${encodeURIComponent(post.id)}`}
+              title={post.data.title || "Untitled"}
+              body={post.data.summary || "No description available"}
+              thumbnail={post.data.image?.url}
+            />
+          ))}
+        </ul>
+      ) : (
+        <p>No articles available.</p>
+      )
+    }
+  </main>
+</Layout>
+
+<style>
+  main {
+    margin: auto;
+    padding: 1rem;
+    width: 800px;
+    max-width: calc(100% - 2rem);
+    color: #333;
+    font-size: 20px;
+    line-height: 1.6;
+  }
+  .link-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+    gap: 2rem;
+    padding: 0;
+  }
+</style>

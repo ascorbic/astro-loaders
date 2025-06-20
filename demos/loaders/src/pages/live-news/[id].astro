@@ -1,0 +1,195 @@
+---
+import { getLiveEntry, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+export const prerender = false; // Disable prerendering for this page to allow live data fetching
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/404");
+}
+
+const { entry: post, error } = await getLiveEntry(
+  "liveNews",
+  decodeURIComponent(id)
+);
+
+if (error) {
+  console.error("Error loading live news article:", error.message);
+  return Astro.redirect("/404");
+}
+
+if (!post) {
+  return Astro.redirect("/404");
+}
+
+const { Content } = await render(post);
+---
+
+<Layout title={post.data.title ?? "Live News Article"}>
+  <main>
+    <article>
+      <header>
+        <h1>{post.data.title}</h1>
+        {
+          post.data.date && (
+            <time datetime={new Date(post.data.date).toISOString()}>
+              {new Date(post.data.date).toLocaleDateString()}
+            </time>
+          )
+        }
+        {post.data.author && <p class="author">By {post.data.author}</p>}
+      </header>
+
+      <div class="content">
+        {
+          post.data.image?.url && (
+            <div class="article-image">
+              <img
+                src={post.data.image.url}
+                alt={post.data.image.title || ""}
+              />
+            </div>
+          )
+        }
+
+        <div class="rendered-content">
+          <Content />
+        </div>
+
+        {
+          post.data.categories && post.data.categories.length > 0 && (
+            <div class="categories">
+              <strong>Categories:</strong>
+              {post.data.categories.map((cat, index) => (
+                <span class="category">
+                  {cat}
+                  {index < post.data.categories.length - 1 ? ", " : ""}
+                </span>
+              ))}
+            </div>
+          )
+        }
+      </div>
+
+      <footer>
+        {
+          post.data.link && (
+            <a
+              href={post.data.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="original-link"
+            >
+              Read Original Article →
+            </a>
+          )
+        }
+        <a href="/live-news" class="back-link">← Back to Live News</a>
+      </footer>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  main {
+    margin: auto;
+    padding: 1rem;
+    width: 800px;
+    max-width: calc(100% - 2rem);
+    color: #333;
+    line-height: 1.6;
+  }
+
+  article {
+    background: rgba(var(--accent-light), 12%);
+    padding: 2rem;
+    border-radius: 8px;
+  }
+
+  header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(var(--accent-light), 25%);
+    padding-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  time {
+    color: rgba(var(--accent-light), 90%);
+    font-size: 0.9rem;
+  }
+
+  .author {
+    color: rgba(var(--accent-light), 80%);
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+
+  .content {
+    margin-bottom: 2rem;
+  }
+
+  .article-image {
+    margin-bottom: 1.5rem;
+  }
+
+  .article-image img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  .rendered-content {
+    margin-bottom: 1.5rem;
+  }
+
+  .rendered-content :global(p),
+  .rendered-content :global(div),
+  .rendered-content :global(span),
+  .rendered-content :global(li) {
+    color: inherit;
+  }
+
+  .categories {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .category {
+    display: inline;
+  }
+
+  footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(var(--accent-light), 25%);
+    padding-top: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .original-link,
+  .back-link {
+    color: rgb(var(--accent));
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .original-link:hover,
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    footer {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

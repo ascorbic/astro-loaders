@@ -1,6 +1,6 @@
 ## Astro loaders
 
-Some Astro loaders, for the experimental [content layer](https://astro.build/blog/future-of-astro-content-layer/). 
+Some Astro content loaders
 
 ### Packages
 

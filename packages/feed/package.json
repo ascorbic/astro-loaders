@@ -20,13 +20,13 @@
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.17.3",
 		"@types/feedparser": "^2.2.8",
-		"astro": "5.2.1",
+		"astro": "5.10.0",
 		"publint": "^0.3.2",
 		"tsup": "^8.3.6",
 		"typescript": "^5.7.3"
 	},
 	"peerDependencies": {
-		"astro": "^4.14.0 || ^5.0.0-beta.0"
+		"astro": "^4.14.0 || ^5.0.0"
 	},
 	"keywords": [
 		"withastro",

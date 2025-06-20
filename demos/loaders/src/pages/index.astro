@@ -15,7 +15,15 @@ const formatter = new Intl.DateTimeFormat("en-CA", {
 });
 ---
 
-<Layout title="Releases">
+<Layout title="Feed content">
+  <h2>Live Content Collections</h2>
+  <ul>
+    <li>
+      <a href="/live-news">Live News</a> - BBC Science & Environment news feed loaded
+      at request time
+    </li>
+  </ul>
+
   <h2>Spacecraft</h2>
   {
     spacecraft.map(({ data }) => (

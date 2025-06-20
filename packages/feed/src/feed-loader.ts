@@ -1,11 +1,11 @@
 import type { Loader } from "astro/loaders";
-import FeedParser from "feedparser";
-import { ItemSchema, type Item } from "./schema.js";
-import { webToNodeStream } from "./streams.js";
+import { ItemSchema } from "./schema.js";
+import { fetchAndParseFeed } from "./feed-utils.js";
 import {
   getConditionalHeaders,
   storeConditionalHeaders,
 } from "@ascorbic/loader-utils";
+import { FeedError } from "./live-feed-errors.js";
 
 export interface FeedLoaderOptions {
   /** URL of the feed */
@@ -23,31 +23,28 @@ export function feedLoader({
     name: "feed-loader",
     load: async ({ store, logger, parseData, meta }) => {
       logger.info("Loading posts");
-      const parser = new FeedParser({ feedurl: feedUrl.toString() });
 
-      requestOptions.headers = getConditionalHeaders({
+      const conditionalHeaders = getConditionalHeaders({
         init: requestOptions.headers,
         meta,
       });
 
-      const res = await fetch(feedUrl, requestOptions);
+      const requestWithHeaders = {
+        ...requestOptions,
+        headers: conditionalHeaders,
+      };
 
-      if (res.status === 304) {
-        logger.info(`Feed ${feedUrl} not modified, skipping`);
-        return;
-      }
-      if (!res.ok) {
-        throw new Error(`Failed to fetch feed: ${res.statusText}`);
-      }
-      if (!res.body) {
-        throw new Error("Response body is empty");
-      }
+      try {
+        const { items, response } = await fetchAndParseFeed(feedUrl, requestWithHeaders);
 
-      store.clear();
+        if (response.status === 304) {
+          logger.info(`Feed ${feedUrl} not modified, skipping`);
+          return;
+        }
 
-      parser.on("readable", async () => {
-        let item: Item | null;
-        while ((item = parser.read() as Item) !== null) {
+        store.clear();
+
+        for (const item of items) {
           const id = item.guid;
           if (!id) {
             logger.warn("Item does not have a guid, skipping");
@@ -66,23 +63,18 @@ export function feedLoader({
             },
           });
         }
-      });
 
-      const stream = webToNodeStream(res.body);
-      stream.pipe(parser);
-
-      return new Promise((resolve, reject) => {
-        parser.on("end", () => {
-          storeConditionalHeaders({
-            headers: res.headers,
-            meta,
-          });
-          resolve();
+        storeConditionalHeaders({
+          headers: response.headers,
+          meta,
         });
-        parser.on("error", (err: Error) => {
-          reject(err);
-        });
-      });
+      } catch (error) {
+        // Re-throw feed-specific errors as-is for better error messages
+        if (error instanceof FeedError) {
+          throw error;
+        }
+        throw new Error(`Failed to load feed: ${error instanceof Error ? error.message : String(error)}`);
+      }
     },
     schema: ItemSchema,
   };

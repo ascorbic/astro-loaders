@@ -10,17 +10,6 @@ npm install @ascorbic/airtable-loader
 
 ## Usage
 
-This package requires Astro 4.14.0 or later. You must enable the experimental content layer in Astro unless you are using version 5.0.0-beta or later. You can do this by adding the following to your `astro.config.mjs`:
-
-```javascript
-export default defineConfig({
-  // ...
-  experimental: {
-    contentLayer: true,
-  },
-});
-```
-
 You will need to create an Airtable personal access token. You can create one [here](https://airtable.com/create/tokens).
 
 You should ensure that this token has access to the base that you want to use, and has the following scopes:
