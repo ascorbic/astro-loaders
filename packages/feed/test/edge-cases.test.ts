@@ -125,7 +125,7 @@ describe("Feed Loader Edge Cases", () => {
       });
 
       expect(mockStore.data.size).toBe(0);
-      expect(mockLogger.warn).toHaveBeenCalledWith("Item does not have a guid, skipping");
+      expect(mockLogger.warn).toHaveBeenCalledWith("Item does not have an id or url, skipping");
       expect(mockLogger.warn).toHaveBeenCalledTimes(1);
     });
 

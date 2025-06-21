@@ -158,8 +158,8 @@ describe("Astro Loader Interface Compliance", () => {
       expect(storedItem.rendered).toHaveProperty("html");
 
       expect(storedItem.data.title).toBe("First Post");
-      expect(storedItem.data.link).toBe("https://example.com/first-post");
-      expect(storedItem.data.guid).toBe("https://example.com/first-post");
+      expect(storedItem.data.url).toBe("https://example.com/first-post");
+      expect(storedItem.data.id).toBe("https://example.com/first-post");
       expect(storedItem.rendered.html).toBe("This is the first post in our RSS feed");
     });
 
@@ -230,8 +230,8 @@ describe("Astro Loader Interface Compliance", () => {
       expect(validationResult.success).toBe(true);
       if (validationResult.success) {
         expect(validationResult.data.title).toBe("First Post");
-        expect(validationResult.data.link).toBe("https://example.com/first-post");
-        expect(validationResult.data.guid).toBe("https://example.com/first-post");
+        expect(validationResult.data.url).toBe("https://example.com/first-post");
+        expect(validationResult.data.id).toBe("https://example.com/first-post");
       }
     });
 
@@ -281,11 +281,15 @@ describe("Astro Loader Interface Compliance", () => {
       
       if (validationResult.success) {
         expect(validationResult.data.title).toBe("Complex Item");
-        expect(validationResult.data.categories).toContain("Technology");
-        expect(validationResult.data.categories).toContain("News");
-        expect(validationResult.data.enclosures).toHaveLength(1);
-        expect(validationResult.data.enclosures![0]!.url).toBe("https://example.com/file.mp3");
-        expect(validationResult.data.enclosures![0]!.type).toBe("audio/mpeg");
+        expect(validationResult.data.categories).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ label: "Technology" }),
+            expect.objectContaining({ label: "News" })
+          ])
+        );
+        expect(validationResult.data.media).toHaveLength(1);
+        expect(validationResult.data.media![0]!.url).toBe("https://example.com/file.mp3");
+        expect(validationResult.data.media![0]!.mimeType).toBe("audio/mpeg");
       }
     });
   });

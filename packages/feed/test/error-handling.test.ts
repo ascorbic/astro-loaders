@@ -114,7 +114,7 @@ describe("Feed Loader Error Handling", () => {
           parseData: mockParseData,
           meta: mockMeta
         });
-      }).rejects.toThrow("Response body is empty");
+      }).rejects.toThrow("Feed response is empty");
     });
 
     it("should handle network timeouts", async () => {
