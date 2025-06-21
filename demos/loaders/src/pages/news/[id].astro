@@ -1,0 +1,197 @@
+---
+import { getLiveEntry, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect('/news');
+}
+
+const decodedId = decodeURIComponent(id);
+const { entry: article, error } = await getLiveEntry('news', decodedId);
+
+if (error) {
+  console.error('Failed to load article:', error.message);
+  return Astro.redirect('/news');
+}
+
+if (!article) {
+  return Astro.redirect('/news');
+}
+
+const { Content } = await render(article);
+
+const publishedDate = article.data.published 
+  ? new Date(article.data.published).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long', 
+      day: 'numeric'
+    })
+  : null;
+---
+
+<Layout title={article.data.title || 'BBC News Article'}>
+  <main>
+    <nav class="breadcrumb">
+      <a href="/news">← Back to News</a>
+    </nav>
+    
+    <article>
+      <header>
+        <h1>{article.data.title}</h1>
+        {publishedDate && (
+          <time class="published-date" datetime={article.data.published?.toISOString()}>
+            {publishedDate}
+          </time>
+        )}
+        {article.data.authors && article.data.authors.length > 0 && (
+          <div class="authors">
+            By: {article.data.authors.map(author => author.name).filter(Boolean).join(', ')}
+          </div>
+        )}
+      </header>
+      
+      <div class="content">
+        <div class="description">
+          <Content />
+        </div>
+        
+        {article.data.url && (
+          <div class="read-more">
+            <a href={article.data.url} target="_blank" rel="noopener noreferrer">
+              Read full article on BBC →
+            </a>
+          </div>
+        )}
+        
+        {article.data.categories && article.data.categories.length > 0 && (
+          <div class="categories">
+            <h3>Categories:</h3>
+            <ul>
+              {article.data.categories.map(category => (
+                <li class="category-tag">{category.label}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  main {
+    margin: auto;
+    padding: 1rem;
+    width: 800px;
+    max-width: calc(100% - 2rem);
+    color: white;
+    line-height: 1.6;
+  }
+  
+  .breadcrumb {
+    margin-bottom: 2rem;
+  }
+  
+  .breadcrumb a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  
+  article {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1rem;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: white;
+  }
+  
+  .published-date {
+    display: block;
+    color: #94a3b8;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .authors {
+    color: #94a3b8;
+    font-style: italic;
+  }
+  
+  .content {
+    font-size: 1.1rem;
+  }
+  
+  .description {
+    margin-bottom: 2rem;
+    line-height: 1.7;
+  }
+  
+  .read-more {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+  }
+  
+  .read-more a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .read-more a:hover {
+    text-decoration: underline;
+  }
+  
+  .categories {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .categories h3 {
+    margin-bottom: 0.5rem;
+    color: #94a3b8;
+    font-size: 1rem;
+  }
+  
+  .categories ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .category-tag {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    padding: 0.25rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+</style>
