@@ -19,7 +19,6 @@
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.17.3",
-		"@types/feedparser": "^2.2.8",
 		"astro": "5.2.1",
 		"publint": "^0.3.2",
 		"tsup": "^8.3.6",
@@ -41,7 +40,7 @@
 	},
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
-		"feedparser": "^2.2.10",
+		"@rowanmanning/feed-parser": "^2.0.0",
 		"@ascorbic/loader-utils": "workspace:^"
 	}
 }
