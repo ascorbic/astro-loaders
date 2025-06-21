@@ -1,52 +1,65 @@
 ---
-import { getLiveCollection } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
+import { getLiveCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
 
-const { entries: news, error } = await getLiveCollection('news', { limit: 20 });
+const { entries: news, error } = await getLiveCollection("news", { limit: 20 });
 
 if (error) {
-  console.error('Failed to load news:', error.message);
+  console.error("Failed to load news:", error.message);
 }
+
+export const prerender = false; // Required for live content, unless using output: "server"
 ---
 
 <Layout title="BBC Science & Environment News">
   <main>
     <h1>🔬 BBC Science & Environment News</h1>
     <p>Live news feed from BBC Science & Environment RSS</p>
-    
-    {error ? (
-      <div class="error">
-        <h2>Error Loading News</h2>
-        <p>{error.message}</p>
-      </div>
-    ) : (
-      <ul role="list" class="news-grid">
-        {news?.map((article) => (
-          <li class="news-item">
-            {article.data.image && (
-              <img 
-                src={article.data.image.url} 
-                alt={article.data.image.title || article.data.title || ''}
-                class="thumbnail"
-              />
-            )}
-            <div class="content">
-              <h3><a href={`/news/${encodeURIComponent(article.id)}`}>{article.data.title || 'Untitled'}</a></h3>
-              <p class="description">{article.data.description || 'No description available'}</p>
-              {article.data.published && (
-                <time class="published-date">
-                  {new Date(article.data.published).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </time>
+
+    {
+      error ? (
+        <div class="error">
+          <h2>Error Loading News</h2>
+          <p>{error.message}</p>
+        </div>
+      ) : (
+        <ul role="list" class="news-grid">
+          {news?.map((article) => (
+            <li class="news-item">
+              {article.data.image && (
+                <img
+                  src={article.data.image.url}
+                  alt={article.data.image.title || article.data.title || ""}
+                  class="thumbnail"
+                />
               )}
-            </div>
-          </li>
-        ))}
-      </ul>
-    )}
+              <div class="content">
+                <h3>
+                  <a href={`/news/${encodeURIComponent(article.id)}`}>
+                    {article.data.title || "Untitled"}
+                  </a>
+                </h3>
+                <p class="description">
+                  {article.data.description || "No description available"}
+                </p>
+                {article.data.published && (
+                  <time class="published-date">
+                    {new Date(article.data.published).toLocaleDateString(
+                      "en-US",
+                      {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      }
+                    )}
+                  </time>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )
+    }
   </main>
 </Layout>
 
@@ -63,7 +76,7 @@ if (error) {
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
-  
+
   .error {
     background: #ff4444;
     color: white;
@@ -71,7 +84,7 @@ if (error) {
     border-radius: 8px;
     margin: 1rem 0;
   }
-  
+
   .news-grid {
     display: flex;
     flex-direction: column;
@@ -79,7 +92,7 @@ if (error) {
     padding: 0;
     list-style: none;
   }
-  
+
   .news-item {
     display: flex;
     background: #f9fafb;
@@ -89,7 +102,7 @@ if (error) {
     gap: 1rem;
     align-items: flex-start;
   }
-  
+
   .thumbnail {
     width: 120px;
     height: 80px;
@@ -97,39 +110,39 @@ if (error) {
     border-radius: 8px;
     flex-shrink: 0;
   }
-  
+
   .content {
     flex: 1;
   }
-  
+
   .news-item h3 {
     margin: 0 0 0.5rem 0;
     font-size: 1.2rem;
     line-height: 1.3;
   }
-  
+
   .news-item h3 a {
     color: #1d4ed8;
     text-decoration: none;
   }
-  
+
   .news-item h3 a:hover {
     color: #1e40af;
     text-decoration: underline;
   }
-  
+
   .description {
     margin: 0 0 0.5rem 0;
     color: #4b5563;
     font-size: 0.95rem;
     line-height: 1.5;
   }
-  
+
   .published-date {
     color: #6b7280;
     font-size: 0.85rem;
   }
-  
+
   h1 {
     font-size: 4rem;
     font-weight: 700;
@@ -138,7 +151,7 @@ if (error) {
     margin-bottom: 1em;
     color: #1f2937;
   }
-  
+
   .text-gradient {
     background-image: var(--accent-gradient);
     -webkit-background-clip: text;

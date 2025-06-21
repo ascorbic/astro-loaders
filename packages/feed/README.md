@@ -3,8 +3,9 @@
 This package provides feed loaders for Astro. It allows you to load and parse RSS, RDF, and Atom feeds, and use the data in your Astro site.
 
 The package includes two loaders:
-- **`feedLoader`**: Build-time feed loading for static content collections  
-- **`liveFeedLoader`**: Runtime feed loading for live content collections ⚠️ **Experimental**
+
+- **`feedLoader`**: Build-time feed loading for build-time content collections
+- **`liveFeedLoader`**: Experimental runtime feed loading for live content collections
 
 ## Installation
 
@@ -16,18 +17,7 @@ npm install @ascorbic/feed-loader
 
 ### Build-time Feed Loading (Static Collections)
 
-This package requires Astro 4.14.0 or later. You must enable the experimental content layer in Astro unless you are using version 5.0.0-beta or later. You can do this by adding the following to your `astro.config.mjs`:
-
-```javascript
-export default defineConfig({
-  // ...
-  experimental: {
-    contentLayer: true,
-  },
-});
-```
-
-You can then use the feed loader in your content configuration:
+You can use the feed loader in your content configuration like this:
 
 ```typescript
 // src/content/config.ts
@@ -91,9 +81,9 @@ const { Content } = await render(episode);
 
 <p>
 	{
-		episode.data.enclosures.map((enclosure) => (
+		episode.data.media.map((media) => (
 			<audio controls>
-				<source src={enclosure.url} type={enclosure.type} />
+				<source src={media.url} type={media.mimeType} />
 			</audio>
 		))
 	}
@@ -101,7 +91,7 @@ const { Content } = await render(episode);
 
 ```
 
-### Live Feed Loading (Runtime Collections) ⚠️ **Experimental**
+### Live Feed Loader (Experimental)
 
 > **⚠️ Experimental Feature**: Live content collections require **Astro 5.10.0 or later** and are currently experimental. The API may change in future versions.
 
@@ -124,13 +114,13 @@ export default defineConfig({
 
 ```typescript
 // src/live.config.ts
-import { defineLiveCollection } from 'astro:content';
-import { liveFeedLoader } from '@ascorbic/feed-loader';
+import { defineLiveCollection } from "astro:content";
+import { liveFeedLoader } from "@ascorbic/feed-loader";
 
 const news = defineLiveCollection({
-  type: 'live',
+  type: "live",
   loader: liveFeedLoader({
-    url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',
+    url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
   }),
 });
 
@@ -144,6 +134,8 @@ export const collections = { news };
 // src/pages/news/index.astro
 import { getLiveCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+
+export const prerender = false; // Required for live content, unless using output: "server"
 
 const { entries: articles, error } = await getLiveCollection('news', { limit: 10 });
 
@@ -178,7 +170,7 @@ if (error) {
 import { getLiveEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 
-export const prerender = false; // Required for dynamic routes with live content
+export const prerender = false; // Required for live content, unless using output: "server"
 
 const { id } = Astro.params;
 const { entry: article, error } = await getLiveEntry('news', decodeURIComponent(id!));
@@ -216,18 +208,18 @@ You can filter live collections when fetching them:
 
 ```typescript
 // Get latest 5 articles
-const { entries } = await getLiveCollection('news', { limit: 5 });
+const { entries } = await getLiveCollection("news", { limit: 5 });
 
 // Filter by category
-const { entries } = await getLiveCollection('news', { category: 'science' });
+const { entries } = await getLiveCollection("news", { category: "science" });
 
-// Filter by author  
-const { entries } = await getLiveCollection('news', { author: 'john' });
+// Filter by author
+const { entries } = await getLiveCollection("news", { author: "john" });
 
 // Filter by date range
-const { entries } = await getLiveCollection('news', { 
-  since: new Date('2024-01-01'),
-  until: new Date('2024-12-31') 
+const { entries } = await getLiveCollection("news", {
+  since: new Date("2024-01-01"),
+  until: new Date("2024-12-31"),
 });
 ```
 
@@ -236,9 +228,9 @@ const { entries } = await getLiveCollection('news', {
 Live feed loaders return structured errors that you can handle appropriately:
 
 ```typescript
-import { FeedLoadError, FeedValidationError } from '@ascorbic/feed-loader';
+import { FeedLoadError, FeedValidationError } from "@ascorbic/feed-loader";
 
-const { entries, error } = await getLiveCollection('news');
+const { entries, error } = await getLiveCollection("news");
 
 if (error) {
   if (error instanceof FeedLoadError) {
@@ -252,12 +244,14 @@ if (error) {
 #### When to Use Live vs Static Loading
 
 **Use live loading when:**
+
 - Content updates frequently (multiple times per day)
-- You need real-time data 
+- You need real-time data
 - You want to avoid rebuilds for content changes
 - You're building preview functionality
 
 **Use static loading when:**
+
 - Content is relatively static
 - Performance is critical (pre-rendered)
 - You want build-time optimization
