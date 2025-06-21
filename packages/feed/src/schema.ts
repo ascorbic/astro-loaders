@@ -14,7 +14,9 @@ export const FeedCategorySchema = z.object({
   url: z.string().nullable(),
 });
 
-// Legacy schemas from original implementation for backward compatibility
+// Legacy schemas from original implementation for exact backward compatibility
+export const LegacyNSSchema = z.record(z.string());
+
 export const LegacyImageSchema = z.object({
   url: z.string().optional(),
   title: z.string().optional(),
@@ -27,7 +29,7 @@ export const LegacyEnclosureSchema = z.object({
 });
 
 export const LegacyMetaSchema = z.object({
-  "#ns": z.array(z.record(z.string())),
+  "#ns": z.array(LegacyNSSchema),
   "#type": z.enum(["atom", "rss", "rdf"]),
   "#version": z.string(),
   title: z.string(),
@@ -142,6 +144,7 @@ export type Item = Simplify<z.infer<typeof ItemSchema>>;
 export type Feed = Simplify<z.infer<typeof FeedSchema>>;
 
 // Legacy types matching original implementation
+export type LegacyNS = z.infer<typeof LegacyNSSchema>;
 export type LegacyImage = z.infer<typeof LegacyImageSchema>;
 export type LegacyEnclosure = z.infer<typeof LegacyEnclosureSchema>;
 export type LegacyMeta = z.infer<typeof LegacyMetaSchema>;
