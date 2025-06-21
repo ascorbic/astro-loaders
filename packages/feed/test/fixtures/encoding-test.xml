@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rss version="2.0">
+  <channel>
+    <title>Encoding Test Feed</title>
+    <link>https://example.com</link>
+    <description>Test feed with various character encodings</description>
+    
+    <item>
+      <title>Latin Characters: áéíóú àèìòù âêîôû ñç</title>
+      <link>https://example.com/latin</link>
+      <description>Testing Latin-1 encoded characters: café, naïve, résumé</description>
+      <pubDate>Wed, 21 Jun 2023 10:00:00 GMT</pubDate>
+      <guid>https://example.com/latin</guid>
+    </item>
+    
+    <item>
+      <title>Special Symbols: © ® ™ € £ ¥</title>
+      <link>https://example.com/symbols</link>
+      <description>Testing special symbols and currency signs</description>
+      <pubDate>Wed, 20 Jun 2023 15:30:00 GMT</pubDate>
+      <guid>https://example.com/symbols</guid>
+    </item>
+  </channel>
+</rss>

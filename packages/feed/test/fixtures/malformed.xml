@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Malformed RSS Feed</title>
+    <link>https://example.com</link>
+    <description>A feed with various malformation issues</description>
+    
+    <item>
+      <title>Valid Item</title>
+      <link>https://example.com/valid</link>
+      <description>This item is valid</description>
+      <pubDate>Wed, 21 Jun 2023 10:00:00 GMT</pubDate>
+    </item>
+    
+    <item>
+      <title>Item with unclosed tag</title>
+      <link>https://example.com/unclosed
+      <description>This item has an unclosed link tag</description>
+      <pubDate>Wed, 20 Jun 2023 15:30:00 GMT</pubDate>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://example.com/empty-title</link>
+      <description>This item has an empty title</description>
+    </item>
+    
+  </channel>
+</rss>

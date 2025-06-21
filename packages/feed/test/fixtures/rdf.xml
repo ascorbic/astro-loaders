@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns="http://purl.org/rss/1.0/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/">
+  
+  <channel rdf:about="https://example.com/">
+    <title>Test RDF Feed</title>
+    <link>https://example.com</link>
+    <description>A test RSS 1.0 / RDF feed</description>
+    <dc:language>en-us</dc:language>
+    <dc:date>2023-06-21T12:00:00Z</dc:date>
+    
+    <items>
+      <rdf:Seq>
+        <rdf:li rdf:resource="https://example.com/rdf-first-item"/>
+        <rdf:li rdf:resource="https://example.com/rdf-second-item"/>
+      </rdf:Seq>
+    </items>
+  </channel>
+  
+  <item rdf:about="https://example.com/rdf-first-item">
+    <title>First RDF Item</title>
+    <link>https://example.com/rdf-first-item</link>
+    <description>This is the first item in our RDF feed</description>
+    <dc:date>2023-06-21T10:00:00Z</dc:date>
+    <dc:creator>Test Author</dc:creator>
+    <dc:subject>Technology</dc:subject>
+  </item>
+  
+  <item rdf:about="https://example.com/rdf-second-item">
+    <title>Second RDF Item</title>
+    <link>https://example.com/rdf-second-item</link>
+    <description>This is the second item in our RDF feed with special characters: é, ñ, 中文</description>
+    <dc:date>2023-06-20T15:30:00Z</dc:date>
+    <dc:creator>Test Author</dc:creator>
+    <dc:subject>News</dc:subject>
+  </item>
+  
+</rdf:RDF>

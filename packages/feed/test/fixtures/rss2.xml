@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Test RSS Feed</title>
+    <link>https://example.com</link>
+    <description>A test RSS 2.0 feed</description>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 21 Jun 2023 12:00:00 GMT</lastBuildDate>
+    
+    <item>
+      <title>First Post</title>
+      <link>https://example.com/first-post</link>
+      <description>This is the first post in our RSS feed</description>
+      <pubDate>Wed, 21 Jun 2023 10:00:00 GMT</pubDate>
+      <guid>https://example.com/first-post</guid>
+      <author>test@example.com (Test Author)</author>
+      <category>Technology</category>
+    </item>
+    
+    <item>
+      <title>Second Post</title>
+      <link>https://example.com/second-post</link>
+      <description><![CDATA[This is the <strong>second post</strong> with HTML content]]></description>
+      <pubDate>Wed, 20 Jun 2023 15:30:00 GMT</pubDate>
+      <guid>https://example.com/second-post</guid>
+      <author>test@example.com (Test Author)</author>
+      <category>News</category>
+      <enclosure url="https://example.com/audio.mp3" length="1024" type="audio/mpeg" />
+    </item>
+    
+    <item>
+      <title>Post Without GUID</title>
+      <link>https://example.com/no-guid-post</link>
+      <description>This post has no GUID to test fallback behavior</description>
+      <pubDate>Wed, 19 Jun 2023 09:15:00 GMT</pubDate>
+      <author>test@example.com (Test Author)</author>
+    </item>
+  </channel>
+</rss>
