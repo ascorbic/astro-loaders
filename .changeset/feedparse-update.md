@@ -71,19 +71,87 @@ const loader = feedLoader({
 
 ### Option 2: Update to New Format (Recommended)
 
-Update your code to use the new field names:
+Update your code to handle the new structured data format:
+
+#### Field Name Changes
 
 ```js
-// Before
+// Item fields
 item.link → item.url
 item.guid → item.id
-item.enclosures → item.media
-item.categories[0].name → item.categories[0].label
+item.pubdate/item.date → item.published
 item.summary → item.description (Atom feeds)
+item.enclosures → item.media
+```
 
-// Media structure
-item.enclosures[0].type → item.media[0].mimeType
-// New fields available: item.media[0].image, item.media[0].title
+#### Author Structure Change
+
+```js
+// Old: Single string format
+item.author = "email (name)";
+
+// New: Array of objects
+item.authors = [{ email: "email", name: "name" }];
+// Access: item.authors[0]?.name, item.authors[0]?.email
+```
+
+#### Category Structure Change
+
+```js
+// Old: Array of strings
+item.categories = ["category1", "category2"];
+
+// New: Array of objects
+item.categories = [{ label: "category1", term: "category1", url: null }];
+// Access: item.categories[0].label
+```
+
+#### Media/Enclosure Structure Change
+
+```js
+// Old: Basic enclosure format
+item.enclosures = [
+  {
+    url: "http://example.com/file.mp3",
+    type: "audio/mpeg",
+    length: "1234",
+  },
+];
+
+// New: Enhanced media format
+item.media = [
+  {
+    url: "http://example.com/file.mp3",
+    mimeType: "audio/mpeg",
+    length: 1234,
+    image: null,
+    title: null,
+  },
+];
+```
+
+#### Image Structure Change
+
+```js
+// Old: Simple object with undefined for missing values
+item.image = { url: "http://example.com/image.jpg", title: undefined };
+
+// New: Full object structure
+item.image = {
+  url: "http://example.com/image.jpg",
+  title: "Image Title",
+  description: "Image description",
+};
+```
+
+#### Meta Structure Changes
+
+```js
+// Feed generator changed from string to object
+meta.generator = "WordPress" → feed.generator = { name: "WordPress" }
+
+// Authors follow same pattern as items
+meta.author = "email (name)" → feed.authors = [{ email: "email", name: "name" }]
 ```
 
 Most users who only access `title`, `description`, `url`, and basic fields will not need changes.
