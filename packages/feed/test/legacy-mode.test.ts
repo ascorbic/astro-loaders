@@ -121,10 +121,8 @@ describe("Feed Loader Legacy Mode", () => {
     const firstPost = mockStore.get("https://example.com/first-post");
     expect(firstPost).toBeDefined();
     
-    // Check legacy category format
-    expect(firstPost.data.categories).toEqual([
-      { name: "Technology", domain: null }
-    ]);
+    // Check legacy category format (array of strings)
+    expect(firstPost.data.categories).toEqual(["Technology"]);
   });
 
   it("should transform media to enclosures in legacy format", async () => {
@@ -162,7 +160,7 @@ describe("Feed Loader Legacy Mode", () => {
       {
         url: "https://example.com/audio.mp3",
         type: "audio/mpeg",
-        length: 1024
+        length: "1024" // String in legacy format
       }
     ]);
   });
@@ -196,11 +194,17 @@ describe("Feed Loader Legacy Mode", () => {
     const firstPost = mockStore.get("https://example.com/first-post");
     expect(firstPost).toBeDefined();
     
-    // Check legacy aliases exist alongside modern fields
-    expect(firstPost.data.url).toBe("https://example.com/first-post");
-    expect(firstPost.data.link).toBe("https://example.com/first-post"); // Legacy alias
-    expect(firstPost.data.id).toBe("https://example.com/first-post");
-    expect(firstPost.data.guid).toBe("https://example.com/first-post"); // Legacy alias
+    // Check legacy fields (original structure has link and guid, not url and id)
+    expect(firstPost.data.link).toBe("https://example.com/first-post");
+    expect(firstPost.data.guid).toBe("https://example.com/first-post");
+    
+    // Check other legacy fields
+    expect(firstPost.data.title).toBe("First Post");
+    expect(firstPost.data.description).toBe("This is the first post in our RSS feed");
+    expect(firstPost.data.author).toBe("test@example.com (Test Author)");
+    expect(firstPost.data.meta).toBeDefined();
+    expect(firstPost.data.meta["#type"]).toBe("rss");
+    expect(firstPost.data.meta["#version"]).toBe("2.0");
   });
 
   it("should use legacy schema when legacy mode is enabled", async () => {
@@ -275,11 +279,12 @@ describe("Feed Loader Legacy Mode", () => {
     const firstPost = mockStore.get("https://example.com/first-post");
     expect(firstPost).toBeDefined();
     
-    // Check modern format (no legacy aliases)
+    // Check modern format 
     expect(firstPost.data.url).toBeDefined();
-    expect(firstPost.data.link).toBeUndefined(); // No legacy alias
     expect(firstPost.data.id).toBeDefined();
-    expect(firstPost.data.guid).toBeUndefined(); // No legacy alias
+    expect(firstPost.data.link).toBeUndefined(); // No legacy field
+    expect(firstPost.data.guid).toBeUndefined(); // No legacy field
+    expect(firstPost.data.meta).toBeUndefined(); // No legacy meta structure
     
     // Check modern category format
     expect(firstPost.data.categories[0]).toEqual({

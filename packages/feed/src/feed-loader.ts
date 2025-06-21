@@ -18,32 +18,51 @@ export interface FeedLoaderOptions {
 /**
  * Transform modern feed item format to legacy format for backward compatibility
  */
-function transformToLegacyFormat(item: Item): LegacyItem {
+function transformToLegacyFormat(item: Item, feedData: any): LegacyItem {
   return {
-    // Copy base fields
-    authors: item.authors,
-    content: item.content,
-    description: item.description,
-    id: item.id,
-    image: item.image,
-    published: item.published,
     title: item.title,
-    updated: item.updated,
-    url: item.url,
-    // Add legacy aliases
-    guid: item.id,
+    description: item.description,
+    summary: item.description, // Map description to summary as well
+    date: item.published,
+    pubdate: item.published,
     link: item.url,
-    // Transform categories from new format to legacy format
-    categories: item.categories.map(cat => ({
-      name: cat.label,
-      domain: cat.url,
-    })),
-    // Transform media to enclosures with legacy format
+    origlink: null,
+    author: item.authors.length > 0 ? 
+      `${item.authors[0].email} (${item.authors[0].name})` : null,
+    guid: item.id || item.url || "",
+    comments: null,
+    image: item.image ? {
+      url: item.image.url,
+      title: item.image.title
+    } : { url: undefined, title: undefined },
+    categories: item.categories.map(cat => cat.label),
     enclosures: item.media.map(media => ({
       url: media.url,
       type: media.mimeType,
-      length: media.length,
+      length: media.length ? String(media.length) : null,
     })),
+    meta: {
+      "#ns": [{}], // Simplified namespace
+      "#type": feedData.meta.type as "atom" | "rss" | "rdf",
+      "#version": feedData.meta.version,
+      title: feedData.title,
+      description: feedData.description,
+      date: feedData.updated,
+      pubdate: feedData.updated,
+      link: feedData.url,
+      xmlurl: null,
+      author: feedData.authors.length > 0 ? 
+        `${feedData.authors[0].email} (${feedData.authors[0].name})` : null,
+      language: feedData.language,
+      image: feedData.image ? {
+        url: feedData.image.url,
+        title: feedData.image.title
+      } : null,
+      favicon: null,
+      copyright: feedData.copyright,
+      generator: feedData.generator?.name || null,
+      categories: feedData.categories.map((cat: any) => cat.label),
+    }
   };
 }
 
@@ -83,7 +102,7 @@ export function feedLoader({
         }
 
         // Transform to legacy format if needed
-        const processedItem = legacy ? transformToLegacyFormat(item) : item;
+        const processedItem = legacy ? transformToLegacyFormat(item, feed) : item;
 
         const data = await parseData({
           id,
