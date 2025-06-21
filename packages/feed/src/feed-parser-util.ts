@@ -50,22 +50,19 @@ export async function fetchAndParseFeed({
       "Failed to fetch feed",
       feedUrl.toString(),
       res.status === 404 ? "NOT_FOUND" : "HTTP_ERROR",
-      res.status
+      res.status,
     );
   }
 
   const feedText = await res.text();
   if (!feedText) {
-    throw new FeedValidationError(
-      "Feed response is empty",
-      feedUrl.toString()
-    );
+    throw new FeedValidationError("Feed response is empty", feedUrl.toString());
   }
 
   logger?.info(`Parsing feed from ${feedUrl}`);
   try {
     const feed = parseFeed(feedText);
-    
+
     // Only store cache headers if meta is provided
     if (meta) {
       storeConditionalHeaders({
@@ -80,7 +77,7 @@ export async function fetchAndParseFeed({
       "Failed to parse feed",
       feedUrl.toString(),
       error instanceof Error ? error.message : String(error),
-      { cause: error }
+      { cause: error },
     );
   }
 }
