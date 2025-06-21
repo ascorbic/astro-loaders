@@ -34,8 +34,8 @@ All commands should be run from the repository root.
 
 ### Demo development (from demos/loaders/)
 
-- `npm run dev` - Start Astro dev server
-- `npm run build` - Build demo site
+- `pnpm run dev` - Start Astro dev server
+- `pnpm run build` - Build demo site
 
 ## Architecture
 
@@ -63,4 +63,3 @@ All loaders implement the Astro `Loader` interface:
 
 - Vitest for unit testing
 - Tests in `test/` directories within each package
-- Use vitest run to execute tests, to avoid watch mode
