@@ -63,3 +63,8 @@ All loaders implement the Astro `Loader` interface:
 
 - Vitest for unit testing
 - Tests in `test/` directories within each package
+
+### SCM
+
+- Uses conventional commits
+- Changes tracked using `changesets`
