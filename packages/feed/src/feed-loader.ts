@@ -18,7 +18,7 @@ export interface FeedLoaderOptions {
 /**
  * Transform modern feed item format to legacy format for backward compatibility
  */
-function transformToLegacyFormat(item: Item, feedData: any): LegacyItem {
+function transformToLegacyFormat(item: any, feedData: any): LegacyItem {
   return {
     title: item.title,
     description: item.description,
@@ -28,12 +28,12 @@ function transformToLegacyFormat(item: Item, feedData: any): LegacyItem {
     link: item.url,
     origlink: null,
     author: item.authors.length > 0 ? 
-      `${item.authors[0].email} (${item.authors[0].name})` : null,
+      `${item.authors[0]?.email || ''} (${item.authors[0]?.name || ''})` : null,
     guid: item.id || item.url || "",
     comments: null,
     image: item.image ? {
-      url: item.image.url,
-      title: item.image.title
+      url: item.image.url || undefined,
+      title: item.image.title || undefined
     } : { url: undefined, title: undefined },
     categories: item.categories.map(cat => cat.label),
     enclosures: item.media.map(media => ({
@@ -52,11 +52,11 @@ function transformToLegacyFormat(item: Item, feedData: any): LegacyItem {
       link: feedData.url,
       xmlurl: null,
       author: feedData.authors.length > 0 ? 
-        `${feedData.authors[0].email} (${feedData.authors[0].name})` : null,
+        `${feedData.authors[0]?.email || ''} (${feedData.authors[0]?.name || ''})` : null,
       language: feedData.language,
       image: feedData.image ? {
-        url: feedData.image.url,
-        title: feedData.image.title
+        url: feedData.image.url || undefined,
+        title: feedData.image.title || undefined
       } : null,
       favicon: null,
       copyright: feedData.copyright,
