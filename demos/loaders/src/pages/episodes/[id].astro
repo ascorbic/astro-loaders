@@ -15,7 +15,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const episodes = await getCollection("podcasts");
   return episodes.map((episode) => ({
     params: {
-      id: formatter.format(episode.data.date!),
+      id: formatter.format(episode.data.published!),
     },
     props: { episode },
   }));
@@ -28,8 +28,8 @@ const { data } = episode;
 
 const { Content } = await render(episode);
 
-const img = data.image.url ?? data.meta.image?.url;
-const alt = data.image.title ?? data.meta.image?.title ?? data.title;
+const img = data.image?.url;
+const alt = data.image?.title ?? data.title;
 ---
 
 <Layout title={data.title ?? "Episode"}>
@@ -41,9 +41,9 @@ const alt = data.image.title ?? data.meta.image?.title ?? data.title;
   }
   <p>
     {
-      data.enclosures.map((enclosure) => (
+      data.media.map((media) => (
         <audio controls>
-          <source src={enclosure.url} type={enclosure.type} />
+          <source src={media.url} type={media.mimeType} />
         </audio>
       ))
     }

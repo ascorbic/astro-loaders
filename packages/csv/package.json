@@ -15,7 +15,8 @@
 		"dev": "tsup src/index.ts --format esm --dts --watch",
 		"prepublishOnly": "node --run build",
 		"check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm",
-		"test": "vitest"
+		"test": "vitest run",
+		"test:watch": "vitest"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.17.3",

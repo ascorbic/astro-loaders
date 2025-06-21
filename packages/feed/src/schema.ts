@@ -51,9 +51,9 @@ export const LegacyMetaSchema = z.object({
 export const FeedImageSchema = z.object({
   url: z.string(),
   title: z.string().nullable(),
-  description: z.string().nullable(),
-  width: z.number().nullable(),
-  height: z.number().nullable(),
+  description: z.string().nullable().optional(),
+  width: z.number().nullable().optional(),
+  height: z.number().nullable().optional(),
 });
 
 // Generator schema for feeds
