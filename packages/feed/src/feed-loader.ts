@@ -35,8 +35,8 @@ function transformToLegacyFormat(item: any, feedData: any): LegacyItem {
       url: item.image.url || undefined,
       title: item.image.title || undefined
     } : { url: undefined, title: undefined },
-    categories: item.categories.map(cat => cat.label),
-    enclosures: item.media.map(media => ({
+    categories: item.categories.map((cat: any) => cat.label),
+    enclosures: item.media.map((media: any) => ({
       url: media.url,
       type: media.mimeType,
       length: media.length ? String(media.length) : null,
