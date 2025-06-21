@@ -54,6 +54,15 @@ const publishedDate = article.data.published
         )}
       </header>
       
+      {article.data.image && (
+        <div class="article-image">
+          <img 
+            src={article.data.image.url} 
+            alt={article.data.image.title || article.data.title || ''}
+          />
+        </div>
+      )}
+      
       <div class="content">
         <div class="description">
           <Content />
@@ -88,8 +97,11 @@ const publishedDate = article.data.published
     padding: 1rem;
     width: 800px;
     max-width: calc(100% - 2rem);
-    color: white;
+    color: #1f2937;
     line-height: 1.6;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
   
   .breadcrumb {
@@ -97,7 +109,7 @@ const publishedDate = article.data.published
   }
   
   .breadcrumb a {
-    color: #3b82f6;
+    color: #1d4ed8;
     text-decoration: none;
     font-weight: 500;
   }
@@ -107,15 +119,15 @@ const publishedDate = article.data.published
   }
   
   article {
-    background: rgba(255, 255, 255, 0.05);
+    background: #f9fafb;
     border-radius: 12px;
     padding: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid #e5e7eb;
   }
   
   header {
     margin-bottom: 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid #e5e7eb;
     padding-bottom: 1rem;
   }
   
@@ -124,18 +136,18 @@ const publishedDate = article.data.published
     font-weight: 700;
     line-height: 1.2;
     margin-bottom: 1rem;
-    color: white;
+    color: #1f2937;
   }
   
   .published-date {
     display: block;
-    color: #94a3b8;
+    color: #6b7280;
     font-size: 1rem;
     margin-bottom: 0.5rem;
   }
   
   .authors {
-    color: #94a3b8;
+    color: #6b7280;
     font-style: italic;
   }
   
@@ -143,21 +155,46 @@ const publishedDate = article.data.published
     font-size: 1.1rem;
   }
   
+  .article-image {
+    margin-bottom: 1.5rem;
+  }
+  
+  .article-image img {
+    width: 240px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+  }
+  
   .description {
     margin-bottom: 2rem;
     line-height: 1.7;
+    color: #374151;
+  }
+  
+  .description :global(p) {
+    color: #374151;
+    margin-bottom: 1rem;
+  }
+  
+  .description :global(a) {
+    color: #1d4ed8;
+  }
+  
+  .description :global(a:hover) {
+    color: #1e40af;
   }
   
   .read-more {
     margin: 2rem 0;
     padding: 1rem;
-    background: rgba(59, 130, 246, 0.1);
+    background: #dbeafe;
     border-radius: 8px;
-    border-left: 4px solid #3b82f6;
+    border-left: 4px solid #1d4ed8;
   }
   
   .read-more a {
-    color: #3b82f6;
+    color: #1d4ed8;
     text-decoration: none;
     font-weight: 600;
   }
@@ -169,12 +206,12 @@ const publishedDate = article.data.published
   .categories {
     margin-top: 2rem;
     padding-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid #e5e7eb;
   }
   
   .categories h3 {
     margin-bottom: 0.5rem;
-    color: #94a3b8;
+    color: #6b7280;
     font-size: 1rem;
   }
   
@@ -187,8 +224,8 @@ const publishedDate = article.data.published
   }
   
   .category-tag {
-    background: rgba(59, 130, 246, 0.2);
-    color: #93c5fd;
+    background: #dbeafe;
+    color: #1e40af;
     padding: 0.25rem 0.75rem;
     border-radius: 16px;
     font-size: 0.875rem;
