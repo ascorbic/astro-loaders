@@ -88,17 +88,17 @@ describe("Feed Loader Integration Tests", () => {
       const firstPost = mockStore.get("https://example.com/first-post");
       expect(firstPost).toBeDefined();
       expect(firstPost.data.title).toBe("First Post");
-      expect(firstPost.data.link).toBe("https://example.com/first-post");
+      expect(firstPost.data.url).toBe("https://example.com/first-post");
       expect(firstPost.data.description).toBe("This is the first post in our RSS feed");
       
       const secondPost = mockStore.get("https://example.com/second-post");
       expect(secondPost).toBeDefined();
       expect(secondPost.data.title).toBe("Second Post");
       expect(secondPost.data.description).toContain("second post");
-      expect(secondPost.data.enclosures).toBeDefined();
-      expect(secondPost.data.enclosures[0]).toMatchObject({
+      expect(secondPost.data.media).toBeDefined();
+      expect(secondPost.data.media[0]).toMatchObject({
         url: "https://example.com/audio.mp3",
-        type: "audio/mpeg"
+        mimeType: "audio/mpeg"
       });
     });
 
@@ -156,20 +156,20 @@ describe("Feed Loader Integration Tests", () => {
       const firstEntry = mockStore.get("https://example.com/first-entry");
       expect(firstEntry).toBeDefined();
       expect(firstEntry.data.title).toBe("First Entry");
-      expect(firstEntry.data.link).toBe("https://example.com/first-entry");
-      expect(firstEntry.data.summary).toBe("This is the first entry in our Atom feed");
+      expect(firstEntry.data.url).toBe("https://example.com/first-entry");
+      expect(firstEntry.data.description).toBe("This is the first entry in our Atom feed");
       
       const secondEntry = mockStore.get("https://example.com/second-entry");
       expect(secondEntry).toBeDefined();
       expect(secondEntry.data.title).toBe("Second Entry with HTML");
-      expect(secondEntry.data.summary).toContain("second entry");
+      expect(secondEntry.data.description).toContain("second entry");
       
       const mediaEntry = mockStore.get("https://example.com/media-entry");
       expect(mediaEntry).toBeDefined();
-      expect(mediaEntry.data.enclosures).toBeDefined();
-      expect(mediaEntry.data.enclosures[0]).toMatchObject({
+      expect(mediaEntry.data.media).toBeDefined();
+      expect(mediaEntry.data.media[0]).toMatchObject({
         url: "https://example.com/video.mp4",
-        type: "video/mp4"
+        mimeType: "video/mp4"
       });
     });
   });
@@ -202,7 +202,7 @@ describe("Feed Loader Integration Tests", () => {
       const firstItem = mockStore.get("https://example.com/rdf-first-item");
       expect(firstItem).toBeDefined();
       expect(firstItem.data.title).toBe("First RDF Item");
-      expect(firstItem.data.link).toBe("https://example.com/rdf-first-item");
+      expect(firstItem.data.url).toBe("https://example.com/rdf-first-item");
       expect(firstItem.data.description).toBe("This is the first item in our RDF feed");
       
       const secondItem = mockStore.get("https://example.com/rdf-second-item");

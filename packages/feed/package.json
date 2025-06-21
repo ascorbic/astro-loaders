@@ -15,11 +15,11 @@
 		"dev": "tsup src/index.ts --format esm --dts --watch",
 		"prepublishOnly": "node --run build",
 		"check": "publint && attw $(pnpm pack) --ignore-rules=cjs-resolves-to-esm",
-		"test": "vitest"
+		"test": "vitest run",
+		"test:watch": "vitest"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.17.3",
-		"@types/feedparser": "^2.2.8",
 		"astro": "5.2.1",
 		"msw": "^2.10.2",
 		"publint": "^0.3.2",
@@ -42,7 +42,7 @@
 	},
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
-		"@ascorbic/loader-utils": "workspace:^",
-		"feedparser": "^2.2.10"
+		"@rowanmanning/feed-parser": "^2.0.0",
+		"@ascorbic/loader-utils": "workspace:^"
 	}
 }

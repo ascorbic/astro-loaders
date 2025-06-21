@@ -46,7 +46,7 @@ const formatter = new Intl.DateTimeFormat("en-CA", {
     {
       episodes.map((episode) => (
         <li>
-          <a href={`/episodes/${formatter.format(episode.data.date!)}`}>
+          <a href={`/episodes/${formatter.format(episode.data.published!)}`}>
             {episode.data.title}
           </a>
         </li>

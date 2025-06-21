@@ -1,89 +1,127 @@
 import type { Loader } from "astro/loaders";
-import FeedParser from "feedparser";
-import { ItemSchema, type Item } from "./schema.js";
-import { webToNodeStream } from "./streams.js";
-import {
-  getConditionalHeaders,
-  storeConditionalHeaders,
-} from "@ascorbic/loader-utils";
+import { ItemSchema, LegacyItemSchema, type Item, type LegacyItem } from "./schema.js";
+import { fetchAndParseFeed } from "./feed-parser-util.js";
 
 export interface FeedLoaderOptions {
   /** URL of the feed */
   url: URL | string;
   /** Extra options passed to the fetch request */
   requestOptions?: RequestInit;
+  /** 
+   * Enable legacy mode for backward compatibility.
+   * @deprecated This mode will be removed in a future version. Please migrate to the new format.
+   * @default false
+   */
+  legacy?: boolean;
+}
+
+/**
+ * Transform modern feed item format to legacy format for backward compatibility
+ */
+function transformToLegacyFormat(item: any, feedData: any): LegacyItem {
+  return {
+    title: item.title,
+    description: item.description,
+    summary: item.description, // Map description to summary as well
+    date: item.published,
+    pubdate: item.published,
+    link: item.url,
+    origlink: null,
+    author: item.authors.length > 0 ? 
+      `${item.authors[0]?.email || ''} (${item.authors[0]?.name || ''})` : null,
+    guid: item.id || item.url || "",
+    comments: null,
+    image: item.image ? {
+      url: item.image.url || undefined,
+      title: item.image.title || undefined
+    } : { url: undefined, title: undefined },
+    categories: item.categories.map((cat: any) => cat.label),
+    enclosures: item.media.map((media: any) => ({
+      url: media.url,
+      type: media.mimeType,
+      length: media.length ? String(media.length) : null,
+    })),
+    meta: {
+      "#ns": [{}], // Simplified namespace
+      "#type": feedData.meta.type as "atom" | "rss" | "rdf",
+      "#version": feedData.meta.version,
+      title: feedData.title,
+      description: feedData.description,
+      date: feedData.updated,
+      pubdate: feedData.updated,
+      link: feedData.url,
+      xmlurl: null,
+      author: feedData.authors.length > 0 ? 
+        `${feedData.authors[0]?.email || ''} (${feedData.authors[0]?.name || ''})` : null,
+      language: feedData.language,
+      image: feedData.image ? {
+        url: feedData.image.url || undefined,
+        title: feedData.image.title || undefined
+      } : null,
+      favicon: null,
+      copyright: feedData.copyright,
+      generator: feedData.generator?.name || null,
+      categories: feedData.categories.map((cat: any) => cat.label),
+    }
+  };
 }
 
 export function feedLoader({
   url,
   requestOptions = {},
+  legacy = false,
 }: FeedLoaderOptions): Loader {
-  const feedUrl = new URL(url);
   return {
     name: "feed-loader",
     load: async ({ store, logger, parseData, meta }) => {
-      logger.info("Loading posts");
-      const parser = new FeedParser({ feedurl: feedUrl.toString() });
-
-      requestOptions.headers = getConditionalHeaders({
-        init: requestOptions.headers,
+      if (legacy) {
+        logger.warn("Using legacy mode. This is deprecated and will be removed in a future version. Please migrate to the new format.");
+      }
+      
+      logger.info("Loading feed");
+      
+      const { feed, wasModified } = await fetchAndParseFeed({
+        url,
+        requestOptions,
         meta,
+        logger,
       });
 
-      const res = await fetch(feedUrl, requestOptions);
-
-      if (res.status === 304) {
-        logger.info(`Feed ${feedUrl} not modified, skipping`);
+      if (!wasModified) {
         return;
-      }
-      if (!res.ok) {
-        throw new Error(`Failed to fetch feed: ${res.statusText}`);
-      }
-      if (!res.body) {
-        throw new Error("Response body is empty");
       }
 
       store.clear();
 
-      parser.on("readable", async () => {
-        let item: Item | null;
-        while ((item = parser.read() as Item) !== null) {
-          const id = item.guid;
-          if (!id) {
-            logger.warn("Item does not have a guid, skipping");
-            continue;
-          }
-          const data = await parseData({
-            id,
-            data: item,
-          });
-
-          store.set({
-            id,
-            data,
-            rendered: {
-              html: data.description ?? "",
-            },
-          });
+      let processedCount = 0;
+      for (const item of feed.items) {
+        const id = item.id || item.url;
+        if (!id) {
+          logger.warn("Item does not have an id or url, skipping");
+          continue;
         }
-      });
 
-      const stream = webToNodeStream(res.body);
-      stream.pipe(parser);
+        // Transform to legacy format if needed
+        const processedItem = legacy ? transformToLegacyFormat(item, feed) : item;
 
-      return new Promise((resolve, reject) => {
-        parser.on("end", () => {
-          storeConditionalHeaders({
-            headers: res.headers,
-            meta,
-          });
-          resolve();
+        const data = await parseData({
+          id,
+          data: processedItem as unknown as Record<string, unknown>,
         });
-        parser.on("error", (err: Error) => {
-          reject(err);
+
+        store.set({
+          id,
+          data,
+          rendered: {
+            html: (data.content as string) || (data.description as string) || "",
+          },
         });
-      });
+
+        processedCount++;
+      }
+
+      logger.info(`Loaded ${processedCount} items from feed`);
     },
-    schema: ItemSchema,
+    schema: legacy ? LegacyItemSchema : ItemSchema,
   };
 }

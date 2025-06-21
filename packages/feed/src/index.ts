@@ -1,2 +1,11 @@
 export { feedLoader } from "./feed-loader.js";
-export type { Item, Enclosure, Image, Meta, NS } from "./schema.js";
+export type { 
+  Item, 
+  Feed, 
+  FeedAuthor, 
+  FeedCategory, 
+  FeedImage, 
+  FeedGenerator, 
+  FeedItemMedia, 
+  FeedMeta 
+} from "./schema.js";
