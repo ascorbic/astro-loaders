@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Test Atom Feed</title>
+  <link href="https://example.com"/>
+  <link rel="self" href="https://example.com/atom.xml"/>
+  <id>https://example.com/</id>
+  <updated>2023-06-21T12:00:00Z</updated>
+  <subtitle>A test Atom 1.0 feed</subtitle>
+  <author>
+    <name>Test Author</name>
+    <email>test@example.com</email>
+  </author>
+  
+  <entry>
+    <title>First Entry</title>
+    <link href="https://example.com/first-entry"/>
+    <id>https://example.com/first-entry</id>
+    <updated>2023-06-21T10:00:00Z</updated>
+    <published>2023-06-21T10:00:00Z</published>
+    <summary>This is the first entry in our Atom feed</summary>
+    <author>
+      <name>Test Author</name>
+      <email>test@example.com</email>
+    </author>
+    <category term="Technology"/>
+  </entry>
+  
+  <entry>
+    <title>Second Entry with HTML</title>
+    <link href="https://example.com/second-entry"/>
+    <id>https://example.com/second-entry</id>
+    <updated>2023-06-20T15:30:00Z</updated>
+    <published>2023-06-20T15:30:00Z</published>
+    <summary type="html"><![CDATA[This is the <strong>second entry</strong> with HTML content]]></summary>
+    <content type="html"><![CDATA[Full content of the <em>second entry</em> with more details]]></content>
+    <author>
+      <name>Test Author</name>
+      <email>test@example.com</email>
+    </author>
+    <category term="News"/>
+  </entry>
+  
+  <entry>
+    <title>Entry with Media</title>
+    <link href="https://example.com/media-entry"/>
+    <id>https://example.com/media-entry</id>
+    <updated>2023-06-19T09:15:00Z</updated>
+    <published>2023-06-19T09:15:00Z</published>
+    <summary>This entry has media attachments</summary>
+    <link rel="enclosure" href="https://example.com/video.mp4" type="video/mp4" length="2048"/>
+    <author>
+      <name>Test Author</name>
+      <email>test@example.com</email>
+    </author>
+  </entry>
+</feed>

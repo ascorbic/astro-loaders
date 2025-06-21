@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Feed Without GUIDs</title>
+    <link>https://example.com</link>
+    <description>Test feed where items have no GUID elements</description>
+    
+    <item>
+      <title>First Item Without GUID</title>
+      <link>https://example.com/item1</link>
+      <description>This item has no GUID element</description>
+      <pubDate>Wed, 21 Jun 2023 10:00:00 GMT</pubDate>
+      <author>test@example.com</author>
+    </item>
+    
+    <item>
+      <title>Second Item Without GUID</title>
+      <link>https://example.com/item2</link>
+      <description>This item also has no GUID element</description>
+      <pubDate>Wed, 20 Jun 2023 15:30:00 GMT</pubDate>
+      <author>test@example.com</author>
+    </item>
+    
+    <item>
+      <title>Third Item Without GUID</title>
+      <link>https://example.com/item3</link>
+      <description>Yet another item without GUID</description>
+      <pubDate>Wed, 19 Jun 2023 09:15:00 GMT</pubDate>
+      <author>test@example.com</author>
+    </item>
+  </channel>
+</rss>
