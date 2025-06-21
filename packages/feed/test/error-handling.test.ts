@@ -71,7 +71,7 @@ describe("Feed Loader Error Handling", () => {
           parseData: mockParseData,
           meta: mockMeta
         });
-      }).rejects.toThrow("Failed to fetch feed: Not Found");
+      }).rejects.toThrow("Failed to fetch feed (URL: https://example.com/notfound.xml)");
     });
 
     it("should throw error for 500 Internal Server Error", async () => {
@@ -90,7 +90,7 @@ describe("Feed Loader Error Handling", () => {
           parseData: mockParseData,
           meta: mockMeta
         });
-      }).rejects.toThrow("Failed to fetch feed: Internal Server Error");
+      }).rejects.toThrow("Failed to fetch feed (URL: https://example.com/error.xml)");
     });
 
     it("should throw error for empty response body", async () => {
@@ -114,7 +114,7 @@ describe("Feed Loader Error Handling", () => {
           parseData: mockParseData,
           meta: mockMeta
         });
-      }).rejects.toThrow("Feed response is empty");
+      }).rejects.toThrow("Feed response is empty (URL: https://example.com/empty-body.xml)");
     });
 
     it("should handle network timeouts", async () => {

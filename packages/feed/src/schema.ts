@@ -94,23 +94,24 @@ export const ItemSchema = z.object({
   url: z.string().nullable(),
 });
 
-// Legacy item schema matching original implementation exactly
-export const LegacyItemSchema = z.object({
-  title: z.string().nullable(),
-  description: z.string().nullable(),
-  summary: z.string().nullable(),
-  date: z.coerce.date().nullable(),
-  pubdate: z.coerce.date().nullable(),
-  link: z.string().nullable(),
-  origlink: z.string().nullable(),
-  author: z.string().nullable(),
-  guid: z.string(),
-  comments: z.string().nullable(),
-  image: LegacyImageSchema,
-  categories: z.array(z.string()),
-  enclosures: z.array(LegacyEnclosureSchema),
-  meta: LegacyMetaSchema,
-}).and(z.record(z.unknown())); // Allow additional fields
+export const LegacyItemSchema = z
+  .object({
+    title: z.string().nullable(),
+    description: z.string().nullable(),
+    summary: z.string().nullable(),
+    date: z.coerce.date().nullable(),
+    pubdate: z.coerce.date().nullable(),
+    link: z.string().nullable(),
+    origlink: z.string().nullable(),
+    author: z.string().nullable(),
+    guid: z.string(),
+    comments: z.string().nullable(),
+    image: LegacyImageSchema,
+    categories: z.array(z.string()),
+    enclosures: z.array(LegacyEnclosureSchema),
+    meta: LegacyMetaSchema,
+  })
+  .and(z.record(z.unknown())); // Allow additional fields
 
 // Feed schema for the complete feed structure
 export const FeedSchema = z.object({
@@ -130,22 +131,18 @@ export const FeedSchema = z.object({
   url: z.string().nullable(),
 });
 
-type Simplify<T> = {
-  [P in keyof T]: T[P];
-};
-
 export type FeedAuthor = z.infer<typeof FeedAuthorSchema>;
 export type FeedCategory = z.infer<typeof FeedCategorySchema>;
 export type FeedImage = z.infer<typeof FeedImageSchema>;
 export type FeedGenerator = z.infer<typeof FeedGeneratorSchema>;
 export type FeedItemMedia = z.infer<typeof FeedItemMediaSchema>;
 export type FeedMeta = z.infer<typeof FeedMetaSchema>;
-export type Item = Simplify<z.infer<typeof ItemSchema>>;
-export type Feed = Simplify<z.infer<typeof FeedSchema>>;
+export type Item = z.infer<typeof ItemSchema>;
+export type Feed = z.infer<typeof FeedSchema>;
 
 // Legacy types matching original implementation
 export type LegacyNS = z.infer<typeof LegacyNSSchema>;
 export type LegacyImage = z.infer<typeof LegacyImageSchema>;
 export type LegacyEnclosure = z.infer<typeof LegacyEnclosureSchema>;
 export type LegacyMeta = z.infer<typeof LegacyMetaSchema>;
-export type LegacyItem = Simplify<z.infer<typeof LegacyItemSchema>>;
+export type LegacyItem = z.infer<typeof LegacyItemSchema>;
