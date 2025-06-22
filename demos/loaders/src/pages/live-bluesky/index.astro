@@ -1,0 +1,286 @@
+---
+import { getLiveCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import { render } from "astro:content";
+
+const { entries: posts, error } = await getLiveCollection("liveBluesky", {
+  limit: 20,
+  type: "posts_no_replies",
+  // Note: identifier can also be overridden here:
+  // identifier: "different.user.bsky.social"
+});
+
+if (error) {
+  console.error("Failed to load live Bluesky posts:", error.message);
+}
+
+export const prerender = false; // Required for live content
+---
+
+<Layout title="Live Bluesky Posts">
+  <main>
+    <h1>🦋 Live Bluesky Posts</h1>
+    <p>Live feed from <strong>mk.gg</strong> using live collections</p>
+    <p class="note">
+      <strong>Note:</strong> This uses live collections that fetch data at request
+      time, compared to the <a href="/bluesky">build-time Bluesky page</a> that fetches
+      at build time.
+    </p>
+
+    {
+      error ? (
+        <div class="error">
+          <h2>Error Loading Posts</h2>
+          <p>{error.message}</p>
+          <p class="error-details">
+            This might be due to network issues or rate limiting. Try refreshing
+            the page in a moment.
+          </p>
+        </div>
+      ) : (
+        <div class="posts-container">
+          {posts?.length === 0 ? (
+            <p class="no-posts">
+              No posts found. The user might not have any recent posts.
+            </p>
+          ) : (
+            (posts
+              ?.sort(
+                (a, b) =>
+                  new Date(b.data.record.createdAt).getTime() -
+                  new Date(a.data.record.createdAt).getTime()
+              )
+              .map(async (post) => {
+                const { Content } = await render(post);
+                return (
+                  <article class="post-item">
+                    <div class="post-meta">
+                      <a
+                        href={`/live-bluesky/${encodeURIComponent(post.id)}`}
+                        class="view-details"
+                      >
+                        View Details
+                      </a>
+                      <time class="post-date">
+                        {new Date(
+                          post.data.record.createdAt
+                        ).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </time>
+                    </div>
+                    <Content />
+                    <div class="engagement-stats">
+                      <span>❤️ {post.data.likeCount}</span>
+                      <span>🔄 {post.data.repostCount}</span>
+                      <span>💬 {post.data.replyCount}</span>
+                      {post.data.quoteCount > 0 && (
+                        <span>📝 {post.data.quoteCount}</span>
+                      )}
+                    </div>
+                  </article>
+                );
+              }) ?? [])
+          )}
+        </div>
+      )
+    }
+
+    <div class="filter-info">
+      <h3>Filter Options</h3>
+      <p>
+        This page shows posts filtered with <code>type: "posts_no_replies"</code
+        > and <code>limit: 20</code>.
+      </p>
+      <p><strong>Available filter options:</strong></p>
+      <ul>
+        <li>
+          <code>type</code>: posts_and_author_threads, posts_no_replies,
+          posts_with_replies, posts_and_replies
+        </li>
+        <li><code>limit</code>: Maximum number of posts to fetch</li>
+        <li><code>since</code>: Only posts after this date</li>
+        <li><code>until</code>: Only posts before this date</li>
+        <li>
+          <code>identifier</code>: Override the Bluesky handle/DID (defaults to
+          mk.gg)
+        </li>
+      </ul>
+      <p>
+        <strong>Service configuration:</strong> Can be customized in loader options
+        (defaults to public.api.bsky.app)
+      </p>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    margin: auto;
+    padding: 1rem;
+    width: 900px;
+    max-width: calc(100% - 2rem);
+    color: #1f2937;
+    font-size: 16px;
+    line-height: 1.6;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .note {
+    background: #e0f2fe;
+    border-left: 4px solid #0284c7;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.95rem;
+  }
+
+  .note a {
+    color: #0284c7;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .note a:hover {
+    text-decoration: underline;
+  }
+
+  .error {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+
+  .error h2 {
+    margin: 0 0 0.5rem 0;
+    color: #7f1d1d;
+  }
+
+  .error-details {
+    font-size: 0.9rem;
+    color: #b91c1c;
+    margin-top: 0.5rem;
+  }
+
+  .no-posts {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 2rem;
+    background: #f9fafb;
+    border-radius: 8px;
+  }
+
+  .posts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+
+  .post-item {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+    position: relative;
+  }
+
+  .post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .view-details {
+    background: #3b82f6;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+
+  .view-details:hover {
+    background: #2563eb;
+  }
+
+  .post-date {
+    color: #6b7280;
+    font-size: 0.85rem;
+  }
+
+  .engagement-stats {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+
+  .filter-info {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+  }
+
+  .filter-info h3 {
+    margin: 0 0 0.5rem 0;
+    color: #166534;
+  }
+
+  .filter-info code {
+    background: #dcfce7;
+    padding: 0.125rem 0.25rem;
+    border-radius: 4px;
+    font-family: "Courier New", monospace;
+    font-size: 0.85rem;
+  }
+
+  h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    margin-bottom: 0.5em;
+    color: #1f2937;
+  }
+
+  @media (max-width: 768px) {
+    main {
+      width: 100%;
+      margin: 0;
+      border-radius: 0;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    .posts-container {
+      gap: 1.5rem;
+    }
+
+    .post-item {
+      padding: 1rem;
+    }
+  }
+</style>
