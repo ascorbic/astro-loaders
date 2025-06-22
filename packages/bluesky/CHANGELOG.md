@@ -4,20 +4,20 @@
 
 ### Minor Changes
 
-- [#91](https://github.com/ascorbic/astro-loaders/pull/91) [`feb8d4b`](https://github.com/ascorbic/astro-loaders/commit/feb8d4ba7e9dc738d1627701e60b86c131f1f5e2) Thanks [@ascorbic](https://github.com/ascorbic)! - # Add live Bluesky loader
+- [#91](https://github.com/ascorbic/astro-loaders/pull/91) [`feb8d4b`](https://github.com/ascorbic/astro-loaders/commit/feb8d4ba7e9dc738d1627701e60b86c131f1f5e2) Thanks [@ascorbic](https://github.com/ascorbic)! - Adds live Bluesky loader
 
   Adds `liveBlueskyLoader` for Astro's experimental Live Content Collections feature. This loader fetches Bluesky posts in real-time, complementing the existing build-time `authorFeedLoader`.
 
   The key difference is that while `authorFeedLoader` fetches data at build time for static generation, `liveBlueskyLoader` retrieves fresh content on-demand during server-side rendering or client-side navigation.
 
-  ## Getting Started
+  #### Getting Started
 
-  ### Prerequisites
+  ##### Prerequisites
 
   - Astro 5.10.0+ with experimental Live Content Collections enabled
   - `@ascorbic/bluesky-loader` package installed
 
-  ### Basic Usage
+  ##### Basic Usage
 
   Create a live collection in your `live.config.ts`:
 
@@ -36,7 +36,7 @@
   export const collections = { liveBluesky };
   ```
 
-  ### Using in Pages
+  ##### Using in Pages
 
   Fetch posts in your Astro pages:
 
@@ -54,7 +54,7 @@
   ---
   ```
 
-  ## Features
+  #### Features
 
   - Real-time data fetching using AT Protocol's `getPosts` method
   - Flexible configuration - set identifier globally or per-request
