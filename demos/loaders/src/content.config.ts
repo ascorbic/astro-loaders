@@ -70,6 +70,7 @@ const spacecraft = defineCollection({
 const bluesky = defineCollection({
   loader: authorFeedLoader({
     identifier: "mk.gg",
+    limit: 100,
   }),
 });
 
