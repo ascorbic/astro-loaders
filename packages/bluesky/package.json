@@ -14,14 +14,17 @@
 		"build": "tsup src/index.ts --format esm --dts --clean",
 		"dev": "tsup src/index.ts --format esm --dts --watch",
 		"prepublishOnly": "node --run check && node --run build",
-		"check": "publint && attw --pack --ignore-rules=cjs-resolves-to-esm"
+		"check": "publint && attw --pack --ignore-rules=cjs-resolves-to-esm",
+		"test": "vitest run",
+		"test:watch": "vitest"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.17.3",
 		"astro": "5.10.0",
 		"publint": "^0.3.2",
 		"tsup": "^8.3.6",
-		"typescript": "^5.7.3"
+		"typescript": "^5.7.3",
+		"vitest": "^2.1.8"
 	},
 	"peerDependencies": {
 		"astro": "^4.14.0 || ^5.0.0"
