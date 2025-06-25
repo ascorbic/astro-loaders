@@ -92,7 +92,14 @@ export function liveFeedLoader(
               rendered: {
                 html: item.content || item.description || "",
               },
+              cacheHint: {
+                lastModified: item.updated || item.published || undefined,
+              },
             })),
+          cacheHint: {
+            lastModified:
+              result.feed.updated || result.feed.published || undefined,
+          },
         };
       } catch (error) {
         if (error instanceof FeedError) {
@@ -124,12 +131,14 @@ export function liveFeedLoader(
           item = items.find((i) => i.url === filter.url);
         }
 
-        if (!item?.id && !item?.url) {
+        const id = item?.id || item?.url;
+
+        if (!item || !id) {
           return undefined;
         }
 
         return {
-          id: item.id || item.url!,
+          id,
           data: item,
           rendered: {
             html: item.content || item.description || "",

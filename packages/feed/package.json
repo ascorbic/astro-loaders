@@ -20,7 +20,7 @@
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.17.3",
-		"astro": "5.10.0",
+		"astro": "^5.10.1",
 		"msw": "^2.10.2",
 		"publint": "^0.3.2",
 		"tsup": "^8.3.6",
