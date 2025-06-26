@@ -2,12 +2,21 @@
 import { getLiveCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 
-const { entries: news, error } = await getLiveCollection("news", { limit: 20 });
+const {
+  entries: news,
+  error,
+  cacheHint,
+} = await getLiveCollection("news", { limit: 20 });
 
 if (error) {
   console.error("Failed to load news:", error.message);
 }
-
+if (cacheHint?.lastModified) {
+  Astro.response.headers.set(
+    "last-modified",
+    cacheHint.lastModified.toUTCString()
+  );
+}
 export const prerender = false; // Required for live content, unless using output: "server"
 ---
 

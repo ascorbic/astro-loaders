@@ -21,7 +21,7 @@
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.17.3",
 		"@types/papaparse": "^5.3.15",
-		"astro": "5.10.0",
+		"astro": "^5.10.1",
 		"publint": "^0.3.2",
 		"tsup": "^8.3.6",
 		"typescript": "^5.7.3"
