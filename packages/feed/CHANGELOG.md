@@ -1,5 +1,11 @@
 # @ascorbic/feed-loader
 
+## 2.0.1
+
+### Patch Changes
+
+- [#94](https://github.com/ascorbic/astro-loaders/pull/94) [`2fc6369`](https://github.com/ascorbic/astro-loaders/commit/2fc6369e0ef696488102af1e7b58920a812eed03) Thanks [@ascorbic](https://github.com/ascorbic)! - Add support for lastModified in live loader
+
 ## 2.0.0
 
 ### Major Changes
