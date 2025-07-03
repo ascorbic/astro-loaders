@@ -27,6 +27,15 @@ const formatter = new Intl.DateTimeFormat("en-CA", {
     <li><a href="/bluesky">Bluesky Posts (Build-time)</a></li>
   </ul>
   
+  <h2>YouTube Loader Demos</h2>
+  <ul>
+    <li><a href="/youtube">YouTube Videos by ID</a> - Load specific videos using their YouTube IDs</li>
+    <li><a href="/youtube-channel">Channel Videos (Latest)</a> - Load latest videos from FreeCodeCamp channel</li>
+    <li><a href="/youtube-popular">Channel Videos (Most Popular)</a> - Load most popular videos from FreeCodeCamp channel</li>
+    <li><a href="/youtube-search">Search Results</a> - Search for "Astro web framework" videos</li>
+    <li><a href="/youtube-recent">Recent JavaScript Tutorials</a> - Search with date filtering (2024+)</li>
+  </ul>
+  
   <h2>Spacecraft</h2>
   {
     spacecraft.map(({ data }) => (

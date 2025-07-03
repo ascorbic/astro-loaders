@@ -1,0 +1,284 @@
+---
+import { getLiveEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { YouTube } from "@astro-community/astro-embed-youtube";
+import { formatDuration, formatViews, formatDate } from "../../utils/youtube.ts";
+
+export const prerender = false;
+
+const { id } = Astro.params;
+const { entry: video, error } = await getLiveEntry('liveChannelVideos', id!);
+
+if (error || !video) {
+  return Astro.redirect('/live-youtube');
+}
+---
+
+<Layout title={`🔴 ${video.data.title}`}>
+  <div class="video-page">
+    <div class="live-header">
+      <span class="live-badge">LIVE</span>
+      <span>Real-time data loaded at: {new Date().toLocaleString()}</span>
+    </div>
+    
+    <nav class="breadcrumb">
+      <a href="/">Home</a> / <a href="/live-youtube">Live YouTube Videos</a> / {video.data.title}
+    </nav>
+    
+    <div class="video-player">
+      <YouTube id={video.data.id} title={video.data.title} />
+    </div>
+    
+    <div class="video-details">
+      <h1>{video.data.title}</h1>
+      
+      <div class="video-meta">
+        <div class="channel-info">
+          <span class="channel-name">{video.data.channelTitle}</span>
+        </div>
+        
+        <div class="video-stats">
+          <span class="views">{formatViews(video.data.viewCount)} views</span>
+          <span class="date">Published {formatDate(video.data.publishedAt)}</span>
+          <span class="duration">Duration: {formatDuration(video.data.duration)}</span>
+          {video.data.likeCount && (
+            <span class="likes">{formatViews(video.data.likeCount)} likes</span>
+          )}
+        </div>
+      </div>
+      
+      {video.data.tags && video.data.tags.length > 0 && (
+        <div class="tags">
+          <h3>Tags</h3>
+          <div class="tag-list">
+            {video.data.tags.slice(0, 10).map((tag: string) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      <div class="description">
+        <h3>Description</h3>
+        <div class="description-content">
+          <p>{video.data.description}</p>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <a href={video.data.url} target="_blank" rel="noopener noreferrer" class="youtube-link">
+          Watch on YouTube →
+        </a>
+        <a href="/live-youtube" class="back-link">← Back to live videos</a>
+        <button onclick="window.location.reload()" class="refresh-btn">🔄 Refresh Data</button>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    .video-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    
+    .live-header {
+      background: #dc2626;
+      color: white;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.875rem;
+    }
+    
+    .live-badge {
+      background: #ef4444;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    .breadcrumb {
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    .breadcrumb a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+    
+    .video-player {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .video-player iframe {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .video-details h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+    
+    .video-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 1.5rem;
+    }
+    
+    .channel-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .channel-name {
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .video-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    .tags {
+      margin-bottom: 1.5rem;
+    }
+    
+    .tags h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .tag {
+      background: #f3f4f6;
+      color: #374151;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+    
+    .description {
+      margin-bottom: 2rem;
+    }
+    
+    .description h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    
+    .description-content {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 1rem;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .youtube-link {
+      background: #dc2626;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    .youtube-link:hover {
+      background: #b91c1c;
+    }
+    
+    .back-link {
+      color: #2563eb;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border: 1px solid #2563eb;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    
+    .back-link:hover {
+      background: #2563eb;
+      color: white;
+    }
+    
+    .refresh-btn {
+      background: #059669;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .refresh-btn:hover {
+      background: #047857;
+    }
+    
+    @media (max-width: 768px) {
+      .video-stats {
+        font-size: 0.8rem;
+      }
+      
+      .video-details h1 {
+        font-size: 1.5rem;
+      }
+      
+      .actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</Layout>

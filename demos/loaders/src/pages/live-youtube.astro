@@ -1,0 +1,278 @@
+---
+import { getLiveCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import { formatDuration, formatViews, formatDate, getMediumThumbnail } from "../utils/youtube.ts";
+
+export const prerender = false;
+
+const { entries: videos, error } = await getLiveCollection('liveChannelVideos', { 
+  limit: 10,
+  order: 'date'
+});
+
+if (error) {
+  console.error('Failed to load live YouTube videos:', error.message);
+}
+---
+
+<Layout title="Live YouTube Channel Videos">
+  <div class="live-header">
+    <h1>🔴 Live YouTube Channel Videos</h1>
+    <p>This page demonstrates <strong>live loading</strong> of YouTube videos from FreeCodeCamp channel.</p>
+    <p>Data is fetched in real-time when you visit this page - no build required!</p>
+    <div class="live-info">
+      <span class="live-badge">LIVE</span>
+      <span>Last updated: {new Date().toLocaleString()}</span>
+    </div>
+  </div>
+  
+  {error ? (
+    <div class="error-message">
+      <h2>❌ Error Loading Videos</h2>
+      <p>Failed to load live videos: {error.message}</p>
+      <details>
+        <summary>Error Details</summary>
+        <pre>{JSON.stringify(error, null, 2)}</pre>
+      </details>
+    </div>
+  ) : (
+    <div>
+      <div class="stats">
+        <p><strong>Channel:</strong> FreeCodeCamp</p>
+        <p><strong>Videos loaded:</strong> {videos?.length || 0} (latest 10, ordered by date)</p>
+        <p><strong>Loading type:</strong> Real-time API call</p>
+      </div>
+      
+      <div class="video-grid">
+        {videos?.map((video) => (
+          <div class="video-card">
+            <div class="thumbnail">
+              <img 
+                src={getMediumThumbnail(video.data.thumbnails)} 
+                alt={video.data.title}
+                loading="lazy"
+              />
+              <div class="duration">{formatDuration(video.data.duration)}</div>
+            </div>
+            
+            <div class="video-info">
+              <h3><a href={`/live-youtube/${video.id}`}>{video.data.title}</a></h3>
+              <p class="channel">{video.data.channelTitle}</p>
+              <div class="metadata">
+                <span class="views">{formatViews(video.data.viewCount)} views</span>
+                <span class="date">{formatDate(video.data.publishedAt)}</span>
+              </div>
+              <div class="actions">
+                <a href={video.data.url} target="_blank" rel="noopener noreferrer">
+                  Watch on YouTube →
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+  
+  <div class="refresh-info">
+    <p>💡 <strong>Tip:</strong> Refresh this page to get the latest videos from the channel!</p>
+    <button onclick="window.location.reload()">🔄 Refresh Videos</button>
+  </div>
+  
+  <style>
+    .live-header {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    .live-header h1 {
+      margin: 0 0 1rem 0;
+      font-size: 2rem;
+    }
+    
+    .live-header p {
+      margin: 0.5rem 0;
+      opacity: 0.9;
+    }
+    
+    .live-info {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      font-size: 0.875rem;
+    }
+    
+    .live-badge {
+      background: #ef4444;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    .error-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .error-message h2 {
+      color: #dc2626;
+      margin: 0 0 1rem 0;
+    }
+    
+    .error-message details {
+      margin-top: 1rem;
+    }
+    
+    .error-message pre {
+      background: #f3f4f6;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 0.875rem;
+    }
+    
+    .stats {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stats p {
+      margin: 0.25rem 0;
+      color: #475569;
+    }
+    
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .video-card {
+      border: 1px solid #e1e5e9;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .video-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .thumbnail {
+      position: relative;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+    }
+    
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .duration {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .video-info {
+      padding: 1rem;
+    }
+    
+    .video-info h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+    
+    .video-info h3 a {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .video-info h3 a:hover {
+      color: #2563eb;
+    }
+    
+    .channel {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin: 0 0 0.5rem 0;
+    }
+    
+    .metadata {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 1rem;
+    }
+    
+    .actions a {
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .actions a:hover {
+      text-decoration: underline;
+    }
+    
+    .refresh-info {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+    
+    .refresh-info button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.2s;
+    }
+    
+    .refresh-info button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</Layout>

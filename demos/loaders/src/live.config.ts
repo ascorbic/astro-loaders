@@ -1,6 +1,7 @@
 import { defineLiveCollection } from "astro:content";
 import { liveFeedLoader } from "@ascorbic/feed-loader";
 import { liveBlueskyLoader } from "@ascorbic/bluesky-loader";
+import { liveYouTubeLoader } from "@ascorbic/youtube-loader";
 
 const news = defineLiveCollection({
   type: "live",
@@ -17,4 +18,19 @@ const liveBluesky = defineLiveCollection({
   }),
 });
 
-export const collections = { news, liveBluesky };
+const liveChannelVideos = defineLiveCollection({
+  type: "live",
+  loader: liveYouTubeLoader({
+    type: "channel",
+    apiKey: import.meta.env.YOUTUBE_API_KEY,
+    channelHandle: "astrodotbuild",
+    defaultMaxResults: 12,
+    defaultOrder: "date",
+  }),
+});
+
+export const collections = {
+  news,
+  liveBluesky,
+  liveChannelVideos,
+};

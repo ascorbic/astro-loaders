@@ -1,0 +1,51 @@
+{
+	"name": "@ascorbic/youtube-loader",
+	"version": "0.0.1",
+	"description": "Astro loader for YouTube videos with build-time and live loading capabilities",
+	"type": "module",
+	"main": "dist/index.js",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": "./dist/index.js"
+	},
+	"scripts": {
+		"build": "tsup src/index.ts --format esm --dts --clean",
+		"dev": "tsup src/index.ts --format esm --dts --watch",
+		"prepublishOnly": "node --run build",
+		"check": "publint && attw --pack --ignore-rules=cjs-resolves-to-esm",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"devDependencies": {
+		"@arethetypeswrong/cli": "^0.17.3",
+		"astro": "^5.10.1",
+		"msw": "^2.10.2",
+		"publint": "^0.3.2",
+		"tsup": "^8.3.6",
+		"typescript": "^5.7.3"
+	},
+	"peerDependencies": {
+		"astro": "^4.14.0 || ^5.0.0"
+	},
+	"keywords": [
+		"withastro",
+		"astro-loader",
+		"youtube",
+		"video",
+		"content-collections"
+	],
+	"author": "Matt Kane",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com:ascorbic/astro-loaders.git",
+		"directory": "packages/youtube"
+	},
+	"homepage": "https://github.com/ascorbic/astro-loaders",
+	"dependencies": {
+		"@ascorbic/loader-utils": "workspace:^",
+		"zod": "^3.24.1"
+	}
+}
