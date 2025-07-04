@@ -13,7 +13,11 @@ import {
   type YouTubeSearchListResponse,
   type Video,
 } from "./schema.js";
-import { YouTubeError, YouTubeAPIError, YouTubeValidationError } from "./youtube-errors.js";
+import {
+  YouTubeError,
+  YouTubeAPIError,
+  YouTubeValidationError,
+} from "./youtube-errors.js";
 
 export interface YouTubeAPIOptions {
   apiKey: string;
@@ -31,7 +35,13 @@ export interface YouTubeChannelVideoFetchOptions extends YouTubeAPIOptions {
   channelId?: string;
   channelHandle?: string;
   maxResults?: number;
-  order?: "date" | "rating" | "relevance" | "title" | "videoCount" | "viewCount";
+  order?:
+    | "date"
+    | "rating"
+    | "relevance"
+    | "title"
+    | "videoCount"
+    | "viewCount";
   publishedAfter?: Date;
   publishedBefore?: Date;
 }
@@ -41,7 +51,13 @@ export interface YouTubeSearchOptions extends YouTubeAPIOptions {
   channelId?: string;
   channelType?: "any" | "show";
   maxResults?: number;
-  order?: "date" | "rating" | "relevance" | "title" | "videoCount" | "viewCount";
+  order?:
+    | "date"
+    | "rating"
+    | "relevance"
+    | "title"
+    | "videoCount"
+    | "viewCount";
   publishedAfter?: Date;
   publishedBefore?: Date;
   regionCode?: string;
@@ -59,13 +75,13 @@ async function makeYouTubeAPIRequest<T>(
   endpoint: string,
   params: Record<string, string | number | boolean | undefined>,
   options: YouTubeAPIOptions,
-  schema: any
+  schema: any,
 ): Promise<YouTubeAPIResult<T>> {
   const url = new URL(`${YOUTUBE_API_BASE_URL}/${endpoint}`);
-  
+
   // Add API key
   url.searchParams.set("key", options.apiKey);
-  
+
   // Add other parameters
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined) {
@@ -93,7 +109,7 @@ async function makeYouTubeAPIRequest<T>(
   if (!res.ok) {
     const errorText = await res.text();
     let errorData: any = null;
-    
+
     try {
       errorData = JSON.parse(errorText);
     } catch {
@@ -105,13 +121,16 @@ async function makeYouTubeAPIRequest<T>(
       url.toString(),
       res.status,
       errorData?.error?.message || res.statusText,
-      errorData
+      errorData,
     );
   }
 
   const responseText = await res.text();
   if (!responseText) {
-    throw new YouTubeValidationError("YouTube API response is empty", url.toString());
+    throw new YouTubeValidationError(
+      "YouTube API response is empty",
+      url.toString(),
+    );
   }
 
   try {
@@ -132,7 +151,7 @@ async function makeYouTubeAPIRequest<T>(
       "Failed to parse YouTube API response",
       url.toString(),
       error instanceof Error ? error.message : String(error),
-      { cause: error }
+      { cause: error },
     );
   }
 }
@@ -141,7 +160,9 @@ export async function fetchYouTubeVideos({
   videoIds,
   part = ["snippet", "contentDetails", "statistics"],
   ...options
-}: YouTubeVideoFetchOptions): Promise<YouTubeAPIResult<YouTubeVideoListResponse>> {
+}: YouTubeVideoFetchOptions): Promise<
+  YouTubeAPIResult<YouTubeVideoListResponse>
+> {
   const params = {
     part: part.join(","),
     id: videoIds.join(","),
@@ -152,7 +173,7 @@ export async function fetchYouTubeVideos({
     "videos",
     params,
     options,
-    YouTubeVideoListResponseSchema
+    YouTubeVideoListResponseSchema,
   );
 }
 
@@ -186,7 +207,7 @@ export async function searchYouTubeVideos({
     "search",
     params,
     options,
-    YouTubeSearchListResponseSchema
+    YouTubeSearchListResponseSchema,
   );
 }
 
@@ -197,14 +218,14 @@ async function getChannelIdFromHandle(
   options.logger?.info(`Fetching channel ID for handle: ${handle}`);
 
   const params = {
-    part: 'snippet',
-    type: 'channel',
+    part: "snippet",
+    type: "channel",
     q: handle,
     maxResults: 1,
   };
 
   const searchResult = await makeYouTubeAPIRequest<YouTubeSearchListResponse>(
-    'search',
+    "search",
     params,
     options,
     YouTubeSearchListResponseSchema,
@@ -219,7 +240,7 @@ async function getChannelIdFromHandle(
   }
 
   const channel = searchResult.data.items[0];
-  if (!channel.id.channelId) {
+  if (!channel?.id?.channelId) {
     throw new YouTubeError(`Could not find channel with handle: ${handle}`);
   }
 
@@ -234,9 +255,13 @@ export async function fetchChannelVideos({
   publishedAfter,
   publishedBefore,
   ...options
-}: YouTubeChannelVideoFetchOptions): Promise<YouTubeAPIResult<YouTubeSearchListResponse>> {
+}: YouTubeChannelVideoFetchOptions): Promise<
+  YouTubeAPIResult<YouTubeSearchListResponse>
+> {
   if (!channelId && !channelHandle) {
-    throw new YouTubeError("Either channelId or channelHandle must be provided");
+    throw new YouTubeError(
+      "Either channelId or channelHandle must be provided",
+    );
   }
 
   let resolvedChannelId = channelId;
@@ -259,7 +284,10 @@ export async function fetchChannelVideos({
 
 export function transformYouTubeVideoToVideo(ytVideo: YouTubeVideo): Video {
   if (!ytVideo.snippet) {
-    throw new YouTubeValidationError("YouTube video missing snippet data", ytVideo.id);
+    throw new YouTubeValidationError(
+      "YouTube video missing snippet data",
+      ytVideo.id,
+    );
   }
 
   return VideoSchema.parse({
@@ -282,6 +310,8 @@ export function transformYouTubeVideoToVideo(ytVideo: YouTubeVideo): Video {
   });
 }
 
-export function transformYouTubeVideosToVideos(ytVideos: YouTubeVideo[]): Video[] {
+export function transformYouTubeVideosToVideos(
+  ytVideos: YouTubeVideo[],
+): Video[] {
   return ytVideos.map(transformYouTubeVideoToVideo);
 }
