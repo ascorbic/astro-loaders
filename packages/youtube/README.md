@@ -20,9 +20,7 @@ To use the YouTube loader, you'll need a YouTube Data API v3 key. Follow these s
 1.  **Create or Select a Google Cloud Project**: If you don't have one, create a new project. Otherwise, select an existing project.
 2.  **Enable the YouTube Data API v3**: In the Google Cloud Console, navigate to "APIs & Services" > "Library". Search for "YouTube Data API v3" and enable it for your project.
 3.  **Create API Credentials**: Go to "APIs & Services" > "Credentials". Click "Create Credentials" and choose "API Key".
-4.  **Restrict the API Key (Recommended)**: For security, it's highly recommended to restrict your API key. Click on the newly created API key, then:
-    *   Under "Application restrictions", select "HTTP referrers (web sites)" and add your website's domains (e.g., `*.yourdomain.com/*`).
-    *   Under "API restrictions", select "Restrict key" and choose "YouTube Data API v3" from the dropdown. This ensures the key can only be used for the YouTube API.
+4.  **Restrict the API Key (Recommended)**: For security, it's highly recommended to restrict your API key. Click on the newly created API key, then under "API restrictions", select "Restrict key" and choose "YouTube Data API v3" from the dropdown. This ensures the key can only be used for the YouTube API.
 
 Once you have your API key, add it to your `.env` file in your Astro project:
 
@@ -44,31 +42,31 @@ import { youTubeLoader } from "@ascorbic/youtube-loader";
 // Load specific videos by ID
 const videos = defineCollection({
   loader: youTubeLoader({
-    type: 'videos',
+    type: "videos",
     apiKey: import.meta.env.YOUTUBE_API_KEY,
-    videoIds: ['dQw4w9WgXcQ', '9bZkp7q19f0']
+    videoIds: ["dQw4w9WgXcQ", "9bZkp7q19f0"],
   }),
 });
 
 // Load videos from a channel
 const channelVideos = defineCollection({
   loader: youTubeLoader({
-    type: 'channel',
+    type: "channel",
     apiKey: import.meta.env.YOUTUBE_API_KEY,
-    channelId: 'UCuAXFkgsw1L7xaCfnd5JJOw',
+    channelId: "UCuAXFkgsw1L7xaCfnd5JJOw",
     maxResults: 50,
-    order: 'date'
+    order: "date",
   }),
 });
 
 // Search for videos
 const searchResults = defineCollection({
   loader: youTubeLoader({
-    type: 'search',
+    type: "search",
     apiKey: import.meta.env.YOUTUBE_API_KEY,
-    query: 'astro framework',
+    query: "astro framework",
     maxResults: 25,
-    publishedAfter: new Date('2023-01-01')
+    publishedAfter: new Date("2023-01-01"),
   }),
 });
 
@@ -121,7 +119,7 @@ const { Content } = await render(video);
 <p>Views: {video.data.viewCount}</p>
 
 <div class="video-embed">
-  <iframe 
+  <iframe
     src={`https://www.youtube.com/embed/${video.data.id}`}
     title={video.data.title}
     frameborder="0"
@@ -161,20 +159,20 @@ import { liveYouTubeLoader } from "@ascorbic/youtube-loader";
 const latestVideos = defineLiveCollection({
   type: "live",
   loader: liveYouTubeLoader({
-    type: 'channel',
+    type: "channel",
     apiKey: import.meta.env.YOUTUBE_API_KEY,
-    channelId: 'UCuAXFkgsw1L7xaCfnd5JJOw',
-    defaultMaxResults: 10
+    channelId: "UCuAXFkgsw1L7xaCfnd5JJOw",
+    defaultMaxResults: 10,
   }),
 });
 
 const searchVideos = defineLiveCollection({
   type: "live",
   loader: liveYouTubeLoader({
-    type: 'search',
+    type: "search",
     apiKey: import.meta.env.YOUTUBE_API_KEY,
-    query: 'web development',
-    defaultMaxResults: 25
+    query: "web development",
+    defaultMaxResults: 25,
   }),
 });
 
@@ -191,7 +189,7 @@ import Layout from '../layouts/Layout.astro';
 
 export const prerender = false; // Required for live content
 
-const { entries: videos, error } = await getLiveCollection('latestVideos', { 
+const { entries: videos, error } = await getLiveCollection('latestVideos', {
   limit: 10,
   order: 'date'
 });
@@ -243,20 +241,20 @@ if (error || !video) {
   <h1>{video.data.title}</h1>
   <p>By: {video.data.channelTitle}</p>
   <p>Published: {new Date(video.data.publishedAt).toLocaleDateString()}</p>
-  
+
   <div class="video-embed">
-    <iframe 
+    <iframe
       src={`https://www.youtube.com/embed/${video.data.id}`}
       title={video.data.title}
       frameborder="0"
       allowfullscreen
     ></iframe>
   </div>
-  
+
   <div class="description">
     <p>{video.data.description}</p>
   </div>
-  
+
   <a href={video.data.url} target="_blank">Watch on YouTube →</a>
 </Layout>
 ```
@@ -267,11 +265,11 @@ The `liveYouTubeLoader` supports various filtering options:
 
 ```typescript
 liveYouTubeLoader({
-  type: 'search',
+  type: "search",
   apiKey: process.env.YOUTUBE_API_KEY,
-  query: 'javascript tutorials',
+  query: "javascript tutorials",
   defaultMaxResults: 20,
-  defaultOrder: 'relevance',
+  defaultOrder: "relevance",
   requestOptions: {
     headers: {
       "User-Agent": "My Astro Site",
@@ -297,13 +295,13 @@ const { entries } = await getLiveCollection("searchVideos", {
 // Filter by duration
 const { entries } = await getLiveCollection("searchVideos", {
   duration: "medium", // short, medium, or long
-  limit: 10
+  limit: 10,
 });
 
 // Custom search query (for search-type loaders)
 const { entries } = await getLiveCollection("searchVideos", {
   query: "react hooks tutorial",
-  order: "date"
+  order: "date",
 });
 ```
 
@@ -312,7 +310,11 @@ const { entries } = await getLiveCollection("searchVideos", {
 Live YouTube loaders return structured errors that you can handle appropriately:
 
 ```typescript
-import { YouTubeAPIError, YouTubeValidationError, YouTubeConfigurationError } from "@ascorbic/youtube-loader";
+import {
+  YouTubeAPIError,
+  YouTubeValidationError,
+  YouTubeConfigurationError,
+} from "@ascorbic/youtube-loader";
 
 const { entries, error } = await getLiveCollection("latestVideos");
 
@@ -389,7 +391,7 @@ Same as `youTubeLoader`, plus:
 - `limit`: Maximum number of results
 - `order`: Sort order
 - `publishedAfter`: Filter by publish date
-- `publishedBefore`: Filter by publish date  
+- `publishedBefore`: Filter by publish date
 - `regionCode`: Region code
 - `categoryId`: YouTube category ID
 - `channelId`: Override channel ID
@@ -452,6 +454,7 @@ YOUTUBE_API_KEY=your_youtube_api_key_here
 ## Rate Limits
 
 The YouTube Data API v3 has quota limits:
+
 - Default quota: 10,000 units per day
 - Different operations consume different units
 - The loader automatically handles caching to minimize API calls
