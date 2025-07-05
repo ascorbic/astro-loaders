@@ -1,6 +1,6 @@
 # Astro YouTube Loader
 
-This package provides YouTube loaders for Astro. It allows you to load YouTube videos using the YouTube Data API v3, and use the data in your Astro site.
+This package provides YouTube loaders for Astro. It allows you to load YouTube videos using the YouTube Data API v3, and use the data in your Astro site. You can load videos by ID, from channels, through search queries, or from playlists.
 
 The package includes two loaders:
 
@@ -70,7 +70,17 @@ const searchResults = defineCollection({
   }),
 });
 
-export const collections = { videos, channelVideos, searchResults };
+// Load videos from a playlist
+const playlistVideos = defineCollection({
+  loader: youTubeLoader({
+    type: "playlist",
+    apiKey: import.meta.env.YOUTUBE_API_KEY,
+    playlistId: "PLqGQbXn_GDmnHxd6p_tTlN3d5pMhTjy8g",
+    maxResults: 50,
+  }),
+});
+
+export const collections = { videos, channelVideos, searchResults, playlistVideos };
 ```
 
 You can then use these like any other collection in Astro:
@@ -101,6 +111,23 @@ const videos = await getCollection("videos");
   </div>
 </Layout>
 ```
+
+### Loading from Playlists
+
+When using `type: "playlist"`, you can load all videos from a specific YouTube playlist. This is useful for curated content collections:
+
+```typescript
+const tutorialSeries = defineCollection({
+  loader: youTubeLoader({
+    type: "playlist",
+    apiKey: import.meta.env.YOUTUBE_API_KEY,
+    playlistId: "PLqGQbXn_GDmnHxd6p_tTlN3d5pMhTjy8g",
+    maxResults: 100, // Load up to 100 videos from the playlist
+  }),
+});
+```
+
+Videos from playlists maintain their playlist order and include all the same metadata as individual videos.
 
 You can render the video description using the `render()` function:
 
@@ -176,7 +203,17 @@ const searchVideos = defineLiveCollection({
   }),
 });
 
-export const collections = { latestVideos, searchVideos };
+const playlistVideos = defineLiveCollection({
+  type: "live",
+  loader: liveYouTubeLoader({
+    type: "playlist",
+    apiKey: import.meta.env.YOUTUBE_API_KEY,
+    playlistId: "PLqGQbXn_GDmnHxd6p_tTlN3d5pMhTjy8g",
+    defaultMaxResults: 50,
+  }),
+});
+
+export const collections = { latestVideos, searchVideos, playlistVideos };
 ```
 
 3. **Use live collections in your pages**:
@@ -360,12 +397,13 @@ Static content collections loader for build-time YouTube video processing.
 
 #### Options
 
-- `type` (required): `'videos' | 'channel' | 'search'`
+- `type` (required): `'videos' | 'channel' | 'search' | 'playlist'`
 - `apiKey` (required): Your YouTube Data API v3 key
 - `videoIds`: Array of video IDs (required when type is 'videos')
 - `channelId`: YouTube channel ID (required when type is 'channel')
 - `channelHandle`: YouTube channel handle (alternative to channelId)
 - `query`: Search query (required when type is 'search')
+- `playlistId`: YouTube playlist ID (required when type is 'playlist')
 - `maxResults`: Maximum number of results (default: 25)
 - `order`: Sort order (`'date' | 'rating' | 'relevance' | 'title' | 'videoCount' | 'viewCount'`)
 - `publishedAfter`: Filter videos published after this date
