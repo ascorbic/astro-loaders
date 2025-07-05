@@ -327,9 +327,9 @@ export async function fetchChannelVideos({
 export type VideoType<TWithFullDetails extends boolean> =
   TWithFullDetails extends true ? VideoWithFullDetails : Video;
 
-export function transformYouTubeVideoToVideo<TWithFullDetails extends boolean>(
+export function transformYouTubeVideoToVideo<TWithFullDetails extends boolean = false>(
   ytVideo: YouTubeVideo,
-  fetchFullDetails: TWithFullDetails,
+  fetchFullDetails: TWithFullDetails = false as TWithFullDetails,
 ): VideoType<TWithFullDetails> {
   if (!ytVideo.snippet) {
     throw new YouTubeValidationError(
@@ -364,7 +364,7 @@ export function transformYouTubeVideoToVideo<TWithFullDetails extends boolean>(
   } else {
     return VideoSchema.parse({
       ...baseVideo,
-      duration: ytVideo.contentDetails?.duration,
+      duration: ytVideo.contentDetails?.duration || "PT0S",
       viewCount: ytVideo.statistics?.viewCount,
       likeCount: ytVideo.statistics?.likeCount,
       commentCount: ytVideo.statistics?.commentCount,
