@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
-
+import { YouTube } from "@astro-community/astro-embed-youtube";
 
 const videos = await getCollection("channelVideos");
 ---
@@ -15,15 +15,7 @@ const videos = await getCollection("channelVideos");
   <div class="video-grid">
     {videos.map((video) => (
       <div class="video-card">
-        <iframe 
-          width="560" 
-          height="315" 
-          src={`https://www.youtube.com/embed/${video.data.id}`} 
-          title={video.data.title} 
-          frameborder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-          allowfullscreen
-        ></iframe>
+        <YouTube id={video.data.id} title={video.data.title} />
         
         <div class="video-info">
           <h3><a href={video.data.url} target="_blank" rel="noopener noreferrer">{video.data.title}</a></h3>
@@ -47,8 +39,8 @@ const videos = await getCollection("channelVideos");
   <style>
     .video-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
       margin-top: 2rem;
     }
     
@@ -66,29 +58,6 @@ const videos = await getCollection("channelVideos");
       box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
     
-    .thumbnail {
-      position: relative;
-      aspect-ratio: 16/9;
-      overflow: hidden;
-    }
-    
-    .thumbnail img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    
-    .duration {
-      position: absolute;
-      bottom: 8px;
-      right: 8px;
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
     
     .video-info {
       padding: 1rem;

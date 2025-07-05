@@ -6,11 +6,15 @@ import {
 import {
   YouTubeVideoListResponseSchema,
   YouTubeSearchListResponseSchema,
+  YouTubePlaylistListResponseSchema,
+  YouTubePlaylistItemListResponseSchema,
   YouTubeVideoSchema,
   VideoSchema,
   type YouTubeVideo,
   type YouTubeVideoListResponse,
   type YouTubeSearchListResponse,
+  type YouTubePlaylistListResponse,
+  type YouTubePlaylistItemListResponse,
   type Video,
 } from "./schema.js";
 import {
@@ -64,6 +68,17 @@ export interface YouTubeSearchOptions extends YouTubeAPIOptions {
   type?: "channel" | "playlist" | "video";
 }
 
+export interface YouTubePlaylistFetchOptions extends YouTubeAPIOptions {
+  playlistId: string;
+  part?: string[];
+}
+
+export interface YouTubePlaylistItemFetchOptions extends YouTubeAPIOptions {
+  playlistId: string;
+  maxResults?: number;
+  part?: string[];
+}
+
 export interface YouTubeAPIResult<T> {
   data: T;
   wasModified: boolean;
@@ -79,24 +94,29 @@ async function makeYouTubeAPIRequest<T>(
 ): Promise<YouTubeAPIResult<T>> {
   const url = new URL(`${YOUTUBE_API_BASE_URL}/${endpoint}`);
 
-  // Add API key
-  url.searchParams.set("key", options.apiKey);
-
-  // Add other parameters
+  // Add other parameters (but NOT the API key - we'll send that in headers)
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined) {
       url.searchParams.set(key, String(value));
     }
   });
 
+  // Copy request options to avoid mutating the original
   const requestOptions = { ...options.requestOptions };
+
+  // Add API key to headers (more secure than query params)
+  const headers = new Headers(requestOptions.headers);
+  headers.set("X-goog-api-key", options.apiKey);
 
   // Only use caching if meta is provided
   if (options.meta) {
-    requestOptions.headers = getConditionalHeaders({
-      init: requestOptions.headers,
+    const conditionalHeaders = getConditionalHeaders({
+      init: headers,
       meta: options.meta,
     });
+    requestOptions.headers = conditionalHeaders;
+  } else {
+    requestOptions.headers = headers;
   }
 
   const res = await fetch(url, requestOptions);
@@ -314,4 +334,46 @@ export function transformYouTubeVideosToVideos(
   ytVideos: YouTubeVideo[],
 ): Video[] {
   return ytVideos.map(transformYouTubeVideoToVideo);
+}
+
+export async function fetchYouTubePlaylist({
+  playlistId,
+  part = ["snippet", "contentDetails"],
+  ...options
+}: YouTubePlaylistFetchOptions): Promise<
+  YouTubeAPIResult<YouTubePlaylistListResponse>
+> {
+  const params = {
+    part: part.join(","),
+    id: playlistId,
+  };
+
+  return makeYouTubeAPIRequest<YouTubePlaylistListResponse>(
+    "playlists",
+    params,
+    options,
+    YouTubePlaylistListResponseSchema,
+  );
+}
+
+export async function fetchYouTubePlaylistItems({
+  playlistId,
+  maxResults = 50,
+  part = ["snippet", "contentDetails"],
+  ...options
+}: YouTubePlaylistItemFetchOptions): Promise<
+  YouTubeAPIResult<YouTubePlaylistItemListResponse>
+> {
+  const params = {
+    part: part.join(","),
+    playlistId,
+    maxResults,
+  };
+
+  return makeYouTubeAPIRequest<YouTubePlaylistItemListResponse>(
+    "playlistItems",
+    params,
+    options,
+    YouTubePlaylistItemListResponseSchema,
+  );
 }

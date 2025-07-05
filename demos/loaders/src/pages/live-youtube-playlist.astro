@@ -10,17 +10,21 @@ const {
   entries: videos,
   error,
   cacheHint,
-} = await getLiveCollection("liveChannelVideos", {
-  limit: 10,
-  order: "date",
+} = await getLiveCollection("livePlaylistVideos", {
+  limit: 15,
 });
 
 if (error) {
-  console.error("Failed to load live YouTube videos:", error.message);
+  console.error("Failed to load live YouTube playlist videos:", error.message);
 }
 ---
 
-<Layout title="Live YouTube Channel Videos">
+<Layout title="Live YouTube Playlist Videos">
+  <h1>Live YouTube Playlist Videos</h1>
+  <p>This page demonstrates loading videos from a YouTube playlist using the live loader.</p>
+  <p><strong>Playlist:</strong> Traversy Media Web Development Playlist</p>
+  <p><strong>Updates:</strong> Real-time as new videos are added to the playlist</p>
+
   {
     error ? (
       <div class="error-message">
@@ -33,6 +37,13 @@ if (error) {
       </div>
     ) : (
       <div>
+        <div class="stats">
+          <p><strong>Videos loaded:</strong> {videos?.length || 0}</p>
+          {cacheHint?.lastModified && (
+            <p><strong>Last updated:</strong> {formatDate(cacheHint.lastModified)}</p>
+          )}
+        </div>
+
         <div class="video-grid">
           {videos?.map((video) => (
             <div class="video-card">
@@ -63,6 +74,12 @@ if (error) {
               </div>
             </div>
           ))}
+        </div>
+
+        <div class="refresh-info">
+          <p>This is a live collection that updates automatically.</p>
+          <p>Refresh the page to see the latest videos from the playlist.</p>
+          <button onclick="window.location.reload()">Refresh Page</button>
         </div>
       </div>
     )

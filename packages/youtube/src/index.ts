@@ -1,18 +1,32 @@
 // Main loaders
 export { youTubeLoader, type YouTubeLoaderOptions } from "./youtube-loader.js";
-export { liveYouTubeLoader, type LiveYouTubeLoaderOptions, type YouTubeCollectionFilter, type YouTubeEntryFilter } from "./live-youtube-loader.js";
+export { 
+  liveYouTubeLoader, 
+  type LiveYouTubeLoaderOptions, 
+  type YouTubeCollectionFilter,
+  type YouTubeBaseCollectionFilter,
+  type YouTubeVideosCollectionFilter,
+  type YouTubeChannelCollectionFilter,
+  type YouTubeSearchCollectionFilter,
+  type YouTubePlaylistCollectionFilter,
+  type YouTubeEntryFilter,
+} from "./live-youtube-loader.js";
 
 // Utility functions
 export { 
   fetchYouTubeVideos, 
   searchYouTubeVideos, 
   fetchChannelVideos,
+  fetchYouTubePlaylist,
+  fetchYouTubePlaylistItems,
   transformYouTubeVideoToVideo,
   transformYouTubeVideosToVideos,
   type YouTubeAPIOptions,
   type YouTubeVideoFetchOptions,
   type YouTubeChannelVideoFetchOptions,
   type YouTubeSearchOptions,
+  type YouTubePlaylistFetchOptions,
+  type YouTubePlaylistItemFetchOptions,
   type YouTubeAPIResult,
 } from "./youtube-api-util.js";
 
@@ -29,6 +43,16 @@ export {
   YouTubeSearchResultSchema,
   YouTubeSearchListResponseSchema,
   YouTubeChannelSchema,
+  YouTubePlaylistSnippetSchema,
+  YouTubePlaylistStatusSchema,
+  YouTubePlaylistContentDetailsSchema,
+  YouTubePlaylistSchema,
+  YouTubePlaylistListResponseSchema,
+  YouTubePlaylistItemSnippetSchema,
+  YouTubePlaylistItemContentDetailsSchema,
+  YouTubePlaylistItemStatusSchema,
+  YouTubePlaylistItemSchema,
+  YouTubePlaylistItemListResponseSchema,
   VideoSchema,
   type YouTubeThumbnail,
   type YouTubeThumbnails,
@@ -41,6 +65,16 @@ export {
   type YouTubeSearchResult,
   type YouTubeSearchListResponse,
   type YouTubeChannel,
+  type YouTubePlaylistSnippet,
+  type YouTubePlaylistStatus,
+  type YouTubePlaylistContentDetails,
+  type YouTubePlaylist,
+  type YouTubePlaylistListResponse,
+  type YouTubePlaylistItemSnippet,
+  type YouTubePlaylistItemContentDetails,
+  type YouTubePlaylistItemStatus,
+  type YouTubePlaylistItem,
+  type YouTubePlaylistItemListResponse,
   type Video,
 } from "./schema.js";
 

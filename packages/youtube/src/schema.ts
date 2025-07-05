@@ -3,8 +3,8 @@ import { z } from "astro/zod";
 // YouTube thumbnail schema
 export const YouTubeThumbnailSchema = z.object({
   url: z.string(),
-  width: z.number(),
-  height: z.number(),
+  width: z.number().optional(),
+  height: z.number().optional(),
 });
 
 // YouTube thumbnails collection schema
@@ -144,6 +144,109 @@ export const YouTubeChannelSchema = z.object({
   }).optional(),
 });
 
+// YouTube playlist snippet schema
+export const YouTubePlaylistSnippetSchema = z.object({
+  publishedAt: z.coerce.date(),
+  channelId: z.string(),
+  title: z.string(),
+  description: z.string(),
+  thumbnails: YouTubeThumbnailsSchema,
+  channelTitle: z.string(),
+  defaultLanguage: z.string().optional(),
+  localized: z.object({
+    title: z.string(),
+    description: z.string(),
+  }).optional(),
+});
+
+// YouTube playlist status schema
+export const YouTubePlaylistStatusSchema = z.object({
+  privacyStatus: z.string().optional(),
+});
+
+// YouTube playlist content details schema
+export const YouTubePlaylistContentDetailsSchema = z.object({
+  itemCount: z.number().optional(),
+});
+
+// YouTube playlist resource schema
+export const YouTubePlaylistSchema = z.object({
+  kind: z.literal("youtube#playlist"),
+  etag: z.string(),
+  id: z.string(),
+  snippet: YouTubePlaylistSnippetSchema.optional(),
+  status: YouTubePlaylistStatusSchema.optional(),
+  contentDetails: YouTubePlaylistContentDetailsSchema.optional(),
+});
+
+// YouTube playlist list response schema
+export const YouTubePlaylistListResponseSchema = z.object({
+  kind: z.literal("youtube#playlistListResponse"),
+  etag: z.string(),
+  nextPageToken: z.string().optional(),
+  prevPageToken: z.string().optional(),
+  pageInfo: z.object({
+    totalResults: z.number(),
+    resultsPerPage: z.number(),
+  }),
+  items: z.array(YouTubePlaylistSchema),
+});
+
+// YouTube playlist item snippet schema
+export const YouTubePlaylistItemSnippetSchema = z.object({
+  publishedAt: z.coerce.date(),
+  channelId: z.string(),
+  title: z.string(),
+  description: z.string(),
+  thumbnails: YouTubeThumbnailsSchema,
+  channelTitle: z.string(),
+  playlistId: z.string(),
+  position: z.number(),
+  resourceId: z.object({
+    kind: z.string(),
+    videoId: z.string().optional(),
+  }),
+  videoOwnerChannelTitle: z.string().optional(),
+  videoOwnerChannelId: z.string().optional(),
+});
+
+// YouTube playlist item content details schema
+export const YouTubePlaylistItemContentDetailsSchema = z.object({
+  videoId: z.string(),
+  startAt: z.string().optional(),
+  endAt: z.string().optional(),
+  note: z.string().optional(),
+  videoPublishedAt: z.coerce.date().optional(),
+});
+
+// YouTube playlist item status schema
+export const YouTubePlaylistItemStatusSchema = z.object({
+  privacyStatus: z.string().optional(),
+});
+
+// YouTube playlist item resource schema
+export const YouTubePlaylistItemSchema = z.object({
+  kind: z.literal("youtube#playlistItem"),
+  etag: z.string(),
+  id: z.string(),
+  snippet: YouTubePlaylistItemSnippetSchema.optional(),
+  contentDetails: YouTubePlaylistItemContentDetailsSchema.optional(),
+  status: YouTubePlaylistItemStatusSchema.optional(),
+});
+
+// YouTube playlist items list response schema
+export const YouTubePlaylistItemListResponseSchema = z.object({
+  kind: z.literal("youtube#playlistItemListResponse"),
+  etag: z.string(),
+  nextPageToken: z.string().optional(),
+  prevPageToken: z.string().optional(),
+  pageInfo: z.object({
+    totalResults: z.number(),
+    resultsPerPage: z.number(),
+  }),
+  items: z.array(YouTubePlaylistItemSchema),
+});
+
 // Simplified video schema for internal use
 export const VideoSchema = z.object({
   id: z.string(),
@@ -176,4 +279,14 @@ export type YouTubeVideoListResponse = z.infer<typeof YouTubeVideoListResponseSc
 export type YouTubeSearchResult = z.infer<typeof YouTubeSearchResultSchema>;
 export type YouTubeSearchListResponse = z.infer<typeof YouTubeSearchListResponseSchema>;
 export type YouTubeChannel = z.infer<typeof YouTubeChannelSchema>;
+export type YouTubePlaylistSnippet = z.infer<typeof YouTubePlaylistSnippetSchema>;
+export type YouTubePlaylistStatus = z.infer<typeof YouTubePlaylistStatusSchema>;
+export type YouTubePlaylistContentDetails = z.infer<typeof YouTubePlaylistContentDetailsSchema>;
+export type YouTubePlaylist = z.infer<typeof YouTubePlaylistSchema>;
+export type YouTubePlaylistListResponse = z.infer<typeof YouTubePlaylistListResponseSchema>;
+export type YouTubePlaylistItemSnippet = z.infer<typeof YouTubePlaylistItemSnippetSchema>;
+export type YouTubePlaylistItemContentDetails = z.infer<typeof YouTubePlaylistItemContentDetailsSchema>;
+export type YouTubePlaylistItemStatus = z.infer<typeof YouTubePlaylistItemStatusSchema>;
+export type YouTubePlaylistItem = z.infer<typeof YouTubePlaylistItemSchema>;
+export type YouTubePlaylistItemListResponse = z.infer<typeof YouTubePlaylistItemListResponseSchema>;
 export type Video = z.infer<typeof VideoSchema>;

@@ -29,8 +29,19 @@ const liveChannelVideos = defineLiveCollection({
   }),
 });
 
+const livePlaylistVideos = defineLiveCollection({
+  type: "live",
+  loader: liveYouTubeLoader({
+    type: "playlist",
+    apiKey: import.meta.env.YOUTUBE_API_KEY,
+    playlistId: "PLillGF-RfqbYeckUaD1z6nviTp31GLTH8", // Traversy Media Web Dev playlist
+    defaultMaxResults: 15,
+  }),
+});
+
 export const collections = {
   news,
   liveBluesky,
   liveChannelVideos,
+  livePlaylistVideos,
 };

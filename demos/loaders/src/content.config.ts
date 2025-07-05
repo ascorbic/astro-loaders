@@ -134,6 +134,16 @@ const recentJavaScriptVideos = defineCollection({
   }),
 });
 
+// Playlist example - Web Development Playlist
+const webDevPlaylist = defineCollection({
+  loader: youTubeLoader({
+    type: "playlist",
+    apiKey: import.meta.env.YOUTUBE_API_KEY,
+    playlistId: "PLillGF-RfqbYeckUaD1z6nviTp31GLTH8", // Traversy Media Web Dev playlist
+    maxResults: 20,
+  }),
+});
+
 export const collections = {
   releases,
   podcasts,
@@ -147,4 +157,5 @@ export const collections = {
   astroSearchVideos,
   popularChannelVideos,
   recentJavaScriptVideos,
+  webDevPlaylist,
 };
