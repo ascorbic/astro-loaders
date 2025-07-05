@@ -1,6 +1,6 @@
 {
 	"name": "@ascorbic/youtube-loader",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Astro loader for YouTube videos with build-time and live loading capabilities",
 	"type": "module",
 	"main": "dist/index.js",
