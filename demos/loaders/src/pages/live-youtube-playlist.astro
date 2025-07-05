@@ -1,0 +1,220 @@
+---
+import { getLiveCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import { YouTube } from "@astro-community/astro-embed-youtube";
+import { formatViews, formatDate } from "../utils/youtube.ts";
+
+export const prerender = false;
+
+const {
+  entries: videos,
+  error,
+  cacheHint,
+} = await getLiveCollection("livePlaylistVideos", {
+  limit: 15,
+});
+
+if (error) {
+  console.error("Failed to load live YouTube playlist videos:", error.message);
+}
+---
+
+<Layout title="Live YouTube Playlist Videos">
+  <h1>Live YouTube Playlist Videos</h1>
+  <p>This page demonstrates loading videos from a YouTube playlist using the live loader.</p>
+  <p><strong>Playlist:</strong> Traversy Media Web Development Playlist</p>
+  <p><strong>Updates:</strong> Real-time as new videos are added to the playlist</p>
+
+  {
+    error ? (
+      <div class="error-message">
+        <h2>❌ Error Loading Videos</h2>
+        <p>Failed to load live videos: {error.message}</p>
+        <details>
+          <summary>Error Details</summary>
+          <pre>{JSON.stringify(error, null, 2)}</pre>
+        </details>
+      </div>
+    ) : (
+      <div>
+        <div class="stats">
+          <p><strong>Videos loaded:</strong> {videos?.length || 0}</p>
+          {cacheHint?.lastModified && (
+            <p><strong>Last updated:</strong> {formatDate(cacheHint.lastModified)}</p>
+          )}
+        </div>
+
+        <div class="video-grid">
+          {videos?.map((video) => (
+            <div class="video-card">
+              <div class="thumbnail">
+                <YouTube id={video.data.id} title={video.data.title} />
+              </div>
+
+              <div class="video-info">
+                <h3>
+                  <a href={`/live-youtube/${video.id}`}>{video.data.title}</a>
+                </h3>
+                <p class="channel">{video.data.channelTitle}</p>
+                <div class="metadata">
+                  <span class="views">
+                    {formatViews(video.data.viewCount)} views
+                  </span>
+                  <span class="date">{formatDate(video.data.publishedAt)}</span>
+                </div>
+                <div class="actions">
+                  <a
+                    href={video.data.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Watch on YouTube →
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="refresh-info">
+          <p>This is a live collection that updates automatically.</p>
+          <p>Refresh the page to see the latest videos from the playlist.</p>
+          <button onclick="window.location.reload()">Refresh Page</button>
+        </div>
+      </div>
+    )
+  }
+
+  <style>
+    .error-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .error-message h2 {
+      color: #dc2626;
+      margin: 0 0 1rem 0;
+    }
+
+    .error-message details {
+      margin-top: 1rem;
+    }
+
+    .error-message pre {
+      background: #f3f4f6;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 0.875rem;
+    }
+
+    .stats {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stats p {
+      margin: 0.25rem 0;
+      color: #475569;
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .video-card {
+      border: 1px solid #e1e5e9;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+    }
+
+    .video-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .video-info {
+      padding: 1rem;
+    }
+
+    .video-info h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+
+    .video-info h3 a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .video-info h3 a:hover {
+      color: #2563eb;
+    }
+
+    .channel {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .metadata {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 1rem;
+    }
+
+    .actions a {
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .actions a:hover {
+      text-decoration: underline;
+    }
+
+    .refresh-info {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .refresh-info button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.2s;
+    }
+
+    .refresh-info button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</Layout>

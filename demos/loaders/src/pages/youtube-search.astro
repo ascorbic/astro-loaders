@@ -1,0 +1,124 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import { YouTube } from "@astro-community/astro-embed-youtube";
+
+const videos = await getCollection("astroSearchVideos");
+---
+
+<Layout title="YouTube Search Results - Astro Web Framework">
+  <h1>YouTube Search: "Astro Web Framework"</h1>
+  <p>This page demonstrates searching YouTube videos using a specific query.</p>
+  <p><strong>Search query:</strong> "Astro web framework"</p>
+  <p><strong>Order:</strong> Relevance</p>
+  <p><strong>Results found:</strong> {videos.length}</p>
+  
+  <div class="video-grid">
+    {videos.map((video) => (
+      <div class="video-card">
+        <YouTube id={video.data.id} title={video.data.title} />
+        
+        <div class="video-info">
+          <h3><a href={video.data.url} target="_blank" rel="noopener noreferrer">{video.data.title}</a></h3>
+          <p class="channel">{video.data.channelTitle}</p>
+          <div class="metadata">
+            <span class="views">{video.data.viewCount ? `${video.data.viewCount.toLocaleString()} views` : 'N/A views'}</span>
+            <span class="date">Published {new Date(video.data.publishedAt).toLocaleDateString()}</span>
+          </div>
+          {video.data.tags && video.data.tags.length > 0 && (
+            <div class="tags">
+              {video.data.tags.slice(0, 4).map((tag: string) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
+          )}
+          <div class="description">
+            {video.data.description && video.data.description.length > 150 
+              ? video.data.description.substring(0, 150) + "..."
+              : video.data.description
+            }
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+  
+  <style>
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .video-card {
+      border: 1px solid #e1e5e9;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .video-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    
+    .video-info {
+      padding: 1rem;
+    }
+    
+    .video-info h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+    
+    .video-info h3 a {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .video-info h3 a:hover {
+      color: #2563eb;
+    }
+    
+    .channel {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin: 0 0 0.5rem 0;
+      font-weight: 500;
+    }
+    
+    .metadata {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 0.75rem;
+    }
+    
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .tag {
+      background: #f3f4f6;
+      color: #374151;
+      padding: 0.125rem 0.375rem;
+      border-radius: 3px;
+      font-size: 0.625rem;
+    }
+    
+    .description {
+      font-size: 0.875rem;
+      color: #4b5563;
+      line-height: 1.4;
+    }
+  </style>
+</Layout>

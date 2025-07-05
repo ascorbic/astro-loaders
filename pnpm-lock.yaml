@@ -44,9 +44,15 @@ importers:
       '@ascorbic/mock-loader':
         specifier: workspace:^
         version: link:../../packages/mock
+      '@ascorbic/youtube-loader':
+        specifier: workspace:^
+        version: link:../../packages/youtube
       '@astro-community/astro-embed-bluesky':
         specifier: ^0.1.3
         version: 0.1.3(astro@5.10.1(@netlify/blobs@8.2.0)(@types/node@22.12.0)(jiti@2.4.2)(rollup@4.44.0)(typescript@5.7.3)(yaml@2.5.0))
+      '@astro-community/astro-embed-youtube':
+        specifier: ^0.5.6
+        version: 0.5.6(astro@5.10.1(@netlify/blobs@8.2.0)(@types/node@22.12.0)(jiti@2.4.2)(rollup@4.44.0)(typescript@5.7.3)(yaml@2.5.0))
       '@astrojs/check':
         specifier: ^0.9.4
         version: 0.9.4(prettier@3.4.2)(typescript@5.7.3)
@@ -227,6 +233,34 @@ importers:
         specifier: ^5.7.3
         version: 5.7.3
 
+  packages/youtube:
+    dependencies:
+      '@ascorbic/loader-utils':
+        specifier: workspace:^
+        version: link:../utils
+      zod:
+        specifier: ^3.24.1
+        version: 3.25.67
+    devDependencies:
+      '@arethetypeswrong/cli':
+        specifier: ^0.17.3
+        version: 0.17.3
+      astro:
+        specifier: ^5.10.1
+        version: 5.10.1(@netlify/blobs@8.2.0)(@types/node@22.12.0)(jiti@2.4.2)(rollup@4.44.0)(typescript@5.7.3)(yaml@2.5.0)
+      msw:
+        specifier: ^2.10.2
+        version: 2.10.2(@types/node@22.12.0)(typescript@5.7.3)
+      publint:
+        specifier: ^0.3.2
+        version: 0.3.2
+      tsup:
+        specifier: ^8.3.6
+        version: 8.3.6(jiti@2.4.2)(postcss@8.5.6)(typescript@5.7.3)(yaml@2.5.0)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
+
 packages:
 
   '@anatine/zod-mock@3.13.5':
@@ -251,6 +285,11 @@ packages:
     resolution: {integrity: sha512-qOuIK2CYQfAjFePaxtko7yyS0rb94I3MgZ94kK02xqeonCzHNP95Q+jUCD/uelcvZK4u+VEh5zNkQ4BfjFm63w==}
     peerDependencies:
       astro: ^4.0.0 || ^5.0.0-beta.0
+
+  '@astro-community/astro-embed-youtube@0.5.6':
+    resolution: {integrity: sha512-/mRfCl/eTBUz0kmjD1psOy0qoDDBorVp0QumUacjFcIkBullYtbeFQ2ZGZ+3N/tA6cR/OIyzr2QA4dQXlY6USg==}
+    peerDependencies:
+      astro: ^2.0.0 || ^3.0.0-beta || ^4.0.0-beta || ^5.0.0-beta
 
   '@astrojs/check@0.9.4':
     resolution: {integrity: sha512-IOheHwCtpUfvogHHsvu0AbeRZEnjJg3MopdLddkJE70mULItS/Vh37BHcI00mcOJcH1vhD3odbpvWokpxam7xA==}
@@ -2896,6 +2935,9 @@ packages:
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
+  lite-youtube-embed@0.3.3:
+    resolution: {integrity: sha512-gFfVVnj6NRjxVfJKo3qoLtpi0v5mn3AcR4eKD45wrxQuxzveFJUb+7Cr6uV6n+DjO8X3p0UzPPquhGt0H/y+NA==}
+
   load-tsconfig@0.2.5:
     resolution: {integrity: sha512-IXO6OCs9yg8tMKzfPZ1YmheJbZCiEsnBdcB03l0OcfK9prKnJb96siuHCr5Fl37/yo9DnKU+TLpxzTUspw9shg==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -4727,6 +4769,11 @@ snapshots:
       astro: 5.10.1(@netlify/blobs@8.2.0)(@types/node@22.12.0)(jiti@2.4.2)(rollup@4.44.0)(typescript@5.7.3)(yaml@2.5.0)
       ts-pattern: 5.6.2
 
+  '@astro-community/astro-embed-youtube@0.5.6(astro@5.10.1(@netlify/blobs@8.2.0)(@types/node@22.12.0)(jiti@2.4.2)(rollup@4.44.0)(typescript@5.7.3)(yaml@2.5.0))':
+    dependencies:
+      astro: 5.10.1(@netlify/blobs@8.2.0)(@types/node@22.12.0)(jiti@2.4.2)(rollup@4.44.0)(typescript@5.7.3)(yaml@2.5.0)
+      lite-youtube-embed: 0.3.3
+
   '@astrojs/check@0.9.4(prettier@3.4.2)(typescript@5.7.3)':
     dependencies:
       '@astrojs/language-server': 2.15.3(prettier@3.4.2)(typescript@5.7.3)
@@ -4860,7 +4907,7 @@ snapshots:
       graphemer: 1.4.0
       multiformats: 9.9.0
       uint8arrays: 3.0.0
-      zod: 3.23.8
+      zod: 3.25.67
 
   '@atproto/lexicon@0.4.5':
     dependencies:
@@ -4868,14 +4915,14 @@ snapshots:
       '@atproto/syntax': 0.3.1
       iso-datestring-validator: 2.2.2
       multiformats: 9.9.0
-      zod: 3.23.8
+      zod: 3.25.67
 
   '@atproto/syntax@0.3.1': {}
 
   '@atproto/xrpc@0.6.6':
     dependencies:
       '@atproto/lexicon': 0.4.5
-      zod: 3.23.8
+      zod: 3.25.67
 
   '@babel/code-frame@7.27.1':
     dependencies:
@@ -7492,6 +7539,8 @@ snapshots:
   lilconfig@3.1.2: {}
 
   lines-and-columns@1.2.4: {}
+
+  lite-youtube-embed@0.3.3: {}
 
   load-tsconfig@0.2.5: {}
 

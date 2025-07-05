@@ -1,0 +1,7 @@
+.astro
+.claude
+package.json
+CHANGELOG.md
+.changeset
+pnpm-lock.yaml
+pnpm-workspace.yaml
