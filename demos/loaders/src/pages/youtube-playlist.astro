@@ -7,35 +7,52 @@ const videos = await getCollection("webDevPlaylist");
 ---
 
 <Layout title="Web Development Playlist - Build-time Collection">
-  <h1>Web Development Playlist (Build-time Collection)</h1>
-  <p>This page demonstrates loading videos from a YouTube playlist using the build-time loader.</p>
-  <p><strong>Playlist:</strong> Traversy Media Web Development Playlist</p>
-  <p><strong>Videos loaded:</strong> {videos.length}</p>
-  
+  <p>
+    This page demonstrates loading videos from a YouTube playlist using the
+    build-time loader.
+  </p>
+
   <div class="video-grid">
-    {videos.map((video) => (
-      <div class="video-card">
-        <YouTube id={video.data.id} title={video.data.title} />
-        
-        <div class="video-info">
-          <h3><a href={video.data.url} target="_blank" rel="noopener noreferrer">{video.data.title}</a></h3>
-          <p class="channel">{video.data.channelTitle}</p>
-          <div class="metadata">
-            <span class="views">{video.data.viewCount ? `${video.data.viewCount.toLocaleString()} views` : 'N/A views'}</span>
-            <span class="date">Published {new Date(video.data.publishedAt).toLocaleDateString()}</span>
-          </div>
-          {video.data.tags && video.data.tags.length > 0 && (
-            <div class="tags">
-              {video.data.tags.slice(0, 3).map((tag: string) => (
-                <span class="tag">{tag}</span>
-              ))}
+    {
+      videos.map((video) => (
+        <div class="video-card">
+          <YouTube id={video.data.id} title={video.data.title} />
+
+          <div class="video-info">
+            <h3>
+              <a
+                href={video.data.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {video.data.title}
+              </a>
+            </h3>
+            <p class="channel">{video.data.channelTitle}</p>
+            <div class="metadata">
+              <span class="views">
+                {video.data.viewCount
+                  ? `${video.data.viewCount.toLocaleString()} views`
+                  : "N/A views"}
+              </span>
+              <span class="date">
+                Published{" "}
+                {new Date(video.data.publishedAt).toLocaleDateString()}
+              </span>
             </div>
-          )}
+            {video.data.tags && video.data.tags.length > 0 && (
+              <div class="tags">
+                {video.data.tags.slice(0, 3).map((tag: string) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    ))}
+      ))
+    }
   </div>
-  
+
   <style>
     .video-grid {
       display: grid;
@@ -43,47 +60,48 @@ const videos = await getCollection("webDevPlaylist");
       gap: 1.5rem;
       margin-top: 2rem;
     }
-    
+
     .video-card {
       border: 1px solid #e1e5e9;
       border-radius: 8px;
       overflow: hidden;
       background: white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition:
+        transform 0.2s,
+        box-shadow 0.2s;
     }
-    
+
     .video-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
-    
-    
+
     .video-info {
       padding: 1rem;
     }
-    
+
     .video-info h3 {
       margin: 0 0 0.5rem 0;
       font-size: 1rem;
       line-height: 1.4;
     }
-    
+
     .video-info h3 a {
       color: inherit;
       text-decoration: none;
     }
-    
+
     .video-info h3 a:hover {
       color: #2563eb;
     }
-    
+
     .channel {
       color: #6b7280;
       font-size: 0.875rem;
       margin: 0 0 0.5rem 0;
     }
-    
+
     .metadata {
       display: flex;
       gap: 1rem;
@@ -91,13 +109,13 @@ const videos = await getCollection("webDevPlaylist");
       color: #6b7280;
       margin-bottom: 0.5rem;
     }
-    
+
     .tags {
       display: flex;
       flex-wrap: wrap;
       gap: 0.25rem;
     }
-    
+
     .tag {
       background: #f3f4f6;
       color: #374151;
