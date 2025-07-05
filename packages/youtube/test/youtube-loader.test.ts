@@ -70,7 +70,7 @@ describe("YouTube Loader Integration Tests", () => {
         http.get("https://www.googleapis.com/youtube/v3/videos", ({ request }) => {
           const url = new URL(request.url);
           const ids = url.searchParams.get("id");
-          const apiKey = url.searchParams.get("key");
+          const apiKey = request.headers.get("X-goog-api-key");
           
           expect(apiKey).toBe("test-api-key");
           expect(ids).toBe("JIOPB36ALMM,cc91EfoBh8A,eYuUAGXN0KM,m3wzpC2o42I,E9de-cmycx8");
@@ -144,7 +144,9 @@ describe("YouTube Loader Integration Tests", () => {
         http.get("https://www.googleapis.com/youtube/v3/videos", ({ request }) => {
           const url = new URL(request.url);
           const ids = url.searchParams.get("id");
+          const apiKey = request.headers.get("X-goog-api-key");
           
+          expect(apiKey).toBe("test-api-key");
           expect(ids).toBe("JIOPB36ALMM,cc91EfoBh8A,eYuUAGXN0KM,m3wzpC2o42I,E9de-cmycx8");
           
           return HttpResponse.json(videosResponse);
@@ -221,7 +223,7 @@ describe("YouTube Loader Integration Tests", () => {
           const url = new URL(request.url);
           const query = url.searchParams.get("q");
           const type = url.searchParams.get("type");
-          const apiKey = url.searchParams.get("key");
+          const apiKey = request.headers.get("X-goog-api-key");
           
           expect(apiKey).toBe("test-api-key");
           expect(query).toBe("rick astley");
@@ -236,7 +238,9 @@ describe("YouTube Loader Integration Tests", () => {
         http.get("https://www.googleapis.com/youtube/v3/videos", ({ request }) => {
           const url = new URL(request.url);
           const ids = url.searchParams.get("id");
+          const apiKey = request.headers.get("X-goog-api-key");
           
+          expect(apiKey).toBe("test-api-key");
           expect(ids).toBe("JIOPB36ALMM,cc91EfoBh8A,eYuUAGXN0KM,m3wzpC2o42I,E9de-cmycx8");
           
           return HttpResponse.json(videosResponse);
