@@ -34,7 +34,7 @@ const livePlaylistVideos = defineLiveCollection({
   loader: liveYouTubeLoader({
     type: "playlist",
     apiKey: import.meta.env.YOUTUBE_API_KEY,
-    playlistId: "PLillGF-RfqbYeckUaD1z6nviTp31GLTH8", // Traversy Media Web Dev playlist
+    playlistId: "PL8Qn4kutqAEuEuNnDtbN7sZuGDKFBmxr3",
     defaultMaxResults: 15,
   }),
 });

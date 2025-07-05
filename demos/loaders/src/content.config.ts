@@ -139,7 +139,7 @@ const webDevPlaylist = defineCollection({
   loader: youTubeLoader({
     type: "playlist",
     apiKey: import.meta.env.YOUTUBE_API_KEY,
-    playlistId: "PLillGF-RfqbYeckUaD1z6nviTp31GLTH8", // Traversy Media Web Dev playlist
+    playlistId: "PL8Qn4kutqAEuDiRlQ7TD2lthxTKtrbQTc",
     maxResults: 20,
   }),
 });
