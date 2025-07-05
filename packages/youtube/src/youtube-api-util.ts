@@ -1,3 +1,4 @@
+import { z } from "astro/zod";
 import type { LoaderContext } from "astro/loaders";
 import {
   getConditionalHeaders,
@@ -10,12 +11,14 @@ import {
   YouTubePlaylistItemListResponseSchema,
   YouTubeVideoSchema,
   VideoSchema,
+  VideoWithFullDetailsSchema,
   type YouTubeVideo,
   type YouTubeVideoListResponse,
   type YouTubeSearchListResponse,
   type YouTubePlaylistListResponse,
   type YouTubePlaylistItemListResponse,
   type Video,
+  type VideoWithFullDetails,
 } from "./schema.js";
 import {
   YouTubeError,
@@ -28,11 +31,13 @@ export interface YouTubeAPIOptions {
   requestOptions?: RequestInit;
   meta?: LoaderContext["meta"];
   logger?: LoaderContext["logger"];
+  fetchFullDetails?: boolean;
 }
 
 export interface YouTubeVideoFetchOptions extends YouTubeAPIOptions {
   videoIds: string[];
   part?: string[];
+  videoCategoryId?: string;
 }
 
 export interface YouTubeChannelVideoFetchOptions extends YouTubeAPIOptions {
@@ -48,6 +53,9 @@ export interface YouTubeChannelVideoFetchOptions extends YouTubeAPIOptions {
     | "viewCount";
   publishedAfter?: Date;
   publishedBefore?: Date;
+  part?: string[];
+  videoCategoryId?: string;
+  videoDuration?: "short" | "medium" | "long" | "any";
 }
 
 export interface YouTubeSearchOptions extends YouTubeAPIOptions {
@@ -66,6 +74,9 @@ export interface YouTubeSearchOptions extends YouTubeAPIOptions {
   publishedBefore?: Date;
   regionCode?: string;
   type?: "channel" | "playlist" | "video";
+  part?: string[];
+  videoCategoryId?: string;
+  videoDuration?: "short" | "medium" | "long" | "any";
 }
 
 export interface YouTubePlaylistFetchOptions extends YouTubeAPIOptions {
@@ -77,6 +88,7 @@ export interface YouTubePlaylistItemFetchOptions extends YouTubeAPIOptions {
   playlistId: string;
   maxResults?: number;
   part?: string[];
+  fetchFullDetails?: boolean;
 }
 
 export interface YouTubeAPIResult<T> {
@@ -179,14 +191,18 @@ async function makeYouTubeAPIRequest<T>(
 export async function fetchYouTubeVideos({
   videoIds,
   part = ["snippet", "contentDetails", "statistics"],
+  videoCategoryId,
+  fetchFullDetails = true,
   ...options
 }: YouTubeVideoFetchOptions): Promise<
   YouTubeAPIResult<YouTubeVideoListResponse>
 > {
+  const effectiveParts = fetchFullDetails ? part : ["snippet"];
   const params = {
-    part: part.join(","),
+    part: effectiveParts.join(","),
     id: videoIds.join(","),
     maxResults: 50, // YouTube API max for videos endpoint
+    videoCategoryId,
   };
 
   return makeYouTubeAPIRequest<YouTubeVideoListResponse>(
@@ -207,15 +223,20 @@ export async function searchYouTubeVideos({
   publishedBefore,
   regionCode,
   type = "video",
+  part = ["snippet"],
+  videoCategoryId,
+  videoDuration,
   ...options
 }: YouTubeSearchOptions): Promise<YouTubeAPIResult<YouTubeSearchListResponse>> {
   const params: Record<string, string | number | boolean | undefined> = {
-    part: "snippet",
+    part: part.join(","),
     type,
     maxResults,
     order,
     regionCode,
     channelType,
+    videoCategoryId,
+    videoDuration,
   };
 
   if (q) params.q = q;
@@ -238,33 +259,27 @@ async function getChannelIdFromHandle(
   options.logger?.info(`Fetching channel ID for handle: ${handle}`);
 
   const params = {
-    part: "snippet",
-    type: "channel",
-    q: handle,
-    maxResults: 1,
+    part: "id",
+    forHandle: handle,
   };
 
-  const searchResult = await makeYouTubeAPIRequest<YouTubeSearchListResponse>(
-    "search",
+  const result = await makeYouTubeAPIRequest<any>(
+    "channels",
     params,
     options,
-    YouTubeSearchListResponseSchema,
+    z.object({ items: z.array(z.object({ id: z.string() })) }),
   );
 
-  if (
-    !searchResult.wasModified ||
-    !searchResult.data ||
-    searchResult.data.items.length === 0
-  ) {
+  if (!result.wasModified || !result.data?.items?.length) {
     throw new YouTubeError(`Could not find channel with handle: ${handle}`);
   }
 
-  const channel = searchResult.data.items[0];
-  if (!channel?.id?.channelId) {
+  const channel = result.data.items[0];
+  if (!channel?.id) {
     throw new YouTubeError(`Could not find channel with handle: ${handle}`);
   }
 
-  return channel.id.channelId;
+  return channel.id;
 }
 
 export async function fetchChannelVideos({
@@ -274,6 +289,8 @@ export async function fetchChannelVideos({
   order = "date",
   publishedAfter,
   publishedBefore,
+  part,
+  fetchFullDetails = true,
   ...options
 }: YouTubeChannelVideoFetchOptions): Promise<
   YouTubeAPIResult<YouTubeSearchListResponse>
@@ -296,13 +313,24 @@ export async function fetchChannelVideos({
     publishedAfter,
     publishedBefore,
     type: "video",
-    ...options,
+    part,
+    fetchFullDetails,
+    apiKey: options.apiKey,
+    requestOptions: options.requestOptions,
+    meta: options.meta,
+    logger: options.logger,
   };
 
   return searchYouTubeVideos(searchOptions);
 }
 
-export function transformYouTubeVideoToVideo(ytVideo: YouTubeVideo): Video {
+export type VideoType<TWithFullDetails extends boolean> =
+  TWithFullDetails extends true ? VideoWithFullDetails : Video;
+
+export function transformYouTubeVideoToVideo<TWithFullDetails extends boolean>(
+  ytVideo: YouTubeVideo,
+  fetchFullDetails: TWithFullDetails,
+): VideoType<TWithFullDetails> {
   if (!ytVideo.snippet) {
     throw new YouTubeValidationError(
       "YouTube video missing snippet data",
@@ -310,30 +338,49 @@ export function transformYouTubeVideoToVideo(ytVideo: YouTubeVideo): Video {
     );
   }
 
-  return VideoSchema.parse({
+  const baseVideo = {
     id: ytVideo.id,
     title: ytVideo.snippet.title,
     description: ytVideo.snippet.description,
     url: `https://www.youtube.com/watch?v=${ytVideo.id}`,
     publishedAt: ytVideo.snippet.publishedAt,
-    duration: ytVideo.contentDetails?.duration || "PT0S",
     channelId: ytVideo.snippet.channelId,
     channelTitle: ytVideo.snippet.channelTitle,
     thumbnails: ytVideo.snippet.thumbnails,
     tags: ytVideo.snippet.tags,
     categoryId: ytVideo.snippet.categoryId,
-    viewCount: ytVideo.statistics?.viewCount,
-    likeCount: ytVideo.statistics?.likeCount,
-    commentCount: ytVideo.statistics?.commentCount,
     liveBroadcastContent: ytVideo.snippet.liveBroadcastContent,
     defaultLanguage: ytVideo.snippet.defaultLanguage,
-  });
+  };
+
+  if (fetchFullDetails) {
+    return VideoWithFullDetailsSchema.parse({
+      ...baseVideo,
+      duration: ytVideo.contentDetails?.duration || "PT0S",
+      viewCount: ytVideo.statistics?.viewCount || "0",
+      likeCount: ytVideo.statistics?.likeCount || "0",
+      commentCount: ytVideo.statistics?.commentCount || "0",
+    });
+  } else {
+    return VideoSchema.parse({
+      ...baseVideo,
+      duration: ytVideo.contentDetails?.duration,
+      viewCount: ytVideo.statistics?.viewCount,
+      likeCount: ytVideo.statistics?.likeCount,
+      commentCount: ytVideo.statistics?.commentCount,
+    }) as VideoType<TWithFullDetails>;
+  }
 }
 
-export function transformYouTubeVideosToVideos(
+export function transformYouTubeVideosToVideos<
+  TFetchFullDetails extends boolean,
+>(
   ytVideos: YouTubeVideo[],
-): Video[] {
-  return ytVideos.map(transformYouTubeVideoToVideo);
+  fetchFullDetails: TFetchFullDetails,
+): Array<VideoType<TFetchFullDetails>> {
+  return ytVideos.map((video) =>
+    transformYouTubeVideoToVideo(video, fetchFullDetails),
+  );
 }
 
 export async function fetchYouTubePlaylist({
@@ -356,24 +403,22 @@ export async function fetchYouTubePlaylist({
   );
 }
 
-export async function fetchYouTubePlaylistItems({
+export const fetchYouTubePlaylistItems = ({
   playlistId,
   maxResults = 50,
   part = ["snippet", "contentDetails"],
+  fetchFullDetails = true,
   ...options
 }: YouTubePlaylistItemFetchOptions): Promise<
   YouTubeAPIResult<YouTubePlaylistItemListResponse>
-> {
-  const params = {
-    part: part.join(","),
-    playlistId,
-    maxResults,
-  };
-
-  return makeYouTubeAPIRequest<YouTubePlaylistItemListResponse>(
+> =>
+  makeYouTubeAPIRequest<YouTubePlaylistItemListResponse>(
     "playlistItems",
-    params,
+    {
+      part: part.join(","),
+      playlistId,
+      maxResults,
+    },
     options,
     YouTubePlaylistItemListResponseSchema,
   );
-}

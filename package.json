@@ -6,7 +6,8 @@
 	"scripts": {
 		"test": "pnpm run --filter @ascorbic/* test",
 		"build": "pnpm run --filter @ascorbic/* build",
-		"check": "pnpm run --filter @ascorbic/* check"
+		"check": "pnpm run --filter @ascorbic/* check",
+		"format": "prettier --write ."
 	},
 	"keywords": [],
 	"author": "Matt Kane",

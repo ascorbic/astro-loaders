@@ -1,5 +1,10 @@
 import type { Loader } from "astro/loaders";
-import { VideoSchema, type Video } from "./schema.js";
+import {
+  VideoSchema,
+  VideoWithFullDetailsSchema,
+  type Video,
+  type VideoWithFullDetails,
+} from "./schema.js";
 import {
   fetchYouTubeVideos,
   searchYouTubeVideos,
@@ -19,40 +24,80 @@ interface YouTubeBaseLoaderOptions extends YouTubeAPIOptions {
 }
 
 // Discriminated union for different loader types
-export type YouTubeLoaderOptions = 
-  | {
-      type: "videos";
-      videoIds: string[];
-    } & YouTubeBaseLoaderOptions
-  | {
-      type: "channel";
-      channelId?: string;
-      channelHandle?: string;
-      order?: "date" | "rating" | "relevance" | "title" | "videoCount" | "viewCount";
-      publishedAfter?: Date;
-      publishedBefore?: Date;
-    } & YouTubeBaseLoaderOptions
-  | {
-      type: "search";
-      query: string;
-      order?: "date" | "rating" | "relevance" | "title" | "videoCount" | "viewCount";
-      publishedAfter?: Date;
-      publishedBefore?: Date;
-      regionCode?: string;
-    } & YouTubeBaseLoaderOptions
-  | {
-      type: "playlist";
-      playlistId: string;
-    } & YouTubeBaseLoaderOptions;
+export interface YouTubeVideosLoaderOptions extends YouTubeBaseLoaderOptions {
+  type: "videos";
+  videoIds: string[];
+}
 
-export function youTubeLoader(options: YouTubeLoaderOptions): Loader {
-  const { type, apiKey, maxResults = 25, parts, requestOptions = {} } = options;
+export interface YouTubeChannelLoaderOptions extends YouTubeBaseLoaderOptions {
+  type: "channel";
+  channelId?: string;
+  channelHandle?: string;
+  order?:
+    | "date"
+    | "rating"
+    | "relevance"
+    | "title"
+    | "videoCount"
+    | "viewCount";
+  publishedAfter?: Date;
+  publishedBefore?: Date;
+  /** Filter by video category ID. Only applicable for channel videos. */
+  categoryId?: string;
+  /** Filter by video duration. Only applicable for channel videos. */
+  duration?: "short" | "medium" | "long";
+}
+
+export interface YouTubeSearchLoaderOptions extends YouTubeBaseLoaderOptions {
+  type: "search";
+  query: string;
+  order?:
+    | "date"
+    | "rating"
+    | "relevance"
+    | "title"
+    | "videoCount"
+    | "viewCount";
+  publishedAfter?: Date;
+  publishedBefore?: Date;
+  regionCode?: string;
+  /** Filter by video category ID. Only applicable for search results. */
+  categoryId?: string;
+  /** Filter by video duration. Only applicable for search results. */
+  duration?: "short" | "medium" | "long";
+}
+
+export interface YouTubePlaylistLoaderOptions extends YouTubeBaseLoaderOptions {
+  type: "playlist";
+  playlistId: string;
+}
+
+export type YouTubeLoaderOptions =
+  | YouTubeVideosLoaderOptions
+  | YouTubeChannelLoaderOptions
+  | YouTubeSearchLoaderOptions
+  | YouTubePlaylistLoaderOptions;
+
+export function youTubeLoader(
+  options: YouTubeLoaderOptions & { fetchFullDetails?: boolean },
+): Loader {
+  const {
+    type,
+    apiKey,
+    maxResults = 25,
+    parts,
+    requestOptions = {},
+    fetchFullDetails = true,
+  } = options;
   // Validate required options
   if (!apiKey) {
     throw new YouTubeConfigurationError("YouTube API key is required");
   }
 
-  if (type === "videos" && (!options.videoIds || options.videoIds.length === 0)) {
+  if (
+    type === "videos" &&
+    (!options.videoIds || options.videoIds.length === 0)
+  ) {
     throw new YouTubeConfigurationError(
       "Video IDs are required when type is 'videos'",
     );
@@ -86,17 +131,17 @@ export function youTubeLoader(options: YouTubeLoaderOptions): Loader {
         requestOptions,
         meta,
         logger,
+        fetchFullDetails,
       };
 
       let videos: Video[] = [];
 
       try {
-        if (type === "videos") {
-          const videosOptions = options as Extract<YouTubeLoaderOptions, { type: "videos" }>;
-          logger.info(`Fetching ${videosOptions.videoIds.length} YouTube videos`);
+        if (options.type === "videos") {
+          logger.info(`Fetching ${options.videoIds.length} YouTube videos`);
           const { data, wasModified } = await fetchYouTubeVideos({
             ...apiOptions,
-            videoIds: videosOptions.videoIds,
+            videoIds: options.videoIds,
             part: parts,
           });
 
@@ -104,28 +149,28 @@ export function youTubeLoader(options: YouTubeLoaderOptions): Loader {
             return;
           }
 
-          videos = transformYouTubeVideosToVideos(data.items);
-        } else if (type === "channel") {
-          const channelOptions = options as Extract<YouTubeLoaderOptions, { type: "channel" }>;
+          videos = transformYouTubeVideosToVideos(data.items, fetchFullDetails);
+        } else if (options.type === "channel") {
           logger.info(
-            `Fetching videos from YouTube channel: ${channelOptions.channelId || channelOptions.channelHandle}`,
+            `Fetching videos from YouTube channel: ${options.channelId || options.channelHandle}`,
           );
           const { data, wasModified } = await fetchChannelVideos({
             ...apiOptions,
-            channelId: channelOptions.channelId,
-            channelHandle: channelOptions.channelHandle,
+            channelId: options.channelId,
+            channelHandle: options.channelHandle,
             maxResults,
-            order: channelOptions.order || "date",
-            publishedAfter: channelOptions.publishedAfter,
-            publishedBefore: channelOptions.publishedBefore,
+            order: options.order || "date",
+            publishedAfter: options.publishedAfter,
+            publishedBefore: options.publishedBefore,
+            part: parts,
           });
 
           if (!wasModified) {
             return;
           }
 
-          // For channel videos, we need to fetch the detailed video info
-          if (data.items.length > 0) {
+          // For channel videos, we need to fetch the detailed video info if not already present
+          if (data.items.length > 0 && fetchFullDetails) {
             const videoIds = data.items
               .filter(
                 (item) => item.id.kind === "youtube#video" && item.id.videoId,
@@ -138,20 +183,33 @@ export function youTubeLoader(options: YouTubeLoaderOptions): Loader {
                 videoIds,
                 part: parts,
               });
-              videos = transformYouTubeVideosToVideos(videoData.items);
+              videos = transformYouTubeVideosToVideos(
+                videoData.items,
+                fetchFullDetails,
+              );
             }
+          } else if (data.items.length > 0) {
+            // If not fetching full details, transform the search results directly
+            videos = transformYouTubeVideosToVideos(
+              data.items.map((item) => ({
+                kind: "youtube#video",
+                etag: item.etag,
+                id: item.id.videoId!,
+                snippet: item.snippet,
+              })),
+              fetchFullDetails,
+            );
           }
-        } else if (type === "search") {
-          const searchOptions = options as Extract<YouTubeLoaderOptions, { type: "search" }>;
-          logger.info(`Searching YouTube videos: "${searchOptions.query}"`);
+        } else if (options.type === "search") {
+          logger.info(`Searching YouTube videos: "${options.query}"`);
           const { data, wasModified } = await searchYouTubeVideos({
             ...apiOptions,
-            q: searchOptions.query,
+            q: options.query,
             maxResults,
-            order: searchOptions.order || "date",
-            publishedAfter: searchOptions.publishedAfter,
-            publishedBefore: searchOptions.publishedBefore,
-            regionCode: searchOptions.regionCode,
+            order: options.order || "date",
+            publishedAfter: options.publishedAfter,
+            publishedBefore: options.publishedBefore,
+            regionCode: options.regionCode,
             type: "video",
           });
 
@@ -160,7 +218,7 @@ export function youTubeLoader(options: YouTubeLoaderOptions): Loader {
           }
 
           // For search results, we need to fetch the detailed video info
-          if (data.items.length > 0) {
+          if (data.items.length > 0 && fetchFullDetails) {
             const videoIds = data.items
               .filter(
                 (item) => item.id.kind === "youtube#video" && item.id.videoId,
@@ -173,15 +231,30 @@ export function youTubeLoader(options: YouTubeLoaderOptions): Loader {
                 videoIds,
                 part: parts,
               });
-              videos = transformYouTubeVideosToVideos(videoData.items);
+              videos = transformYouTubeVideosToVideos(
+                videoData.items,
+                fetchFullDetails,
+              );
             }
+          } else if (data.items.length > 0) {
+            // If not fetching full details, transform the search results directly
+            videos = transformYouTubeVideosToVideos(
+              data.items.map((item) => ({
+                kind: "youtube#video",
+                etag: item.etag,
+                id: item.id.videoId!,
+                snippet: item.snippet,
+              })),
+              fetchFullDetails,
+            );
           }
-        } else if (type === "playlist") {
-          const playlistOptions = options as Extract<YouTubeLoaderOptions, { type: "playlist" }>;
-          logger.info(`Fetching videos from YouTube playlist: ${playlistOptions.playlistId}`);
+        } else if (options.type === "playlist") {
+          logger.info(
+            `Fetching videos from YouTube playlist: ${options.playlistId}`,
+          );
           const { data, wasModified } = await fetchYouTubePlaylistItems({
             ...apiOptions,
-            playlistId: playlistOptions.playlistId,
+            playlistId: options.playlistId,
             maxResults,
           });
 
@@ -190,7 +263,7 @@ export function youTubeLoader(options: YouTubeLoaderOptions): Loader {
           }
 
           // For playlist items, we need to fetch the detailed video info
-          if (data.items.length > 0) {
+          if (data.items.length > 0 && fetchFullDetails) {
             const videoIds = data.items
               .filter(
                 (item) =>
@@ -205,8 +278,19 @@ export function youTubeLoader(options: YouTubeLoaderOptions): Loader {
                 videoIds,
                 part: parts,
               });
-              videos = transformYouTubeVideosToVideos(videoData.items);
+              videos = transformYouTubeVideosToVideos(videoData.items, fetchFullDetails);
             }
+          } else if (data.items.length > 0) {
+            // If not fetching full details, transform the playlist items directly
+            videos = transformYouTubeVideosToVideos(
+              data.items.map((item) => ({
+                kind: "youtube#video",
+                etag: item.etag,
+                id: item.snippet!.resourceId!.videoId!,
+                snippet: item.snippet,
+              })),
+              fetchFullDetails,
+            );
           }
         }
 
@@ -238,6 +322,6 @@ export function youTubeLoader(options: YouTubeLoaderOptions): Loader {
         throw error;
       }
     },
-    schema: VideoSchema,
+    schema: fetchFullDetails ? VideoWithFullDetailsSchema : VideoSchema,
   };
 }

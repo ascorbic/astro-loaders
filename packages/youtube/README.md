@@ -399,18 +399,21 @@ Static content collections loader for build-time YouTube video processing.
 
 - `type` (required): `'videos' | 'channel' | 'search' | 'playlist'`
 - `apiKey` (required): Your YouTube Data API v3 key
-- `videoIds`: Array of video IDs (required when type is 'videos')
-- `channelId`: YouTube channel ID (required when type is 'channel')
-- `channelHandle`: YouTube channel handle (alternative to channelId)
-- `query`: Search query (required when type is 'search')
-- `playlistId`: YouTube playlist ID (required when type is 'playlist')
-- `maxResults`: Maximum number of results (default: 25)
-- `order`: Sort order (`'date' | 'rating' | 'relevance' | 'title' | 'videoCount' | 'viewCount'`)
-- `publishedAfter`: Filter videos published after this date
-- `publishedBefore`: Filter videos published before this date
-- `regionCode`: Region code for localized results
-- `parts`: Additional YouTube API parts to include
+- `videoIds`: Array of video IDs (required when `type` is `'videos'`)
+- `channelId`: YouTube channel ID (required when `type` is `'channel'`, or `channelHandle` can be used)
+- `channelHandle`: YouTube channel handle (alternative to `channelId` for `'channel'` type)
+- `query`: Search query (required when `type` is `'search'`)
+- `playlistId`: YouTube playlist ID (required when `type` is `'playlist'`)
+- `maxResults`: Maximum number of results (default: 25). Note: YouTube API limits this to 50 for most endpoints.
+- `order`: Sort order (`'date' | 'rating' | 'relevance' | 'title' | 'videoCount' | 'viewCount'`). Applicable for `'channel'` and `'search'` types.
+- `publishedAfter`: Filter videos published after this date. Applicable for `'channel'` and `'search'` types.
+- `publishedBefore`: Filter videos published before this date. Applicable for `'channel'` and `'search'` types.
+- `regionCode`: Region code for localized results. Applicable for `'search'` type.
+- `categoryId`: YouTube category ID. Applicable for `'channel'` and `'search'` types.
+- `duration`: Filter by video duration (`'short' | 'medium' | 'long'`). Applicable for `'channel'` and `'search'` types.
+- `parts`: Additional YouTube API parts to include (e.g., `["snippet", "contentDetails"]`)
 - `requestOptions`: Custom fetch options
+- `fetchFullDetails`: `boolean` (default: `false`). If `true`, the loader will make additional API calls to fetch `duration`, `viewCount`, `likeCount`, and `commentCount` for videos from `channel`, `search`, and `playlist` types. If `false`, these properties may be `undefined` for those types, but it will reduce API quota usage.
 
 ### `liveYouTubeLoader(options)` ⚠️ **Experimental**
 
@@ -423,31 +426,58 @@ Same as `youTubeLoader`, plus:
 - `defaultMaxResults`: Default maximum results for live queries
 - `defaultOrder`: Default sort order for live queries
 - `defaultRegionCode`: Default region code for live queries
+- `fetchFullDetails`: `boolean` (default: `false`). If `true`, the loader will make additional API calls to fetch `duration`, `viewCount`, `likeCount`, and `commentCount` for videos from `channel`, `search`, and `playlist` types. If `false`, these properties may be `undefined` for those types, but it will reduce API quota usage.
 
 #### Filter Options (for `getLiveCollection`)
 
-- `limit`: Maximum number of results
-- `order`: Sort order
-- `publishedAfter`: Filter by publish date
-- `publishedBefore`: Filter by publish date
-- `regionCode`: Region code
-- `categoryId`: YouTube category ID
-- `channelId`: Override channel ID
-- `query`: Override search query (for search-type loaders)
-- `duration`: Filter by video duration (`'short' | 'medium' | 'long'`)
+These options can be passed to `getLiveCollection` to filter the results. Filters are applied at the API level where supported, otherwise they are ignored.
+
+##### `videos` type filters
+
+- `limit`: Maximum number of results to return.
+
+##### `channel` type filters
+
+- `limit`: Maximum number of results to return.
+- `channelId`: Override the channel ID specified in the loader options.
+- `order`: Sort order (`'date' | 'rating' | 'relevance' | 'title' | 'videoCount' | 'viewCount'`).
+- `publishedAfter`: Filter videos published after this date.
+- `publishedBefore`: Filter videos published before this date.
+- `categoryId`: Filter by YouTube video category ID.
+- `duration`: Filter by video duration (`'short' | 'medium' | 'long'`).
+
+##### `search` type filters
+
+- `limit`: Maximum number of results to return.
+- `query`: Override the search query specified in the loader options.
+- `channelId`: Limit search results to a specific channel ID.
+- `order`: Sort order (`'date' | 'rating' | 'relevance' | 'title' | 'videoCount' | 'viewCount'`).
+- `publishedAfter`: Filter videos published after this date.
+- `publishedBefore`: Filter videos published before this date.
+- `regionCode`: Region code for localized results.
+- `categoryId`: Filter by YouTube video category ID.
+- `duration`: Filter by video duration (`'short' | 'medium' | 'long'`).
+
+##### `playlist` type filters
+
+- `limit`: Maximum number of results to return.
+
 
 ### Video Data Schema
 
-Each video entry contains:
+Each video entry returned by the loader conforms to the `Video` type. When `fetchFullDetails` is `false` (the default), properties like `duration`, `viewCount`, `likeCount`, and `commentCount` may be `undefined` for videos fetched from channel, search, or playlist types.
+
+If `fetchFullDetails` is set to `true`, the returned entries will conform to the `VideoWithFullDetails` type, where these properties are guaranteed to be present.
 
 ```typescript
+// Base Video type (when fetchFullDetails is false)
 {
   id: string;
   title: string;
   description: string;
   url: string;
   publishedAt: Date;
-  duration: string; // ISO 8601 format (e.g., "PT4M13S")
+  duration?: string; // ISO 8601 format (e.g., "PT4M13S")
   channelId: string;
   channelTitle: string;
   thumbnails: {
@@ -465,6 +495,40 @@ Each video entry contains:
   liveBroadcastContent?: string;
   defaultLanguage?: string;
 }
+
+// VideoWithFullDetails type (when fetchFullDetails is true)
+// All optional fields above (duration, viewCount, etc.) are guaranteed to be present.
+```
+
+#### Handling `fetchFullDetails` in your code
+
+When using `fetchFullDetails: false`, you should handle the possibility of `undefined` properties. TypeScript's type narrowing can help:
+
+```typescript
+import { getCollection } from "astro:content";
+import type { Video, VideoWithFullDetails } from "@ascorbic/youtube-loader";
+
+// Example with fetchFullDetails: false (default)
+const videos = await getCollection("videos-without-full-details");
+
+videos.map(videoEntry => {
+  const video = videoEntry.data; // Type: Video
+  if (video.duration) {
+    // TypeScript knows video.duration is string here
+    console.log(`Video duration: ${video.duration}`);
+  } else {
+    console.log("Video duration not available.");
+  }
+});
+
+// Example with fetchFullDetails: true
+const videosWithFullDetails = await getCollection("videos-with-full-details");
+
+videosWithFullDetails.map(videoEntry => {
+  const video = videoEntry.data; // Type: VideoWithFullDetails
+  // TypeScript knows video.duration is string here, no need for check
+  console.log(`Video duration: ${video.duration}`);
+});
 ```
 
 ### Error Types

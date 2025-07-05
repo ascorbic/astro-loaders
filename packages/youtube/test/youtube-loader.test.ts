@@ -116,20 +116,29 @@ describe("YouTube Loader Integration Tests", () => {
       const videosResponse = JSON.parse(
         readFileSync(join(__dirname, "fixtures/youtube-videos-response.json"), "utf-8")
       );
-      const channelSearchResponse = JSON.parse(
-        readFileSync(join(__dirname, "fixtures/youtube-channel-search-response.json"), "utf-8")
+      const channelResponse = JSON.parse(
+        readFileSync(join(__dirname, "fixtures/youtube-channel-response.json"), "utf-8")
       );
 
       // Mock channel handle lookup
       server.use(
+        http.get("https://www.googleapis.com/youtube/v3/channels", ({ request }) => {
+          const url = new URL(request.url);
+          const handle = url.searchParams.get("forHandle");
+          
+          if (handle === '@rickastley') {
+            return HttpResponse.json(channelResponse);
+          }
+          
+          return new HttpResponse("Not found", { status: 404 });
+        })
+      );
+
+      // Mock search API call
+      server.use(
         http.get("https://www.googleapis.com/youtube/v3/search", ({ request }) => {
           const url = new URL(request.url);
-          const query = url.searchParams.get("q");
           const type = url.searchParams.get("type");
-
-          if (type === 'channel' && query === '@rickastley') {
-            return HttpResponse.json(channelSearchResponse);
-          }
 
           if (type === 'video' && url.searchParams.get("channelId") === 'UCuAXFkgsw1L7xaCfnd5JJOw') {
              return HttpResponse.json(searchResponse);

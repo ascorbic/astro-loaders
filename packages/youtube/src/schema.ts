@@ -254,7 +254,7 @@ export const VideoSchema = z.object({
   description: z.string(),
   url: z.string(),
   publishedAt: z.coerce.date(),
-  duration: z.string(),
+  duration: z.string().optional(),
   channelId: z.string(),
   channelTitle: z.string(),
   thumbnails: YouTubeThumbnailsSchema,
@@ -265,6 +265,13 @@ export const VideoSchema = z.object({
   commentCount: z.string().optional(),
   liveBroadcastContent: z.string().optional(),
   defaultLanguage: z.string().optional(),
+});
+
+export const VideoWithFullDetailsSchema = VideoSchema.extend({
+  duration: z.string(),
+  viewCount: z.string(),
+  likeCount: z.string(),
+  commentCount: z.string(),
 });
 
 // Export types
@@ -290,3 +297,4 @@ export type YouTubePlaylistItemStatus = z.infer<typeof YouTubePlaylistItemStatus
 export type YouTubePlaylistItem = z.infer<typeof YouTubePlaylistItemSchema>;
 export type YouTubePlaylistItemListResponse = z.infer<typeof YouTubePlaylistItemListResponseSchema>;
 export type Video = z.infer<typeof VideoSchema>;
+export type VideoWithFullDetails = z.infer<typeof VideoWithFullDetailsSchema>;

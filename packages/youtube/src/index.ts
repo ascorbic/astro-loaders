@@ -5,10 +5,8 @@ export {
   type LiveYouTubeLoaderOptions, 
   type YouTubeCollectionFilter,
   type YouTubeBaseCollectionFilter,
-  type YouTubeVideosCollectionFilter,
   type YouTubeChannelCollectionFilter,
   type YouTubeSearchCollectionFilter,
-  type YouTubePlaylistCollectionFilter,
   type YouTubeEntryFilter,
 } from "./live-youtube-loader.js";
 

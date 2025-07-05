@@ -1,13 +1,14 @@
 import type { LiveLoader } from "astro/loaders";
-import { 
-  fetchYouTubeVideos, 
-  searchYouTubeVideos, 
+import {
+  fetchYouTubeVideos,
+  searchYouTubeVideos,
   fetchChannelVideos,
   fetchYouTubePlaylistItems,
   transformYouTubeVideosToVideos,
-  type YouTubeAPIOptions 
+  type YouTubeAPIOptions,
+  type VideoType,
 } from "./youtube-api-util.js";
-import { type Video } from "./schema.js";
+import { type Video, type VideoWithFullDetails } from "./schema.js";
 import {
   YouTubeError,
   YouTubeAPIError,
@@ -20,113 +21,142 @@ interface LiveYouTubeBaseLoaderOptions extends YouTubeAPIOptions {
   /** Default maximum number of results to fetch */
   defaultMaxResults?: number;
   /** Default order of results */
-  defaultOrder?: "date" | "rating" | "relevance" | "title" | "videoCount" | "viewCount";
+  defaultOrder?:
+    | "date"
+    | "rating"
+    | "relevance"
+    | "title"
+    | "videoCount"
+    | "viewCount";
   /** Default region code for localized results */
   defaultRegionCode?: string;
   /** Additional YouTube API parts to include */
   parts?: string[];
 }
 
-// Discriminated union for different live loader types
-export type LiveYouTubeLoaderOptions = 
-  | {
-      type: 'videos';
-      videoIds: string[];
-    } & LiveYouTubeBaseLoaderOptions
-  | {
-      type: 'channel';
-      channelId?: string;
-      channelHandle?: string;
-    } & LiveYouTubeBaseLoaderOptions
-  | {
-      type: 'search';
-      query: string;
-    } & LiveYouTubeBaseLoaderOptions
-  | {
-      type: 'playlist';
-      playlistId: string;
-    } & LiveYouTubeBaseLoaderOptions;
+export interface LiveYouTubeVideosLoaderOptions
+  extends LiveYouTubeBaseLoaderOptions {
+  type: "videos";
+  videoIds: string[];
+}
 
-// Base filter interface with common properties
+export interface LiveYouTubeChannelLoaderOptions
+  extends LiveYouTubeBaseLoaderOptions {
+  type: "channel";
+  channelId?: string;
+  channelHandle?: string;
+}
+
+export interface LiveYouTubeSearchLoaderOptions
+  extends LiveYouTubeBaseLoaderOptions {
+  type: "search";
+  query: string;
+}
+
+export interface LiveYouTubePlaylistLoaderOptions
+  extends LiveYouTubeBaseLoaderOptions {
+  type: "playlist";
+  playlistId: string;
+}
+
+export type LiveYouTubeLoaderOptions =
+  | LiveYouTubeVideosLoaderOptions
+  | LiveYouTubeChannelLoaderOptions
+  | LiveYouTubeSearchLoaderOptions
+  | LiveYouTubePlaylistLoaderOptions;
+
 export interface YouTubeBaseCollectionFilter {
   limit?: number;
+}
+
+export interface YouTubeChannelCollectionFilter
+  extends YouTubeBaseCollectionFilter {
+  channelId?: string;
+  order?:
+    | "date"
+    | "rating"
+    | "relevance"
+    | "title"
+    | "videoCount"
+    | "viewCount";
+  publishedAfter?: Date;
+  publishedBefore?: Date;
   categoryId?: string;
   duration?: "short" | "medium" | "long";
 }
 
-// Filter for videos loader type
-export interface YouTubeVideosCollectionFilter extends YouTubeBaseCollectionFilter {
-  // Videos are loaded by ID, so no additional filtering options needed
-}
-
-// Filter for channel loader type
-export interface YouTubeChannelCollectionFilter extends YouTubeBaseCollectionFilter {
-  channelId?: string; // Override the channel specified in loader options
-  order?: "date" | "rating" | "relevance" | "title" | "videoCount" | "viewCount";
-  publishedAfter?: Date;
-  publishedBefore?: Date;
-}
-
-// Filter for search loader type
-export interface YouTubeSearchCollectionFilter extends YouTubeBaseCollectionFilter {
-  query?: string; // Override the search query specified in loader options
-  channelId?: string; // Limit search to specific channel
-  order?: "date" | "rating" | "relevance" | "title" | "videoCount" | "viewCount";
+export interface YouTubeSearchCollectionFilter
+  extends YouTubeBaseCollectionFilter {
+  query?: string;
+  channelId?: string;
+  order?:
+    | "date"
+    | "rating"
+    | "relevance"
+    | "title"
+    | "videoCount"
+    | "viewCount";
   publishedAfter?: Date;
   publishedBefore?: Date;
   regionCode?: string;
+  categoryId?: string;
+  duration?: "short" | "medium" | "long";
 }
 
-// Filter for playlist loader type
-export interface YouTubePlaylistCollectionFilter extends YouTubeBaseCollectionFilter {
-  // Playlists maintain their order, so no order option
-  // Position-based filtering could be added in future
-}
-
-// Union type for all collection filters
-export type YouTubeCollectionFilter = 
-  | YouTubeVideosCollectionFilter
-  | YouTubeChannelCollectionFilter 
-  | YouTubeSearchCollectionFilter
-  | YouTubePlaylistCollectionFilter;
+export type YouTubeCollectionFilter =
+  | YouTubeChannelCollectionFilter
+  | YouTubeSearchCollectionFilter;
 
 export interface YouTubeEntryFilter {
   id?: string;
   url?: string;
 }
 
-export function liveYouTubeLoader(
-  options: LiveYouTubeLoaderOptions,
-): LiveLoader<Video, YouTubeEntryFilter, YouTubeCollectionFilter, YouTubeErrorTypes> {
-  const { 
-    type, 
-    apiKey, 
+export function liveYouTubeLoader<TFetchFullDetails extends boolean = true>(
+  options: LiveYouTubeLoaderOptions & { fetchFullDetails?: TFetchFullDetails },
+): LiveLoader<
+  VideoType<TFetchFullDetails>,
+  YouTubeEntryFilter,
+  YouTubeCollectionFilter,
+  YouTubeErrorTypes
+> {
+  const {
+    type,
+    apiKey,
     defaultMaxResults = 25,
     defaultOrder = "date",
     defaultRegionCode,
     parts,
-    requestOptions = {} 
+    requestOptions = {},
+    fetchFullDetails = true as TFetchFullDetails,
   } = options;
 
-  // Validate required options
   if (!apiKey) {
     throw new YouTubeConfigurationError("YouTube API key is required");
   }
 
-  if (type === 'videos' && (!options.videoIds || options.videoIds.length === 0)) {
-    throw new YouTubeConfigurationError("Video IDs are required when type is 'videos'");
+  if (type === "videos" && !options.videoIds?.length) {
+    throw new YouTubeConfigurationError(
+      "Video IDs are required when type is 'videos'",
+    );
   }
 
-  if (type === 'channel' && !options.channelId && !options.channelHandle) {
-    throw new YouTubeConfigurationError("Channel ID or handle is required when type is 'channel'");
+  if (type === "channel" && !options.channelId && !options.channelHandle) {
+    throw new YouTubeConfigurationError(
+      "Channel ID or handle is required when type is 'channel'",
+    );
   }
 
-  if (type === 'search' && !options.query) {
-    throw new YouTubeConfigurationError("Search query is required when type is 'search'");
+  if (type === "search" && !options.query) {
+    throw new YouTubeConfigurationError(
+      "Search query is required when type is 'search'",
+    );
   }
 
-  if (type === 'playlist' && !options.playlistId) {
-    throw new YouTubeConfigurationError("Playlist ID is required when type is 'playlist'");
+  if (type === "playlist" && !options.playlistId) {
+    throw new YouTubeConfigurationError(
+      "Playlist ID is required when type is 'playlist'",
+    );
   }
 
   return {
@@ -137,43 +167,49 @@ export function liveYouTubeLoader(
         const apiOptions = {
           apiKey,
           requestOptions,
+          fetchFullDetails,
         };
 
         let videos: Video[] = [];
         let lastModified: Date | undefined;
 
-        if (type === 'videos') {
-          const videosOptions = options as Extract<LiveYouTubeLoaderOptions, { type: 'videos' }>;
+        if (options.type === "videos") {
           const { data } = await fetchYouTubeVideos({
             ...apiOptions,
-            videoIds: videosOptions.videoIds,
+            videoIds: options.videoIds,
             part: parts,
           });
 
-          videos = transformYouTubeVideosToVideos(data.items);
+          videos = transformYouTubeVideosToVideos(data.items, fetchFullDetails);
           lastModified = videos.length > 0 ? videos[0]?.publishedAt : undefined;
-        } else if (type === 'channel') {
-          const channelOptions = options as Extract<LiveYouTubeLoaderOptions, { type: 'channel' }>;
+        } else if (options.type === "channel") {
           const channelFilter = filter as YouTubeChannelCollectionFilter;
-          const effectiveChannelId = channelFilter?.channelId || channelOptions.channelId;
-          if (!effectiveChannelId && !channelOptions.channelHandle) {
-            throw new YouTubeConfigurationError("Channel ID or handle is required for channel videos");
+          const effectiveChannelId =
+            channelFilter?.channelId || options.channelId;
+          if (!effectiveChannelId && !options.channelHandle) {
+            throw new YouTubeConfigurationError(
+              "Channel ID or handle is required for channel videos",
+            );
           }
           const { data } = await fetchChannelVideos({
             ...apiOptions,
             channelId: effectiveChannelId,
-            channelHandle: !effectiveChannelId ? channelOptions.channelHandle : undefined,
+            channelHandle: !effectiveChannelId
+              ? options.channelHandle
+              : undefined,
             maxResults: filter?.limit || defaultMaxResults,
             order: channelFilter?.order || defaultOrder,
             publishedAfter: channelFilter?.publishedAfter,
             publishedBefore: channelFilter?.publishedBefore,
+            videoCategoryId: channelFilter?.categoryId,
+            videoDuration: channelFilter?.duration,
           });
 
-          // For channel videos, we need to fetch the detailed video info
-          if (data.items.length > 0) {
+          // For channel videos, we need to fetch the detailed video info if not already present
+          if (data.items.length > 0 && fetchFullDetails) {
             const videoIds = data.items
-              .filter(item => item.id.videoId)
-              .map(item => item.id.videoId!);
+              .filter((item) => item.id.videoId)
+              .map((item) => item.id.videoId!);
 
             if (videoIds.length > 0) {
               const { data: videoData } = await fetchYouTubeVideos({
@@ -181,13 +217,26 @@ export function liveYouTubeLoader(
                 videoIds,
                 part: parts,
               });
-              videos = transformYouTubeVideosToVideos(videoData.items);
+              videos = transformYouTubeVideosToVideos(
+                videoData.items,
+                fetchFullDetails,
+              );
             }
+          } else if (data.items.length > 0) {
+            // If not fetching full details, transform the search results directly
+            videos = transformYouTubeVideosToVideos(
+              data.items.map((item) => ({
+                kind: "youtube#video",
+                etag: item.etag,
+                id: item.id.videoId!,
+                snippet: item.snippet,
+              })),
+              fetchFullDetails,
+            );
           }
-        } else if (type === 'search') {
-          const searchOptions = options as Extract<LiveYouTubeLoaderOptions, { type: 'search' }>;
+        } else if (options.type === "search") {
           const searchFilter = filter as YouTubeSearchCollectionFilter;
-          const effectiveQuery = searchFilter?.query || searchOptions.query;
+          const effectiveQuery = searchFilter?.query || options.query;
           const { data } = await searchYouTubeVideos({
             ...apiOptions,
             q: effectiveQuery,
@@ -197,14 +246,16 @@ export function liveYouTubeLoader(
             publishedAfter: searchFilter?.publishedAfter,
             publishedBefore: searchFilter?.publishedBefore,
             regionCode: searchFilter?.regionCode || defaultRegionCode,
-            type: 'video',
+            type: "video",
+            videoCategoryId: searchFilter?.categoryId,
+            videoDuration: searchFilter?.duration,
           });
 
           // For search results, we need to fetch the detailed video info
-          if (data.items.length > 0) {
+          if (data.items.length > 0 && fetchFullDetails) {
             const videoIds = data.items
-              .filter(item => item.id.videoId)
-              .map(item => item.id.videoId!);
+              .filter((item) => item.id.videoId)
+              .map((item) => item.id.videoId!);
 
             if (videoIds.length > 0) {
               const { data: videoData } = await fetchYouTubeVideos({
@@ -212,25 +263,39 @@ export function liveYouTubeLoader(
                 videoIds,
                 part: parts,
               });
-              videos = transformYouTubeVideosToVideos(videoData.items);
+              videos = transformYouTubeVideosToVideos(
+                videoData.items,
+                fetchFullDetails,
+              );
             }
+          } else if (data.items.length > 0) {
+            // If not fetching full details, transform the search results directly
+            videos = transformYouTubeVideosToVideos(
+              data.items.map((item) => ({
+                kind: "youtube#video",
+                etag: item.etag,
+                id: item.id.videoId!,
+                snippet: item.snippet,
+              })),
+              fetchFullDetails,
+            );
           }
-        } else if (type === 'playlist') {
-          const playlistOptions = options as Extract<LiveYouTubeLoaderOptions, { type: 'playlist' }>;
+        } else if (options.type === "playlist") {
           const { data } = await fetchYouTubePlaylistItems({
             ...apiOptions,
-            playlistId: playlistOptions.playlistId,
+            playlistId: options.playlistId,
             maxResults: filter?.limit || defaultMaxResults,
           });
 
           // For playlist items, we need to fetch the detailed video info
-          if (data.items.length > 0) {
+          if (data.items.length > 0 && fetchFullDetails) {
             const videoIds = data.items
-              .filter(item => 
-                item.snippet?.resourceId?.kind === "youtube#video" && 
-                item.snippet.resourceId.videoId
+              .filter(
+                (item) =>
+                  item.snippet?.resourceId?.kind === "youtube#video" &&
+                  item.snippet.resourceId.videoId,
               )
-              .map(item => item.snippet!.resourceId.videoId!);
+              .map((item) => item.snippet!.resourceId.videoId!);
 
             if (videoIds.length > 0) {
               const { data: videoData } = await fetchYouTubeVideos({
@@ -238,55 +303,41 @@ export function liveYouTubeLoader(
                 videoIds,
                 part: parts,
               });
-              videos = transformYouTubeVideosToVideos(videoData.items);
+              videos = transformYouTubeVideosToVideos(
+                videoData.items,
+                fetchFullDetails,
+              );
             }
+          } else if (data.items.length > 0) {
+            // If not fetching full details, transform the playlist items directly
+            videos = transformYouTubeVideosToVideos(
+              data.items.map((item) => ({
+                kind: "youtube#video",
+                etag: item.etag,
+                id: item.snippet!.resourceId!.videoId!,
+                snippet: item.snippet,
+              })),
+              fetchFullDetails,
+            );
           }
         }
 
         // Apply additional filters
-        if (filter) {
-          if (filter.categoryId) {
-            videos = videos.filter(video => video.categoryId === filter.categoryId);
-          }
-
-          if (filter.duration) {
-            videos = videos.filter(video => {
-              const duration = video.duration;
-              if (!duration) return false;
-              
-              // Parse YouTube duration format (ISO 8601)
-              const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-              if (!match) return false;
-              
-              const hours = parseInt(match[1] || '0', 10);
-              const minutes = parseInt(match[2] || '0', 10);
-              const seconds = parseInt(match[3] || '0', 10);
-              const totalSeconds = hours * 3600 + minutes * 60 + seconds;
-              
-              switch (filter.duration) {
-                case 'short': return totalSeconds <= 240; // 4 minutes
-                case 'medium': return totalSeconds > 240 && totalSeconds <= 1200; // 4-20 minutes
-                case 'long': return totalSeconds > 1200; // 20+ minutes
-                default: return true;
-              }
-            });
-          }
-
-          if (filter.limit && filter.limit < videos.length) {
-            videos = videos.slice(0, filter.limit);
-          }
+        if (filter?.limit && filter.limit < videos.length) {
+          videos = videos.slice(0, filter.limit);
         }
 
         // Sort videos by published date (newest first) if no specific order
-        const hasOrder = (filter as YouTubeChannelCollectionFilter | YouTubeSearchCollectionFilter)?.order;
-        if (!hasOrder) {
-          videos.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+        if (!filter?.order) {
+          videos.sort(
+            (a, b) => b.publishedAt.getTime() - a.publishedAt.getTime(),
+          );
         }
 
         return {
           entries: videos.map((video) => ({
             id: video.id,
-            data: video,
+            data: video as VideoType<TFetchFullDetails>,
             rendered: {
               html: video.description || "",
             },
@@ -295,7 +346,9 @@ export function liveYouTubeLoader(
             },
           })),
           cacheHint: {
-            lastModified: lastModified || (videos.length > 0 ? videos[0]?.publishedAt : undefined),
+            lastModified:
+              lastModified ||
+              (videos.length > 0 ? videos[0]?.publishedAt : undefined),
           },
         };
       } catch (error) {
@@ -320,12 +373,12 @@ export function liveYouTubeLoader(
         const apiOptions = {
           apiKey,
           requestOptions,
+          fetchFullDetails,
         };
 
-        let video: Video | undefined;
+        let video: VideoType<TFetchFullDetails> | undefined;
 
         if (filter.id) {
-          // Try to load by video ID
           try {
             const { data } = await fetchYouTubeVideos({
               ...apiOptions,
@@ -334,11 +387,34 @@ export function liveYouTubeLoader(
             });
 
             if (data.items.length > 0) {
-              video = transformYouTubeVideosToVideos(data.items)[0];
+              video = transformYouTubeVideosToVideos(
+                data.items,
+                fetchFullDetails,
+              )[0];
             }
           } catch (error) {
-            // If loading by ID fails, try to find it in the collection
-            // This is a fallback for when the ID might be from a search result
+            // If loading by ID fails, it might be an ID from a search result
+            // that is not a canonical video ID. In this case, we can try
+            // searching for it.
+            const { data: searchData } = await searchYouTubeVideos({
+              ...apiOptions,
+              q: filter.id,
+              maxResults: 1,
+            });
+            const videoId = searchData?.items?.[0]?.id?.videoId;
+            if (videoId) {
+              const { data: videoData } = await fetchYouTubeVideos({
+                ...apiOptions,
+                videoIds: [videoId],
+                part: parts,
+              });
+              if (videoData?.items?.length > 0) {
+                video = transformYouTubeVideosToVideos(
+                  videoData.items,
+                  fetchFullDetails,
+                )[0];
+              }
+            }
           }
         }
 
@@ -354,7 +430,10 @@ export function liveYouTubeLoader(
               });
 
               if (data.items.length > 0) {
-                video = transformYouTubeVideosToVideos(data.items)[0];
+                video = transformYouTubeVideosToVideos(
+                  data.items,
+                  fetchFullDetails,
+                )[0];
               }
             } catch (error) {
               // Video not found or inaccessible
@@ -395,14 +474,22 @@ export function liveYouTubeLoader(
 function extractVideoIdFromUrl(url: string): string | null {
   try {
     const urlObj = new URL(url);
-    
-    // Handle different YouTube URL formats
-    if (urlObj.hostname.includes('youtube.com')) {
-      return urlObj.searchParams.get('v');
-    } else if (urlObj.hostname.includes('youtu.be')) {
-      return urlObj.pathname.slice(1);
+    const hostname = urlObj.hostname;
+    const pathname = urlObj.pathname;
+    const searchParams = urlObj.searchParams;
+
+    if (hostname.includes("youtube.com")) {
+      if (pathname.startsWith("/watch")) {
+        return searchParams.get("v");
+      } else if (pathname.startsWith("/embed/")) {
+        return pathname.substring(7);
+      } else if (pathname.startsWith("/shorts/")) {
+        return pathname.substring(8);
+      }
+    } else if (hostname.includes("youtu.be")) {
+      return pathname.substring(1);
     }
-    
+
     return null;
   } catch {
     return null;
