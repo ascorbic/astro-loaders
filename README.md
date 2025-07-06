@@ -1,6 +1,6 @@
 ## Astro loaders
 
-Some Astro loaders, for the experimental [content layer](https://astro.build/blog/future-of-astro-content-layer/). 
+Some Astro content loaders
 
 ### Packages
 
@@ -9,3 +9,4 @@ Some Astro loaders, for the experimental [content layer](https://astro.build/blo
 - [@ascorbic/feed-loader](packages/feed) - Load RSS, RDF, and Atom feeds, including podcasts
 - [@ascorbic/mock-loader](packages/mock) - Mock data for development
 - [@ascorbic/bluesky-loader](packages/bluesky) - Load Bluesky posts
+- [@ascorbic/youtube-loader](packages/youtube) - Load YouTube videos
