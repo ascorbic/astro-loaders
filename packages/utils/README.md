@@ -5,7 +5,7 @@ Utilities to help building Astro loaders
 ## Installation
 
 ```sh
-npm install @ascorbic/feed-utils astro@experimental--contentlayer
+npm install @ascorbic/loader-utils
 ```
 
 ## API
