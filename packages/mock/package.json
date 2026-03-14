@@ -44,6 +44,6 @@
 		"@anatine/zod-mock": "^3.13.5",
 		"@ascorbic/loader-utils": "workspace:^",
 		"@faker-js/faker": "^9.4.0",
-		"zod-to-ts": "^2.0.0"
+		"zod-to-ts": "^1.2.0"
 	}
 }

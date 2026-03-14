@@ -202,8 +202,8 @@ importers:
         specifier: ^9.4.0
         version: 9.4.0
       zod-to-ts:
-        specifier: ^2.0.0
-        version: 2.0.0(typescript@5.7.3)(zod@4.3.6)
+        specifier: ^1.2.0
+        version: 1.2.0(typescript@5.7.3)(zod@4.3.6)
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.17.3
@@ -5282,12 +5282,6 @@ packages:
     peerDependencies:
       typescript: ^4.9.4 || ^5.0.2
       zod: ^3
-
-  zod-to-ts@2.0.0:
-    resolution: {integrity: sha512-aHsUgIl+CQutKAxtRNeZslLCLXoeuSq+j5HU7q3kvi/c2KIAo6q4YjT7/lwFfACxLB923ELHYMkHmlxiqFy4lw==}
-    peerDependencies:
-      typescript: ^5.0.0
-      zod: ^3.25.0 || ^4.0.0
 
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
@@ -10751,11 +10745,6 @@ snapshots:
       readable-stream: 4.7.0
 
   zod-to-ts@1.2.0(typescript@5.7.3)(zod@4.3.6):
-    dependencies:
-      typescript: 5.7.3
-      zod: 4.3.6
-
-  zod-to-ts@2.0.0(typescript@5.7.3)(zod@4.3.6):
     dependencies:
       typescript: 5.7.3
       zod: 4.3.6
