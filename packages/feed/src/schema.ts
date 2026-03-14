@@ -15,7 +15,7 @@ export const FeedCategorySchema = z.object({
 });
 
 // Legacy schemas from original implementation for exact backward compatibility
-export const LegacyNSSchema = z.record(z.string());
+export const LegacyNSSchema = z.record(z.string(), z.unknown());
 
 export const LegacyImageSchema = z.object({
   url: z.string().optional(),
@@ -111,7 +111,7 @@ export const LegacyItemSchema = z
     enclosures: z.array(LegacyEnclosureSchema),
     meta: LegacyMetaSchema,
   })
-  .and(z.record(z.unknown())); // Allow additional fields
+  .and(z.record(z.string(), z.unknown())); // Allow additional fields
 
 // Feed schema for the complete feed structure
 export const FeedSchema = z.object({
