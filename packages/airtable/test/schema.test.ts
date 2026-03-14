@@ -156,7 +156,7 @@ describe("Airtable to Zod Schema Mapping", () => {
   it("should map email to z.string().email()", () => {
     const field = airtableFieldFixtures.email;
     const schema = airtableTypeToZodType(field);
-    expect(schema).toBeInstanceOf(z.ZodString);
+    expect(schema).toBeInstanceOf(z.ZodEmail);
     expect(() => schema.parse("not-an-email")).toThrow();
     expect(() => schema.parse("test@example.com")).not.toThrow();
   });
@@ -164,7 +164,7 @@ describe("Airtable to Zod Schema Mapping", () => {
   it("should map url to z.string().url()", () => {
     const field = airtableFieldFixtures.url;
     const schema = airtableTypeToZodType(field);
-    expect(schema).toBeInstanceOf(z.ZodString);
+    expect(schema).toBeInstanceOf(z.ZodURL);
     expect(() => schema.parse("not-a-url")).toThrow();
     expect(() => schema.parse("https://example.com")).not.toThrow();
   });

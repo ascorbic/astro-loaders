@@ -83,6 +83,9 @@ importers:
       ts-pattern:
         specifier: ^5.6.2
         version: 5.6.2
+      zod-to-ts:
+        specifier: ^1.2.0
+        version: 1.2.0(typescript@5.7.3)(zod@4.3.6)
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.17.3
@@ -198,6 +201,9 @@ importers:
       '@faker-js/faker':
         specifier: ^9.4.0
         version: 9.4.0
+      zod-to-ts:
+        specifier: ^2.0.0
+        version: 2.0.0(typescript@5.7.3)(zod@4.3.6)
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.17.3
@@ -5270,6 +5276,18 @@ packages:
   zip-stream@6.0.1:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
     engines: {node: '>= 14'}
+
+  zod-to-ts@1.2.0:
+    resolution: {integrity: sha512-x30XE43V+InwGpvTySRNz9kB7qFU8DlyEy7BsSTCHPH1R0QasMmHWZDCzYm6bVXtj/9NNJAZF3jW8rzFvH5OFA==}
+    peerDependencies:
+      typescript: ^4.9.4 || ^5.0.2
+      zod: ^3
+
+  zod-to-ts@2.0.0:
+    resolution: {integrity: sha512-aHsUgIl+CQutKAxtRNeZslLCLXoeuSq+j5HU7q3kvi/c2KIAo6q4YjT7/lwFfACxLB923ELHYMkHmlxiqFy4lw==}
+    peerDependencies:
+      typescript: ^5.0.0
+      zod: ^3.25.0 || ^4.0.0
 
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
@@ -10731,6 +10749,16 @@ snapshots:
       archiver-utils: 5.0.2
       compress-commons: 6.0.2
       readable-stream: 4.7.0
+
+  zod-to-ts@1.2.0(typescript@5.7.3)(zod@4.3.6):
+    dependencies:
+      typescript: 5.7.3
+      zod: 4.3.6
+
+  zod-to-ts@2.0.0(typescript@5.7.3)(zod@4.3.6):
+    dependencies:
+      typescript: 5.7.3
+      zod: 4.3.6
 
   zod@3.23.8: {}
 

@@ -1,6 +1,7 @@
 import type { Loader } from "astro/loaders";
 import { AstroError } from "astro/errors";
 import Airtable, { type Query, type FieldSet } from "airtable";
+import { createTypeAlias, printNode, zodToTs } from "zod-to-ts";
 import { zodSchemaFromAirtableTable } from "./schema.js";
 
 export interface AirtableLoaderOptions<TFields extends FieldSet = FieldSet> {
@@ -44,11 +45,19 @@ export function airtableLoader({
       }
       logger.info(`Loaded ${records.length} records from "${table}"`);
     },
-    schema: () =>
-      zodSchemaFromAirtableTable({
+    createSchema: async () => {
+      const schema = await zodSchemaFromAirtableTable({
         baseID: base,
         tableIdOrName: table,
         apiKey: token,
-      }),
+      });
+      const identifier = "Entry";
+      const { node } = zodToTs(schema, identifier);
+      const typeAlias = createTypeAlias(node, identifier);
+      return {
+        schema,
+        types: `export ${printNode(typeAlias)}`,
+      };
+    },
   };
 }

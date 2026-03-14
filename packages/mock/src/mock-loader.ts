@@ -1,7 +1,8 @@
 import type { Loader } from "astro/loaders";
 import { AstroError } from "astro/errors";
-import type { ZodSchema } from "astro/zod";
+import { z, type ZodSchema } from "astro/zod";
 import { generateMock } from "@anatine/zod-mock";
+import { createTypeAlias, printNode, zodToTs } from "zod-to-ts";
 
 interface SharedOptions {
   /** The number of entries to generate */
@@ -33,7 +34,7 @@ export function mockLoader({
   loader,
   ...options
 }: MockLoaderOptions): Loader {
-  async function getSchema() {
+  async function getSchema(): Promise<z.ZodTypeAny> {
     if (options.schema) {
       return options.schema;
     }
@@ -45,20 +46,19 @@ export function mockLoader({
       );
     }
 
-    if (!loader.schema) {
-      throw new AstroError(
-        `The loader "${loader.name}" does not define a schema`,
-        "Define a schema manually and pass it to the `mockLoader`",
-      );
+    if ("createSchema" in loader && loader.createSchema) {
+      const result = await loader.createSchema();
+      return result.schema as z.ZodTypeAny;
     }
-    if (typeof loader.schema === "function") {
-      return loader.schema();
-    } else {
-      return loader.schema;
+    if ("schema" in loader && loader.schema) {
+      const schema = loader.schema as z.ZodTypeAny | (() => Promise<z.ZodTypeAny>);
+      return typeof schema === "function" ? schema() : schema;
     }
+    throw new AstroError(
+      `The loader "${loader.name}" does not define a schema`,
+      "Define a schema manually and pass it to the `mockLoader`",
+    );
   }
-
-  const schema = getSchema();
 
   return {
     name: "mock-loader",
@@ -66,11 +66,11 @@ export function mockLoader({
       logger.info(
         `Generating mock data${loader?.name ? ` for ${loader.name}` : ""}`,
       );
-      const mockSchema = await schema;
+      const mockSchema = await getSchema();
       for (let i = 0; i < entryCount; i++) {
         const data = generateMock(mockSchema, {
           seed: options.seed ? options.seed + i : undefined,
-        });
+        }) as Record<string, unknown>;
         const id = options.idField ? data[options.idField] : i;
         const rendered = options.mockHTML
           ? {
@@ -81,7 +81,16 @@ export function mockLoader({
       }
       logger.info(`Generated ${entryCount} mock entries`);
     },
-    schema: () => schema,
+    createSchema: async () => {
+      const schema = await getSchema();
+      const identifier = "Entry";
+      const { node } = zodToTs(schema, identifier);
+      const typeAlias = createTypeAlias(node, identifier);
+      return {
+        schema: schema as z.ZodType,
+        types: `export ${printNode(typeAlias)}`,
+      };
+    },
   };
 }
 
