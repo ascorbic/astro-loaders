@@ -42,7 +42,7 @@
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
 		"@anatine/zod-mock": "^3.13.5",
-		"@ascorbic/loader-utils": "file:../utils",
+		"@ascorbic/loader-utils": "workspace:^",
 		"@faker-js/faker": "^9.4.0"
 	}
 }

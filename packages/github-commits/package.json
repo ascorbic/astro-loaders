@@ -41,6 +41,6 @@
 	},
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
-		"@ascorbic/loader-utils": "file:../utils"
+		"@ascorbic/loader-utils": "workspace:^"
 	}
 }

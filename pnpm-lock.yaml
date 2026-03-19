@@ -231,7 +231,7 @@ importers:
   packages/s3-media:
     dependencies:
       '@ascorbic/loader-utils':
-        specifier: file:../utils
+        specifier: workspace:^
         version: link:../utils
       '@aws-sdk/client-s3':
         specifier: ^3.986.0

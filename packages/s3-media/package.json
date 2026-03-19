@@ -41,7 +41,7 @@
 	},
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
-		"@ascorbic/loader-utils": "file:../utils",
+		"@ascorbic/loader-utils": "workspace:^",
 		"@aws-sdk/client-s3": "^3.986.0"
 	}
 }

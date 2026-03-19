@@ -42,7 +42,7 @@
 	},
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
-		"@ascorbic/loader-utils": "file:../utils",
+		"@ascorbic/loader-utils": "workspace:^",
 		"papaparse": "^5.5.2",
 		"pathe": "^2.0.2"
 	}

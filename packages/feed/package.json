@@ -43,6 +43,6 @@
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
 		"@rowanmanning/feed-parser": "^2.0.0",
-		"@ascorbic/loader-utils": "file:../utils"
+		"@ascorbic/loader-utils": "workspace:^"
 	}
 }
