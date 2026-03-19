@@ -10,3 +10,5 @@ Some Astro content loaders
 - [@ascorbic/mock-loader](packages/mock) - Mock data for development
 - [@ascorbic/bluesky-loader](packages/bluesky) - Load Bluesky posts
 - [@ascorbic/youtube-loader](packages/youtube) - Load YouTube videos
+- [@ascorbic/s3-media-loader](packages/s3-media) - Load media files from S3-compatible storage
+- [@ascorbic/github-commits-loader](packages/github-commits) - Load commit history from GitHub repositories
