@@ -41,7 +41,7 @@
 	},
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
-		"@ascorbic/loader-utils": "workspace:^",
+		"@ascorbic/loader-utils": "file:../utils",
 		"airtable": "^0.12.2",
 		"ts-pattern": "^5.6.2"
 	}

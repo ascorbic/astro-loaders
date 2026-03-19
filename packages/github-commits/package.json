@@ -1,7 +1,7 @@
 {
-	"name": "@ascorbic/youtube-loader",
-	"version": "0.0.2",
-	"description": "Astro loader for YouTube videos with build-time and live loading capabilities",
+	"name": "@ascorbic/github-commits-loader",
+	"version": "0.0.1",
+	"description": "Load commits from a GitHub repository into Astro",
 	"type": "module",
 	"main": "dist/index.js",
 	"files": [
@@ -21,7 +21,6 @@
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.17.3",
 		"astro": "^5.10.1",
-		"msw": "^2.10.2",
 		"publint": "^0.3.2",
 		"tsup": "^8.3.6",
 		"typescript": "^5.7.3"
@@ -31,21 +30,17 @@
 	},
 	"keywords": [
 		"withastro",
-		"astro-loader",
-		"youtube",
-		"video",
-		"content-collections"
+		"astro-loader"
 	],
-	"author": "Matt Kane",
+	"author": "strangeZombies",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com:ascorbic/astro-loaders.git",
-		"directory": "packages/youtube"
+		"directory": "packages/github-commits"
 	},
 	"homepage": "https://github.com/ascorbic/astro-loaders",
 	"dependencies": {
-		"@ascorbic/loader-utils": "file:../utils",
-		"zod": "^3.24.1"
+		"@ascorbic/loader-utils": "file:../utils"
 	}
 }
