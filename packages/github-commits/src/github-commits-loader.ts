@@ -1,5 +1,6 @@
 // packages/github/src/github-commits-loader.ts
 import type { Loader, LoaderContext } from "astro/loaders";
+import { getLoaderFetch } from "@ascorbic/loader-utils";
 import type { GitHubCommit, GitHubCommitFile, ProcessedCommit, GitHubLoaderOptions } from "./schema.js";
 
 const ETAG_KEY = (repo: string, perPage: number) => `gh-commits-etag:${repo}:${perPage}`;
@@ -14,16 +15,17 @@ export function githubLoader(options: GitHubLoaderOptions): Loader {
 	} = options;
 
 	return {
-		name: "github",
+			name: "github",
 
-		load: async ({ store, logger, parseData, meta, generateDigest }: LoaderContext) => {
-			const etagKey = ETAG_KEY(repo, perPage);
+			load: async ({ store, logger, parseData, meta, generateDigest }: LoaderContext) => {
+				const etagKey = ETAG_KEY(repo, perPage);
+				const fetchImpl = getLoaderFetch();
 
-			try {
-				// Test if repo is accessible
-				const testRes = await fetch(`https://api.github.com/repos/${repo}`, {
-					headers: getHeaders(token),
-				});
+				try {
+					// Test if repo is accessible
+					const testRes = await fetchImpl(`https://api.github.com/repos/${repo}`, {
+						headers: getHeaders(token),
+					});
 				if (!testRes.ok) {
 					const text = await testRes.text().catch(() => "");
 					logger.error(`Cannot access repo ${repo}: ${testRes.status} - ${text.slice(0, 200)}`);
@@ -42,7 +44,7 @@ export function githubLoader(options: GitHubLoaderOptions): Loader {
 				const controller = new AbortController();
 				const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-				const res = await fetch(url, { headers, signal: controller.signal });
+					const res = await fetchImpl(url, { headers, signal: controller.signal });
 				clearTimeout(timeoutId);
 
 				if (res.status === 304) {
@@ -67,10 +69,10 @@ export function githubLoader(options: GitHubLoaderOptions): Loader {
 
 						if (fetchFilesFor > 0 && index < fetchFilesFor) {
 							try {
-								const detailRes = await fetch(
-									`https://api.github.com/repos/${repo}/commits/${c.sha}`,
-									{ headers }
-								);
+									const detailRes = await fetchImpl(
+										`https://api.github.com/repos/${repo}/commits/${c.sha}`,
+										{ headers }
+									);
 
 								if (detailRes.ok) {
 									const detail = (await detailRes.json()) as { files?: GitHubCommitFile[] };

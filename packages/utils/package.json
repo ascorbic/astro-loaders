@@ -34,5 +34,8 @@
 		"url": "git+https://github.com:ascorbic/astro-loaders.git",
 		"directory": "packages/utils"
 	},
-	"homepage": "https://github.com/ascorbic/astro-loaders"
+	"homepage": "https://github.com/ascorbic/astro-loaders",
+	"dependencies": {
+		"node-fetch-native": "^1.6.6"
+	}
 }

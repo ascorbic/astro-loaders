@@ -1,4 +1,9 @@
 import type { LoaderContext } from "astro/loaders";
+import {
+	createFetch as createProxyFetch,
+	createProxy,
+	type ProxyOptions,
+} from "node-fetch-native/proxy";
 
 /**
  * Get the headers needed to make a conditional request.
@@ -28,8 +33,8 @@ export function getConditionalHeaders({
  * Store the etag or last-modified headers from a response in the meta store.
  */
 export function storeConditionalHeaders({
-  headers,
-  meta,
+	headers,
+	meta,
 }: {
   /** Headers from the response */
   headers: Headers;
@@ -44,5 +49,89 @@ export function storeConditionalHeaders({
     meta.set("etag", etag);
   } else if (lastModified) {
     meta.set("last-modified", lastModified);
-  }
+	}
+}
+
+let cachedProxyFetch: typeof globalThis.fetch | null = null;
+let cachedProxyAgent: ReturnType<typeof createProxy>["agent"] | null = null;
+let cachedProxyDispatcher: ReturnType<typeof createProxy>["dispatcher"] | null = null;
+let cachedProxyCacheKey: string | null = null;
+
+function getEnvValue(name: string): string | undefined {
+	const value = process.env[name]?.trim();
+	return value ? value : undefined;
+}
+
+export function getLoaderProxyOptions(): ProxyOptions | undefined {
+	if (process.env.NODE_ENV === "production") {
+		return undefined;
+	}
+
+	const url =
+		getEnvValue("ASTRO_LOADER_PROXY") ??
+		getEnvValue("HTTPS_PROXY") ??
+		getEnvValue("https_proxy") ??
+		getEnvValue("HTTP_PROXY") ??
+		getEnvValue("http_proxy");
+
+	if (!url) {
+		return undefined;
+	}
+
+	const noProxy = getEnvValue("NO_PROXY") ?? getEnvValue("no_proxy");
+
+	return {
+		url,
+		...(noProxy ? { noProxy } : {}),
+	};
+}
+
+function getProxyCacheKey(options?: ProxyOptions): string {
+	if (!options?.url) return "no-proxy";
+	return `${options.url}::${Array.isArray(options.noProxy) ? options.noProxy.join(",") : options.noProxy ?? ""}`;
+}
+
+export function getLoaderFetch(): typeof globalThis.fetch {
+	const proxyOptions = getLoaderProxyOptions();
+	if (!proxyOptions?.url) {
+		return globalThis.fetch;
+	}
+
+	const cacheKey = getProxyCacheKey(proxyOptions);
+	if (!cachedProxyFetch || cacheKey !== cachedProxyCacheKey) {
+		cachedProxyFetch = createProxyFetch(proxyOptions);
+		cachedProxyCacheKey = cacheKey;
+	}
+
+	return cachedProxyFetch;
+}
+
+function ensureProxyCache() {
+	const proxyOptions = getLoaderProxyOptions();
+	if (!proxyOptions?.url) {
+		cachedProxyAgent = null;
+		cachedProxyDispatcher = null;
+		cachedProxyCacheKey = "no-proxy";
+		return;
+	}
+
+	const cacheKey = getProxyCacheKey(proxyOptions);
+	if (cacheKey === cachedProxyCacheKey && (cachedProxyAgent || cachedProxyDispatcher)) {
+		return;
+	}
+
+	const proxy = createProxy(proxyOptions);
+	cachedProxyAgent = proxy.agent ?? null;
+	cachedProxyDispatcher = proxy.dispatcher ?? null;
+	cachedProxyCacheKey = cacheKey;
+}
+
+export function getLoaderProxyAgent(): ReturnType<typeof createProxy>["agent"] | undefined {
+	ensureProxyCache();
+	return cachedProxyAgent ?? undefined;
+}
+
+export function getLoaderProxyDispatcher(): ReturnType<typeof createProxy>["dispatcher"] | undefined {
+	ensureProxyCache();
+	return cachedProxyDispatcher ?? undefined;
 }

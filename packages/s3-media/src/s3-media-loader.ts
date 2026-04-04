@@ -2,6 +2,8 @@
 import type { Loader } from "astro/loaders";
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import type { ListObjectsV2CommandOutput } from "@aws-sdk/client-s3";
+import { NodeHttpHandler } from "@smithy/node-http-handler";
+import { getLoaderProxyAgent } from "@ascorbic/loader-utils";
 import type { MediaItem, S3LoaderOptions } from "./schema.js";
 
 let cachedClient: S3Client | null = null;
@@ -30,6 +32,8 @@ function getOrCreateClient(options: S3LoaderOptions): S3Client {
 		return cachedClient;
 	}
 
+	const proxyAgent = getLoaderProxyAgent();
+
 	cachedClient = new S3Client({
 		endpoint: options.endpoint,
 		region: options.region || "auto",
@@ -38,6 +42,14 @@ function getOrCreateClient(options: S3LoaderOptions): S3Client {
 			secretAccessKey: options.secretAccessKey,
 		},
 		forcePathStyle: options.forcePathStyle ?? true,
+		...(proxyAgent
+			? {
+					requestHandler: new NodeHttpHandler({
+						httpAgent: proxyAgent,
+						httpsAgent: proxyAgent,
+					}),
+				}
+			: {}),
 	});
 
 	cachedOptions = options;
