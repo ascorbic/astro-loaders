@@ -6,16 +6,32 @@ import { NodeHttpHandler } from "@smithy/node-http-handler";
 import { getLoaderProxyAgent } from "@ascorbic/loader-utils";
 import type { MediaItem, S3LoaderOptions } from "./schema.js";
 
+import fs from "node:fs/promises";
+import path from "node:path";
+
 let cachedClient: S3Client | null = null;
 let cachedOptions: S3LoaderOptions | null = null;
 
-interface CacheEntry {
-	data: MediaItem[];
-	timestamp: number;
+const CACHE_DIR = path.join(process.cwd(), "src/content/content-metadata");
+const CACHE_FILE = "s3-media.json";
+
+async function readCache(): Promise<MediaItem[] | null> {
+	try {
+		const file = await fs.readFile(path.join(CACHE_DIR, CACHE_FILE), "utf-8");
+		return JSON.parse(file) as MediaItem[];
+	} catch {
+		return null;
+	}
 }
 
-const loaderCache = new Map<string, CacheEntry>();
-const CACHE_TTL = 5 * 60 * 1000;
+async function writeCache(data: MediaItem[]) {
+	try {
+		await fs.mkdir(CACHE_DIR, { recursive: true });
+		await fs.writeFile(path.join(CACHE_DIR, CACHE_FILE), JSON.stringify(data, null, 2));
+	} catch (e) {
+		console.error("Failed to write s3 cache to disk", e);
+	}
+}
 
 function getCacheKey(options: S3LoaderOptions): string {
 	return `${options.bucket}:${options.prefix || ""}`;
@@ -95,26 +111,6 @@ export function s3Loader(options: S3LoaderOptions): Loader {
 		name: "s3",
 
 		async load({ store, logger }) {
-			const cacheKey = getCacheKey(options);
-			const now = Date.now();
-
-			// Production cache
-			const isProd = process.env.NODE_ENV === "production";
-			if (isProd) {
-				const cached = loaderCache.get(cacheKey);
-				if (cached && now - cached.timestamp < CACHE_TTL) {
-					for (const item of cached.data) {
-						store.set({
-							id: item.id,
-							data: item,
-							rendered: { html: "" },
-						});
-					}
-					logger.info(`Loaded ${cached.data.length} media items from cache`);
-					return;
-				}
-			}
-
 			const client = getOrCreateClient(options);
 			const maxKeys = options.maxKeys ?? 1000;
 
@@ -162,15 +158,27 @@ export function s3Loader(options: S3LoaderOptions): Loader {
 					});
 				}
 
-				loaderCache.set(cacheKey, {
-					data: results,
-					timestamp: now,
-				});
+				await writeCache(results);
 
 				logger.info(`Loaded ${results.length} media items from S3`);
 			} catch (err) {
 				const errorMessage = err instanceof Error ? err.message : String(err);
 				logger.error(`Error loading media from S3: ${errorMessage}`);
+				
+				// Fallback to cache if available
+				const cached = await readCache();
+				if (cached) {
+					logger.info(`Falling back to cache for ${cached.length} media items`);
+					for (const item of cached) {
+						store.set({
+							id: item.id,
+							data: item,
+							rendered: { html: "" },
+						});
+					}
+					return;
+				}
+				
 				throw err;
 			}
 		},
