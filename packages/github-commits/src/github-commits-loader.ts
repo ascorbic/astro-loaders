@@ -3,6 +3,41 @@ import type { Loader, LoaderContext } from "astro/loaders";
 import { getLoaderFetch } from "@ascorbic/loader-utils";
 import type { GitHubCommit, GitHubCommitFile, ProcessedCommit, GitHubLoaderOptions } from "./schema.js";
 
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const CACHE_DIR = path.join(process.cwd(), "src/content/content-metadata");
+
+function getCacheFile(cacheKey: string): string {
+	return `github-commits-${cacheKey.replace(/[:\/]/g, '_')}.json`;
+}
+
+async function readCache(cacheKey: string): Promise<{ data: ProcessedCommit[]; isFresh: boolean } | null> {
+	try {
+		const filePath = path.join(CACHE_DIR, getCacheFile(cacheKey));
+		const stat = await fs.stat(filePath);
+		const file = await fs.readFile(filePath, "utf-8");
+		const data = JSON.parse(file) as ProcessedCommit[];
+		const isFresh = Date.now() - stat.mtime.getTime() < 60 * 60 * 1000; // 1 hour
+		return { data, isFresh };
+	} catch {
+		return null;
+	}
+}
+
+async function writeCache(cacheKey: string, data: ProcessedCommit[]) {
+	try {
+		await fs.mkdir(CACHE_DIR, { recursive: true });
+		await fs.writeFile(path.join(CACHE_DIR, getCacheFile(cacheKey)), JSON.stringify(data, null, 2));
+	} catch (e) {
+		console.error("Failed to write github-commits cache to disk", e);
+	}
+}
+
+function getCacheKey(options: GitHubLoaderOptions): string {
+	return `${options.repo}:${options.perPage || 15}`;
+}
+
 const ETAG_KEY = (repo: string, perPage: number) => `gh-commits-etag:${repo}:${perPage}`;
 
 export function githubLoader(options: GitHubLoaderOptions): Loader {
@@ -18,6 +53,38 @@ export function githubLoader(options: GitHubLoaderOptions): Loader {
 			name: "github",
 
 			load: async ({ store, logger, parseData, meta, generateDigest }: LoaderContext) => {
+				const cacheKey = getCacheKey(options);
+				const cached = await readCache(cacheKey);
+
+				if (cached?.isFresh) {
+					logger.info(`Using fresh cache for ${cached.data.length} commits`);
+					for (const commit of cached.data) {
+						const id = commit.shortSha;
+
+						const digest = generateDigest({
+							sha: commit.sha,
+							message: commit.message,
+							date: commit.date.toISOString(),
+							filesLength: commit.files.length,
+						});
+
+						const parsed = await parseData({
+							id,
+							data: {
+								...commit,
+								date: commit.date.toISOString(),
+							},
+						});
+
+						await store.set({
+							id,
+							data: parsed,
+							digest,
+						});
+					}
+					return;
+				}
+
 				const etagKey = ETAG_KEY(repo, perPage);
 				const fetchImpl = getLoaderFetch();
 
@@ -116,7 +183,10 @@ export function githubLoader(options: GitHubLoaderOptions): Loader {
 
 					const parsed = await parseData({
 						id,
-						data: commit,
+						data: {
+							...commit,
+							date: commit.date.toISOString(),
+						},
 					});
 
 					await store.set({
@@ -126,6 +196,8 @@ export function githubLoader(options: GitHubLoaderOptions): Loader {
 					});
 				}
 
+				await writeCache(cacheKey, detailedCommits);
+
 				logger.info(`Stored ${detailedCommits.length} commits`);
 			} catch (err: unknown) {
 				if (err instanceof Error && err.name === "AbortError") {
@@ -133,6 +205,38 @@ export function githubLoader(options: GitHubLoaderOptions): Loader {
 				} else {
 					logger.error(`Load failed: ${err instanceof Error ? err.message : err}`);
 				}
+
+				// Fallback to cache if available
+				if (cached) {
+					logger.info(`Falling back to cache for ${cached.data.length} commits`);
+					for (const commit of cached.data) {
+						const id = commit.shortSha;
+
+						const digest = generateDigest({
+							sha: commit.sha,
+							message: commit.message,
+							date: commit.date.toISOString(),
+							filesLength: commit.files.length,
+						});
+
+						const parsed = await parseData({
+							id,
+							data: {
+								...commit,
+								date: commit.date.toISOString(),
+							},
+						});
+
+						await store.set({
+							id,
+							data: parsed,
+							digest,
+						});
+					}
+					return;
+				}
+
+				throw err;
 			}
 		},
 	};
