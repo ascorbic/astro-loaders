@@ -1,0 +1,47 @@
+{
+  "name": "@ascorbic/bilibili-loader",
+  "version": "0.0.1",
+  "description": "Astro loader for Bilibili videos, playlists, and articles",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "dev": "tsup src/index.ts --format esm --dts --watch",
+    "test": "vitest",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "astro",
+    "loader",
+    "bilibili",
+    "video",
+    "playlist",
+    "article"
+  ],
+  "author": "ascorbic",
+  "license": "MIT",
+  "dependencies": {
+    "@ascorbic/loader-utils": "workspace:*",
+    "astro": "^4.0.0 || ^5.0.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "astro": "^4.0.0 || ^5.0.0"
+  }
+}

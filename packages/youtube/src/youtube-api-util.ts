@@ -3,6 +3,7 @@ import type { LoaderContext } from "astro/loaders";
 import {
   getConditionalHeaders,
   storeConditionalHeaders,
+  getLoaderProxyAgent,
 } from "@ascorbic/loader-utils";
 import {
   YouTubeVideoListResponseSchema,
@@ -115,6 +116,12 @@ async function makeYouTubeAPIRequest<T>(
 
   // Copy request options to avoid mutating the original
   const requestOptions = { ...options.requestOptions };
+
+  // Add proxy agent if available
+  const proxyAgent = getLoaderProxyAgent();
+  if (proxyAgent) {
+    (requestOptions as any).agent = proxyAgent;
+  }
 
   // Add API key to headers (more secure than query params)
   const headers = new Headers(requestOptions.headers);
