@@ -13,21 +13,28 @@ let cachedClient: S3Client | null = null;
 let cachedOptions: S3LoaderOptions | null = null;
 
 const CACHE_DIR = path.join(process.cwd(), "src/content/content-metadata");
-const CACHE_FILE = "s3-media.json";
 
-async function readCache(): Promise<MediaItem[] | null> {
+function getCacheFile(cacheKey: string): string {
+	return `s3-media-${cacheKey.replace(/[:\/]/g, '_')}.json`;
+}
+
+async function readCache(cacheKey: string): Promise<{ data: MediaItem[]; isFresh: boolean } | null> {
 	try {
-		const file = await fs.readFile(path.join(CACHE_DIR, CACHE_FILE), "utf-8");
-		return JSON.parse(file) as MediaItem[];
+		const filePath = path.join(CACHE_DIR, getCacheFile(cacheKey));
+		const stat = await fs.stat(filePath);
+		const file = await fs.readFile(filePath, "utf-8");
+		const data = JSON.parse(file) as MediaItem[];
+		const isFresh = Date.now() - stat.mtime.getTime() < 60 * 60 * 1000; // 1 hour
+		return { data, isFresh };
 	} catch {
 		return null;
 	}
 }
 
-async function writeCache(data: MediaItem[]) {
+async function writeCache(cacheKey: string, data: MediaItem[]) {
 	try {
 		await fs.mkdir(CACHE_DIR, { recursive: true });
-		await fs.writeFile(path.join(CACHE_DIR, CACHE_FILE), JSON.stringify(data, null, 2));
+		await fs.writeFile(path.join(CACHE_DIR, getCacheFile(cacheKey)), JSON.stringify(data, null, 2));
 	} catch (e) {
 		console.error("Failed to write s3 cache to disk", e);
 	}
@@ -111,6 +118,21 @@ export function s3Loader(options: S3LoaderOptions): Loader {
 		name: "s3",
 
 		async load({ store, logger }) {
+			const cacheKey = getCacheKey(options);
+			const cached = await readCache(cacheKey);
+
+			if (cached?.isFresh) {
+				logger.info(`Using fresh cache for ${cached.data.length} media items`);
+				for (const item of cached.data) {
+					store.set({
+						id: item.id,
+						data: item,
+						rendered: { html: "" },
+					});
+				}
+				return;
+			}
+
 			const client = getOrCreateClient(options);
 			const maxKeys = options.maxKeys ?? 1000;
 
@@ -158,18 +180,17 @@ export function s3Loader(options: S3LoaderOptions): Loader {
 					});
 				}
 
-				await writeCache(results);
+				await writeCache(cacheKey, results);
 
 				logger.info(`Loaded ${results.length} media items from S3`);
 			} catch (err) {
 				const errorMessage = err instanceof Error ? err.message : String(err);
 				logger.error(`Error loading media from S3: ${errorMessage}`);
-				
+
 				// Fallback to cache if available
-				const cached = await readCache();
 				if (cached) {
-					logger.info(`Falling back to cache for ${cached.length} media items`);
-					for (const item of cached) {
+					logger.info(`Falling back to cache for ${cached.data.length} media items`);
+					for (const item of cached.data) {
 						store.set({
 							id: item.id,
 							data: item,
@@ -178,7 +199,7 @@ export function s3Loader(options: S3LoaderOptions): Loader {
 					}
 					return;
 				}
-				
+
 				throw err;
 			}
 		},
