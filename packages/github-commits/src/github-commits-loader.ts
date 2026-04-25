@@ -18,8 +18,13 @@ async function readCache(cacheKey: string): Promise<{ data: ProcessedCommit[]; i
 		const stat = await fs.stat(filePath);
 		const file = await fs.readFile(filePath, "utf-8");
 		const data = JSON.parse(file) as ProcessedCommit[];
+		// Convert date strings back to Date objects
+		const processedData = data.map(commit => ({
+			...commit,
+			date: new Date(commit.date)
+		}));
 		const isFresh = Date.now() - stat.mtime.getTime() < 60 * 60 * 1000; // 1 hour
-		return { data, isFresh };
+		return { data: processedData, isFresh };
 	} catch {
 		return null;
 	}
@@ -183,10 +188,7 @@ export function githubLoader(options: GitHubLoaderOptions): Loader {
 
 					const parsed = await parseData({
 						id,
-						data: {
-							...commit,
-							date: commit.date.toISOString(),
-						},
+						data: commit,
 					});
 
 					await store.set({

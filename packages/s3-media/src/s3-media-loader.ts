@@ -24,8 +24,13 @@ async function readCache(cacheKey: string): Promise<{ data: MediaItem[]; isFresh
 		const stat = await fs.stat(filePath);
 		const file = await fs.readFile(filePath, "utf-8");
 		const data = JSON.parse(file) as MediaItem[];
+		// Convert date strings back to Date objects
+		const processedData = data.map(item => ({
+			...item,
+			lastModified: item.lastModified ? new Date(item.lastModified) : undefined
+		}));
 		const isFresh = Date.now() - stat.mtime.getTime() < 60 * 60 * 1000; // 1 hour
-		return { data, isFresh };
+		return { data: processedData, isFresh };
 	} catch {
 		return null;
 	}
