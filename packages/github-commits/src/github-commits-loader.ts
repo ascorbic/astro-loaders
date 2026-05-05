@@ -60,7 +60,7 @@ async function writeCache(cacheKey: string, data: ProcessedCommit[]) {
       JSON.stringify(serializable, null, 2),
     );
   } catch (e) {
-    console.error("Failed to write GitHub commits cache:", e);
+    console.warn("⚠️ Failed to write GitHub cache (this is non-fatal):", e);
   }
 }
 
@@ -113,7 +113,7 @@ async function safeStoreBatch(
         id: commit.shortSha,
         data: {
           ...commit,
-          date: commit.date.toISOString(),
+          date: commit,
         },
       });
 
@@ -123,7 +123,7 @@ async function safeStoreBatch(
         digest: generateDigest({
           sha: commit.sha,
           message: commit.message,
-          date: commit.date.toISOString(),
+          date: commit,
           filesLength: commit.files.length,
         }),
       });
