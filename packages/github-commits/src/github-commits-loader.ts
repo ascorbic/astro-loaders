@@ -2,236 +2,290 @@
 import type { Loader, LoaderContext } from "astro/loaders";
 import { getLoaderFetch } from "@ascorbic/loader-utils";
 import type {
-	GitHubCommit,
-	GitHubCommitFile,
-	ProcessedCommit,
-	GitHubLoaderOptions,
+  GitHubCommit,
+  GitHubCommitFile,
+  ProcessedCommit,
+  GitHubLoaderOptions,
 } from "./schema.js";
 
 import fs from "node:fs/promises";
 import path from "node:path";
 
 const CACHE_DIR = path.join(process.cwd(), "src/content/content-metadata");
-const CACHE_VERSION = "v1"; // ✅ 防 schema 变更
-
-function getCacheFile(cacheKey: string): string {
-	return `github-commits-${cacheKey}.json`;
-}
+const CACHE_VERSION = "v2"; // 🔥 建议升级（schema 有改动）
 
 function getCacheKey(options: GitHubLoaderOptions): string {
-	return `${CACHE_VERSION}_${options.repo}_${options.perPage || 15}`;
+  return `${CACHE_VERSION}_${options.repo}_${options.perPage ?? 15}`;
 }
 
-async function readCache(
-	cacheKey: string
-): Promise<{ data: ProcessedCommit[]; isFresh: boolean } | null> {
-	try {
-		const filePath = path.join(CACHE_DIR, getCacheFile(cacheKey));
-		const stat = await fs.stat(filePath);
-		const file = await fs.readFile(filePath, "utf-8");
+function getCacheFile(cacheKey: string): string {
+  return `github-commits-${cacheKey}.json`;
+}
 
-		const data = JSON.parse(file) as ProcessedCommit[];
+/* ---------------- CACHE ---------------- */
+async function readCache(cacheKey: string) {
+  try {
+    const filePath = path.join(CACHE_DIR, getCacheFile(cacheKey));
+    const [fileContent, stat] = await Promise.all([
+      fs.readFile(filePath, "utf-8"),
+      fs.stat(filePath),
+    ]);
 
-		return {
-			data: data.map((c) => ({
-				...c,
-				date: new Date(c.date),
-			})),
-			isFresh: Date.now() - stat.mtime.getTime() < 60 * 60 * 1000,
-		};
-	} catch {
-		return null;
-	}
+    const parsed = JSON.parse(fileContent);
+    if (!Array.isArray(parsed)) return null;
+
+    const data: ProcessedCommit[] = parsed
+      .map(safeParseCachedCommit)
+      .filter((c): c is ProcessedCommit => c !== null);
+
+    return {
+      data,
+      isFresh: Date.now() - stat.mtimeMs < 60 * 60 * 1000, // 1小时
+    };
+  } catch {
+    return null;
+  }
 }
 
 async function writeCache(cacheKey: string, data: ProcessedCommit[]) {
-	try {
-		await fs.mkdir(CACHE_DIR, { recursive: true });
-		await fs.writeFile(
-			path.join(CACHE_DIR, getCacheFile(cacheKey)),
-			JSON.stringify(data, null, 2)
-		);
-	} catch (e) {
-		console.error("Failed to write cache", e);
-	}
+  try {
+    await fs.mkdir(CACHE_DIR, { recursive: true });
+    const serializable = data.map((c) => ({
+      ...c,
+      date: c.date.toISOString(),
+    }));
+
+    await fs.writeFile(
+      path.join(CACHE_DIR, getCacheFile(cacheKey)),
+      JSON.stringify(serializable, null, 2),
+    );
+  } catch (e) {
+    console.error("Failed to write GitHub commits cache:", e);
+  }
 }
 
+/* ---------------- TYPE GUARDS & HELPERS ---------------- */
+function isValidDate(d: unknown): d is Date {
+  return d instanceof Date && !isNaN(d.getTime());
+}
+
+function safeParseCachedCommit(input: unknown): ProcessedCommit | null {
+  if (!input || typeof input !== "object") return null;
+  const c = input as any;
+
+  const date = new Date(c.date);
+  if (!isValidDate(date)) return null;
+
+  return {
+    sha: String(c.sha),
+    shortSha: String(c.shortSha),
+    message: String(c.message || ""),
+    author: String(c.author || "unknown"),
+    date,
+    files: Array.isArray(c.files) ? c.files : [],
+  };
+}
+
+function cleanCommitMessage(msg: string): string {
+  if (!msg) return "";
+  msg = msg.replace(/[\u{1F300}-\u{1FAFF}]/gu, ""); // 移除 emoji
+  if (/^merge\b/i.test(msg)) return "";
+  return (msg.split("\n")[0] ?? "").trim();
+}
+
+function isValidCommit(c: ProcessedCommit): boolean {
+  return !!(c.sha && c.message && isValidDate(c.date));
+}
+
+/* ---------------- STORE HELPERS ---------------- */
+async function safeStoreBatch(
+  commits: ProcessedCommit[],
+  store: LoaderContext["store"],
+  parseData: LoaderContext["parseData"],
+  generateDigest: LoaderContext["generateDigest"],
+  logger: LoaderContext["logger"],
+) {
+  for (const commit of commits) {
+    if (!isValidCommit(commit)) continue;
+
+    try {
+      const parsed = await parseData({
+        id: commit.shortSha,
+        data: {
+          ...commit,
+          date: commit.date.toISOString(),
+        },
+      });
+
+      await store.set({
+        id: commit.shortSha,
+        data: parsed,
+        digest: generateDigest({
+          sha: commit.sha,
+          message: commit.message,
+          date: commit.date.toISOString(),
+          filesLength: commit.files.length,
+        }),
+      });
+    } catch (e) {
+      logger.warn(`Skipped bad commit ${commit.shortSha}: ${e}`);
+    }
+  }
+}
+
+/* ---------------- MAIN LOADER ---------------- */
 const ETAG_KEY = (repo: string, perPage: number) =>
-	`gh-commits-etag:${repo}:${perPage}`;
+  `gh-commits-etag:${repo}:${perPage}`;
 
 export function githubLoader(options: GitHubLoaderOptions): Loader {
-	const {
-		repo,
-		token,
-		perPage = 15,
-		timeoutMs = 8000,
-		fetchFilesFor = 0,
-	} = options;
+  const {
+    repo,
+    token,
+    perPage = 15,
+    timeoutMs = 8000,
+    fetchFilesFor = 0,
+  } = options;
 
-	return {
-		name: "github",
+  return {
+    name: "github",
 
-		load: async ({ store, logger, parseData, meta, generateDigest }: LoaderContext) => {
-			const cacheKey = getCacheKey(options);
-			const cached = await readCache(cacheKey);
+    load: async (context: LoaderContext) => {
+      const { store, logger, parseData, meta, generateDigest } = context;
 
-			// ✅ 优先使用 fresh cache
-			if (cached?.isFresh) {
-				logger.info(`Using fresh cache (${cached.data.length})`);
-				await store.clear();
+      const cacheKey = getCacheKey(options);
+      const cached = await readCache(cacheKey);
 
-				for (const commit of cached.data) {
-					await store.set({
-						id: commit.shortSha,
-						data: await parseData({
-							id: commit.shortSha,
-							data: serialize(commit),
-						}),
-						digest: getDigest(commit, generateDigest),
-					});
-				}
-				return;
-			}
+      // 优先使用新鲜缓存
+      if (cached?.isFresh) {
+        logger.info(`Using fresh cache (${cached.data.length} commits)`);
+        await store.clear();
+        await safeStoreBatch(
+          cached.data,
+          store,
+          parseData,
+          generateDigest,
+          logger,
+        );
+        return;
+      }
 
-			const fetchImpl = getLoaderFetch();
-			const headers = getHeaders(token);
+      const fetchImpl = getLoaderFetch();
+      const headers = getHeaders(token);
+      const etagKey = ETAG_KEY(repo, perPage);
+      const prevEtag = meta.get(etagKey);
+      if (prevEtag) headers["If-None-Match"] = prevEtag;
 
-			const etagKey = ETAG_KEY(repo, perPage);
-			const prevEtag = meta.get(etagKey);
-			if (prevEtag) headers["If-None-Match"] = prevEtag;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-			const controller = new AbortController();
-			const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const res = await fetchImpl(
+          `https://api.github.com/repos/${repo}/commits?per_page=${perPage}`,
+          { headers, signal: controller.signal },
+        );
 
-			try {
-				const res = await fetchImpl(
-					`https://api.github.com/repos/${repo}/commits?per_page=${perPage}`,
-					{ headers, signal: controller.signal }
-				);
+        clearTimeout(timeoutId);
 
-				clearTimeout(timeoutId);
+        if (res.status === 304) {
+          logger.info("ETag hit → skip update");
+          return;
+        }
 
-				if (res.status === 304) {
-					logger.info("ETag hit → skip update");
-					return;
-				}
+        if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
 
-				if (!res.ok) {
-					throw new Error(`GitHub API ${res.status}`);
-				}
+        const etag = res.headers.get("ETag");
+        if (etag) meta.set(etagKey, etag);
 
-				const etag = res.headers.get("ETag");
-				if (etag) meta.set(etagKey, etag);
+        const rawCommits = (await res.json()) as GitHubCommit[];
+        const processed: ProcessedCommit[] = [];
 
-				const commits = (await res.json()) as GitHubCommit[];
+        for (let i = 0; i < rawCommits.length; i++) {
+          const c = rawCommits[i];
+          if (!c?.commit?.author?.date) continue;
 
-				// ✅ 限制并发（关键优化）
-				const detailed: ProcessedCommit[] = [];
-				for (let i = 0; i < commits.length; i++) {
-					const c = commits[i];
+          const date = new Date(c.commit.author.date);
+          if (!isValidDate(date)) continue;
 
-					let files: ProcessedCommit["files"] = [];
+          const message = cleanCommitMessage(c.commit.message || "");
+          if (!message) continue;
 
-					if (i < fetchFilesFor) {
-						try {
-							const detailRes = await fetchImpl(
-								`https://api.github.com/repos/${repo}/commits/${c.sha}`,
-								{ headers }
-							);
+          let files: ProcessedCommit["files"] = [];
 
-							if (detailRes.ok) {
-								const detail = await detailRes.json();
-								files = (detail.files || []).map((f: GitHubCommitFile) => ({
-									filename: f.filename,
-									status: f.status,
-									changes: f.changes,
-									additions: f.additions,
-									deletions: f.deletions,
-								}));
-							}
-						} catch (e) {
-							logger.warn(`files fetch failed: ${c.sha}`);
-						}
-					}
+          if (i < fetchFilesFor) {
+            try {
+              const detailRes = await fetchImpl(
+                `https://api.github.com/repos/${repo}/commits/${c.sha}`,
+                { headers },
+              );
+              if (detailRes.ok) {
+                const detail = (await detailRes.json()) as {
+                  files?: GitHubCommitFile[];
+                };
+                files = (detail.files || []).map((f) => ({
+                  filename: f.filename,
+                  status: f.status,
+                  changes: f.changes,
+                  additions: f.additions,
+                  deletions: f.deletions,
+                }));
+              }
+            } catch {
+              logger.warn(`Failed to fetch files for ${c.sha.slice(0, 7)}`);
+            }
+          }
 
-					detailed.push({
-						sha: c.sha,
-						shortSha: c.sha.slice(0, 7),
-						message: c.commit.message.split("\n")[0] || "",
-						author: c.commit.author.name,
-						date: new Date(c.commit.author.date),
-						files,
-					});
-				}
+          const commit: ProcessedCommit = {
+            sha: c.sha,
+            shortSha: c.sha.slice(0, 7),
+            message,
+            author: c.commit.author.name || "unknown",
+            date,
+            files,
+          };
 
-				// ✅ 只有成功拿到数据才 clear
-				await store.clear();
+          if (isValidCommit(commit)) processed.push(commit);
+        }
 
-				for (const commit of detailed) {
-					await store.set({
-						id: commit.shortSha,
-						data: await parseData({
-							id: commit.shortSha,
-							data: serialize(commit),
-						}),
-						digest: getDigest(commit, generateDigest),
-					});
-				}
+        await store.clear();
+        await safeStoreBatch(
+          processed,
+          store,
+          parseData,
+          generateDigest,
+          logger,
+        );
+        await writeCache(cacheKey, processed);
 
-				await writeCache(cacheKey, detailed);
+        logger.info(`Stored ${processed.length} commits`);
+      } catch (err) {
+        clearTimeout(timeoutId);
+        logger.error(`GitHub loader failed: ${err}`);
 
-				logger.info(`Stored ${detailed.length} commits`);
-			} catch (err) {
-				clearTimeout(timeoutId);
+        if (cached?.data.length) {
+          logger.warn("Falling back to cache");
+          await store.clear();
+          await safeStoreBatch(
+            cached.data,
+            store,
+            parseData,
+            generateDigest,
+            logger,
+          );
+          return;
+        }
 
-				logger.error(`Load failed: ${String(err)}`);
-
-				if (cached) {
-					logger.warn("Fallback to cache");
-					await store.clear();
-
-					for (const commit of cached.data) {
-						await store.set({
-							id: commit.shortSha,
-							data: await parseData({
-								id: commit.shortSha,
-								data: serialize(commit),
-							}),
-							digest: getDigest(commit, generateDigest),
-						});
-					}
-					return;
-				}
-
-				throw err;
-			}
-		},
-	};
+        throw err;
+      }
+    },
+  };
 }
 
-/* ---------------- utils ---------------- */
-
-function serialize(commit: ProcessedCommit) {
-	return {
-		...commit,
-		date: commit.date.toISOString(),
-	};
-}
-
-function getDigest(commit: ProcessedCommit, generateDigest: any) {
-	return generateDigest({
-		sha: commit.sha,
-		message: commit.message,
-		date: commit.date.toISOString(),
-		filesLength: commit.files.length,
-	});
-}
-
+/* ---------------- HEADERS ---------------- */
 function getHeaders(token?: string): Record<string, string> {
-	const h: Record<string, string> = {
-		Accept: "application/vnd.github+json",
-		"User-Agent": "Astro-GitHub-Loader",
-	};
-	if (token) h.Authorization = `Bearer ${token}`;
-	return h;
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+    "User-Agent": "Astro-GitHub-Loader",
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return headers;
 }
