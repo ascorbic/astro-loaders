@@ -4,7 +4,7 @@ import type { LoaderContext } from "astro/loaders";
 import {
   getConditionalHeaders,
   storeConditionalHeaders,
-  getLoaderProxyAgent,
+  getLoaderFetch,
 } from "@ascorbic/loader-utils";
 import {
   BilibiliVideoSchema,
@@ -61,14 +61,11 @@ async function makeBilibiliAPIRequest<T>(
 ): Promise<BilibiliAPIResult<T>> {
   const url = `https://api.bilibili.com${endpoint}`;
 
+  // Get the proxy-enabled fetch function
+  const fetchImpl = getLoaderFetch();
+
   // Copy request options to avoid mutating the original
   const requestOptions = { ...options.requestOptions };
-
-  // Add proxy agent if available
-  const proxyAgent = getLoaderProxyAgent();
-  if (proxyAgent) {
-    (requestOptions as any).agent = proxyAgent;
-  }
 
   // Add headers
   const headers = new Headers(requestOptions.headers);
@@ -86,7 +83,7 @@ async function makeBilibiliAPIRequest<T>(
     requestOptions.headers = headers;
   }
 
-  const res = await fetch(url, requestOptions);
+  const res = await fetchImpl(url, requestOptions);
 
   if (res.status === 304 && options.meta) {
     options.logger?.info(`Bilibili data not modified, skipping`);

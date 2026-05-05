@@ -3,6 +3,7 @@ import type { LoaderContext } from "astro/loaders";
 import {
   getConditionalHeaders,
   storeConditionalHeaders,
+  getLoaderFetch,
 } from "@ascorbic/loader-utils";
 import { FeedLoadError, FeedValidationError } from "./feed-errors.js";
 
@@ -29,6 +30,9 @@ export async function fetchAndParseFeed({
 }: FeedParseOptions): Promise<ParsedFeedResult> {
   const feedUrl = new URL(url);
 
+  // Get the proxy-enabled fetch function
+  const fetchImpl = getLoaderFetch();
+
   // Only use caching if meta is provided
   if (meta) {
     requestOptions.headers = getConditionalHeaders({
@@ -38,7 +42,7 @@ export async function fetchAndParseFeed({
   }
 
   logger?.info(`Fetching feed from ${feedUrl}`);
-  const res = await fetch(feedUrl, requestOptions);
+  const res = await fetchImpl(feedUrl, requestOptions);
 
   if (res.status === 304 && meta) {
     logger?.info(`Feed ${feedUrl} not modified, skipping`);

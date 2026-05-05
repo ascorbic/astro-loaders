@@ -3,7 +3,7 @@ import type { LoaderContext } from "astro/loaders";
 import {
   getConditionalHeaders,
   storeConditionalHeaders,
-  getLoaderProxyAgent,
+  getLoaderFetch,
 } from "@ascorbic/loader-utils";
 import {
   YouTubeVideoListResponseSchema,
@@ -114,14 +114,11 @@ async function makeYouTubeAPIRequest<T>(
     }
   });
 
+  // Get the proxy-enabled fetch function
+  const fetchImpl = getLoaderFetch();
+
   // Copy request options to avoid mutating the original
   const requestOptions = { ...options.requestOptions };
-
-  // Add proxy agent if available
-  const proxyAgent = getLoaderProxyAgent();
-  if (proxyAgent) {
-    (requestOptions as any).agent = proxyAgent;
-  }
 
   // Add API key to headers (more secure than query params)
   const headers = new Headers(requestOptions.headers);
@@ -138,7 +135,7 @@ async function makeYouTubeAPIRequest<T>(
     requestOptions.headers = headers;
   }
 
-  const res = await fetch(url, requestOptions);
+  const res = await fetchImpl(url, requestOptions);
 
   if (res.status === 304 && options.meta) {
     options.logger?.info(`YouTube data not modified, skipping`);
