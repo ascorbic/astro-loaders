@@ -59,13 +59,13 @@ const BOOLEAN_TYPES = new Set(["checkbox", "boolean"]);
 // Define schemas for complex field types
 const userSchema = z.object({
   id: z.string(),
-  email: z.string().email(),
+  email: z.email(),
   name: z.string(),
 });
 
 const attachmentSchema = z.object({
   id: z.string(),
-  url: z.string().url(),
+  url: z.url(),
   filename: z.string(),
   size: z.number().optional(),
   type: z.string().optional(),
@@ -78,8 +78,8 @@ export const airtableTypeToZodType = (field: AirtableField): ZodTypeAny => {
     .with({ type: P.when((t) => DATE_TYPES.has(t)) }, () => z.coerce.date())
     .with({ type: P.when((t) => USER_TYPES.has(t)) }, () => userSchema)
     .with({ type: P.when((t) => BOOLEAN_TYPES.has(t)) }, () => z.boolean())
-    .with({ type: "email" }, () => z.string().email())
-    .with({ type: "url" }, () => z.string().url())
+    .with({ type: "email" }, () => z.email())
+    .with({ type: "url" }, () => z.url())
     .with(
       { type: "singleSelect", options: { choices: P.array(P.any) } },
       ({ options }) => {
@@ -105,7 +105,7 @@ export const airtableTypeToZodType = (field: AirtableField): ZodTypeAny => {
     .with({ type: "button" }, () =>
       z.object({
         label: z.string(),
-        url: z.string().url().optional(),
+        url: z.url().optional(),
       }),
     )
     .with(
@@ -147,7 +147,7 @@ export const airtableTypeToZodType = (field: AirtableField): ZodTypeAny => {
     )
     .with(
       { type: "multipleLookupValues", options: { result: { type: "object" } } },
-      () => z.array(z.object({}).passthrough()),
+      () => z.array(z.looseObject({})),
     )
     .with({ type: "duration" }, () => z.number())
     .otherwise(() => z.unknown());
