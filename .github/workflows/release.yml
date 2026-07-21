@@ -17,13 +17,13 @@ jobs:
       pull-requests: write
       repository-projects: write
     steps:
-      - uses: navikt/github-app-token-generator@v1
+      - uses: navikt/github-app-token-generator@b96ff604b2300989cd1105e3fad09199fca56681 # v1
         id: get-token
         with:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
           app-id: ${{ secrets.APP_ID }}
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -32,7 +32,7 @@ jobs:
         uses: pnpm/action-setup@v3
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: latest
           cache: "pnpm"
